@@ -61,7 +61,9 @@ Menu transcript 2026-10-25 (21 screenshots of every Settings page, game
 running; `docs/menu-settings-2026-10-25.md`): the game has NO particle
 quality and NO separate anti-aliasing control (AA comes from the upscaler),
 so the earlier "Particles Low" and "Anti-Aliasing" lines were dropped.
-Decisions recorded there: exclusive Fullscreen (not Borderless), NVIDIA DLSS
+Decisions recorded there: exclusive Fullscreen 240 Hz (not Borderless; operator
+choice 2026-10-26, borderless was only for screenshots; applied and read back
+2026-10-26), NVIDIA DLSS
 at 1.5x (Quality, pinned instead of Auto) with the Transformer model, Fog
 Low, Area lights Off, Shadows Med (the operator's change, `video.txt`
 `r_citadel_shadow_quality` 2 -> 1), Reduce camera shake On. Three keys

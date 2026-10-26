@@ -35,9 +35,9 @@ NEXT ACTION
   free autoexec applied, game copy sha256 a38b0d66aec5 = repo copy;
   `vw_controls.py check` all empty (hidden Cosmetic1 E accepted, operator
   verified harmless); DLSS enums 3 / 10 confirmed by a second read.
-  1) VW-VIDEO-FULLSCREEN: video.txt 23:15 reads borderless (fullscreen 0,
-  nowindowborder 1, refresh 0/0) - ask whether on purpose; if not,
-  `vw_video.py apply` with the game closed, read back. 2) VW-CASTING: the
+  VW-VIDEO-FULLSCREEN closed 2026-10-26: operator chose exclusive
+  fullscreen 240 Hz; applied with the game closed, read back 1/0, 240/1.
+  1) (none) 2) VW-CASTING: the
   operator confirms the three casting options in the menu (no file shows
   them). 3) VW-AUTOEXEC-VERIFY: one F7 console look for the echo and
   "Unknown command". Then VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).

@@ -1,12 +1,5 @@
 # ROADMAP - open work only
 
-- [ ] VW-VIDEO-FULLSCREEN: video.txt written 2026-10-25 23:15 reads
-  borderless (`fullscreen` 0, `nowindowborder` 1, refresh 0/0);
-  `vw_video.py check` would_change those 4 keys back to exclusive
-  fullscreen 240/1 (set and read back at 21:46). Left: find out whether the
-  menu was switched on purpose; if not, `vw_video.py apply` with the game
-  closed and read back. (VW-VIDEO-MENU closed: DLSS enum second read 23:15
-  `r_citadel_dlss_settings_mode` 3 = 1.5x, `r_dlss_preset` 10 = Transformer.)
 - [ ] VW-CASTING: Casting mode Quick Cast / Alternate cast Press and Hold 0.15
   / Items Instant Cast are menu-only and no file confirms them
   (`cl_citadel_quickcast_ability1-4` and `cl_citadel_items_quickcast_mode`

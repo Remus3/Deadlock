@@ -7,7 +7,8 @@ can show account details). Values below are what the screens showed.
 
 Operator facts: Shadows were changed High -> Med before the screenshots;
 the window mode was switched to Borderless Window only to take the
-screenshots; the menu has no "particles" and no "anti-aliasing" control.
+screenshots (operator choice 2026-10-26: exclusive Fullscreen 240 Hz is the
+playing mode; see "Applied 2026-10-26" at the end); the menu has no "particles" and no "anti-aliasing" control.
 
 File mapping: video keys are in `<Steam>/userdata/<id>/1422450/local/cfg/video.txt`
 (read with `tools/vw_paths.py`); other settings are cvars in
@@ -44,7 +45,7 @@ Display
 | Custom resolution | On | toggle | - | keep |
 | Aspect ratio | 16x9 | 16x9, 16x10, 21x9 | `setting.aspectratiomode` 0 | keep |
 | Resolution | 2560x1440 (240 Hz) | list | `setting.defaultres` / `defaultresheight`, `refreshrate_numerator/denominator` 240/1 | keep |
-| Window mode | Borderless Window (for the screenshots) | dropdown (not opened) | `setting.fullscreen` + `setting.nowindowborder` (1/0 = Fullscreen, 0/1 = Borderless) | **Fullscreen** (see decision 1) |
+| Window mode | Borderless Window (for the screenshots only; exclusive Fullscreen 240 Hz applied 2026-10-26) | dropdown (not opened) | `setting.fullscreen` + `setting.nowindowborder` (1/0 = Fullscreen, 0/1 = Borderless) | **Fullscreen** (see decision 1) |
 
 Performance (Advanced settings: On, `setting.useadvanced` 1)
 | Setting | Current | Options seen | Key | Recommended |
@@ -261,3 +262,15 @@ left. Enum values learned once (1.5x = 3, Transformer = 10); second read
 Keybinds and casting modes: not changed (keys file unchanged since 21:00;
 casting keys and convars identical to the 21:37 backup). Sensitivity 1.1 is
 saved.
+
+## Applied 2026-10-26: exclusive fullscreen 240 Hz
+
+Operator choice 2026-10-26: exclusive Fullscreen at 240 Hz; Borderless was
+only for the 2026-10-25 screenshots. The 23:15 file read borderless
+(`fullscreen` 0, `nowindowborder` 1, refresh 0/0). With deadlock.exe not
+running, `vw_video.py apply` set `fullscreen` 1, `nowindowborder` 0,
+`refreshrate_numerator` / `_denominator` 240 / 1 (backup
+`ops/runtime/backup/20261026-010034/video.txt`). Read back: those 4 values,
+`check` would_change empty; a diff against the backup shows only those 4
+lines, so 2560x1440, Shadows Med (1), DLSS 1.5x (3) Transformer (10), fog
+Low (0) and area lights off are unchanged. localconfig.vdf not touched.
