@@ -255,8 +255,9 @@ Note: first launch wrote Borderless as 0 / 1; switching back from Borderless
 to Fullscreen set `fullscreen` 1 and left `nowindowborder` 1. `vw_video.py
 apply` (21:46, backup under `ops/runtime/backup/`) set `nowindowborder` 0,
 the documented exclusive-fullscreen pair 1 / 0; read back, check: no change
-left. Enum values learned once (1.5x = 3, Transformer = 10); they stay
-MENU_ONLY until a second read confirms them.
+left. Enum values learned once (1.5x = 3, Transformer = 10); second read
+2026-10-25 23:15 (video.txt) confirms both. They stay MENU_ONLY in
+`tools/vw_video.py` (set in the menu, never written by the tool).
 Keybinds and casting modes: not changed (keys file unchanged since 21:00;
 casting keys and convars identical to the 21:37 backup). Sensitivity 1.1 is
 saved.

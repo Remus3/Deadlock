@@ -1,26 +1,19 @@
 # ROADMAP - open work only
 
-- [ ] VW-VIDEO-MENU: the six menu changes are set (read back 2026-10-25
-  21:44, game closed; `docs/menu-settings-2026-10-25.md` "Read-back"):
-  Fullscreen, Scaling 1.5x, DLSS Transformer, Fog Low, Area lights Off,
-  Reduce camera shake On. Left: confirm `r_citadel_dlss_settings_mode` 3
-  = 1.5x and `r_dlss_preset` 10 = Transformer a second time (next menu
-  read) before they leave MENU_ONLY.
-- [ ] VW-CONTROLS: sensitivity 1.6 at 1200 DPI (operator: R110 step 2 of 3; eDPI 1920,
-  21.6 cm/360) live - read back 23:01 in user_convars and hero-settings base.
-  Binds Melee MOUSE5, Item 1 Q, Item 4 E, Interact V, Ping MOUSE4 set.
-  Reticle: the autoexec cannot set it (the cloud citadel_hero_settings.lst
-  base block overrides the citadel_crosshair_* cvars; menu showed defaults
-  23:01), so the 13 cvar lines were dropped from config/autoexec.cfg;
-  operator sets the 13 rows in Settings > Game > Reticle (docs/controls.md).
-  Cosmetic: keys file rewritten 23:00:34 with the game running still has
-  Cosmetic1 E / 5 ("stale" theory falsified); the menu "Cosmetic" row shows 5
-  = CosmeticMenu. Search "cosmetic" in Keybinds and clear an E slot if one
-  shows. Also Casting mode Quick Cast, Alternate cast Press and Hold (0.15),
-  Items Instant Cast. Then, game closed: apply the new autoexec
-  (`tools/Apply-DeadlockConfig.ps1 -SkipRegistry -SkipLaunchOptions`, read
-  back by hash) and `python tools/vw_controls.py check`: bind_changes_left,
-  convars_not_yet_saved and reticle_changes_left empty.
+- [ ] VW-VIDEO-FULLSCREEN: video.txt written 2026-10-25 23:15 reads
+  borderless (`fullscreen` 0, `nowindowborder` 1, refresh 0/0);
+  `vw_video.py check` would_change those 4 keys back to exclusive
+  fullscreen 240/1 (set and read back at 21:46). Left: find out whether the
+  menu was switched on purpose; if not, `vw_video.py apply` with the game
+  closed and read back. (VW-VIDEO-MENU closed: DLSS enum second read 23:15
+  `r_citadel_dlss_settings_mode` 3 = 1.5x, `r_dlss_preset` 10 = Transformer.)
+- [ ] VW-CASTING: Casting mode Quick Cast / Alternate cast Press and Hold 0.15
+  / Items Instant Cast are menu-only and no file confirms them
+  (`cl_citadel_quickcast_ability1-4` and `cl_citadel_items_quickcast_mode`
+  read 0, unchanged since 21:37). Left: operator confirms in the menu; one
+  toggle with a before/after read learns the enum. (VW-CONTROLS closed
+  2026-10-25 23:16: `vw_controls.py check` all empty, docs/controls.md
+  "Final state".)
 - [ ] VW-AUTOEXEC-VERIFY: autoexec RUNS (inferred 23:01: process command line
   carries `+exec autoexec`, its sensitivity 1.6 landed). Left: one console
   look (F7) for `[VW] autoexec loaded` and any "Unknown command" line.

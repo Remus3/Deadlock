@@ -1,5 +1,5 @@
 {
- "_README": "Recommended Deadlock controls (research 2026-10-25, docs/controls.md). binds = action name in the game's citadelkeys_personal.lst -> primary key, or a list = the exact set of keys over both slots (Key, Key2); set in Settings > Keybinds (the file is a Steam cloud file this repo never edits); tools/vw_controls.py check reads them back. convars_checked = the controls cvars config/autoexec.cfg sets (sensitivity). reticle = menu-set targets read back from the hero-settings cloud file. menu = settings with no verified cvar value, set by hand.",
+ "_README": "Recommended Deadlock controls (research 2026-10-25, docs/controls.md). binds = action name in the game's citadelkeys_personal.lst -> primary key, or a list = the exact set of keys over both slots (Key, Key2); accepted_hidden = hidden binds kept as they are and never flagged as conflicts; set in Settings > Keybinds (the file is a Steam cloud file this repo never edits); tools/vw_controls.py check reads them back. convars_checked = the controls cvars config/autoexec.cfg sets (sensitivity). reticle = menu-set targets read back from the hero-settings cloud file. menu = settings with no verified cvar value, set by hand.",
  "dpi_assumed": 1200,
  "mouse": "Rapique R110, DPI steps 800/1200/1600 (button), set to step 2 of 3 = 1200 (operator 2026-10-25); tools/vw_dpi.py measure",
  "cm_per_360": 21.6,
@@ -10,7 +10,11 @@
   "Item4": "E",
   "Interact": "V",
   "Ping": "MOUSE4",
-  "Cosmetic1": ["5"]
+  "CosmeticMenu": "5"
+ },
+ "accepted_hidden": {
+  "_README": "Binds the menu never shows, kept as the game holds them and not flagged: Cosmetic1 is a hidden legacy/default action whose E slot cannot be cleared from the menu; the operator verified 2026-10-25 that E with an empty item slot 4 fires nothing. The menu Cosmetic row is CosmeticMenu (5).",
+  "Cosmetic1": ["E", "5"]
  },
  "combat_actions": ["AbilityMelee", "Ability1", "Ability2", "Ability3", "Ability4",
                     "Item1", "Item2", "Item3", "Item4", "HeldItem", "Roll", "Crouch",

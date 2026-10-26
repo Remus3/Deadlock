@@ -61,6 +61,30 @@ def test_list_target_compares_both_slots():
         assert C.conflicts(C.key_slots(done), ["Item4", "Cosmetic1"]) == {}
 
 
+def test_hidden_cosmetic1_e_is_accepted_not_flagged():
+    # the game file of 2026-10-25 23:00: Cosmetic1 E / 5 (hidden, menu cannot
+    # clear it; operator: E with an empty item slot 4 fires nothing),
+    # CosmeticMenu 5 = the menu "Cosmetic" row
+    rec = C.recommended()
+    ok = C._accepted(rec)
+    assert ok == {"Cosmetic1": ["E", "5"]}
+    assert rec["binds"]["CosmeticMenu"] == "5"
+    assert "Cosmetic1" not in rec["binds"]
+    text = _lst({"Item4": ("E", "NONE"), "Cosmetic1": ("E", "5"),
+                 "CosmeticMenu": ("5", "NONE")})
+    slots = C.key_slots(text)
+    assert C.conflicts(slots, rec["combat_actions"]) == {"E": ["Item4", "Cosmetic1"]}
+    assert C.conflicts(slots, rec["combat_actions"], ok) == {}
+    want = {"CosmeticMenu": "5"}
+    assert C.diff_binds(C.binds(text), want, slots) == {}
+    moved = _lst({"CosmeticMenu": ("NONE", "NONE")})
+    assert C.diff_binds(C.binds(moved), want, C.key_slots(moved)) == {"CosmeticMenu": ("NONE", "5")}
+    # only the listed (action, key) pairs are exempt
+    clash = _lst({"Item4": ("5", "NONE"), "Cosmetic1": ("E", "5")})
+    assert C.conflicts(C.key_slots(clash), ["Item4", "Cosmetic1"], ok) == {}
+    assert C.conflicts(C.key_slots(clash), ["Item4", "Cosmetic1"], {"Cosmetic1": ["E"]}) == {"5": ["Item4", "Cosmetic1"]}
+
+
 def test_recommended_layout_has_no_combat_conflicts():
     rec = C.recommended()
     assert C.conflicts(rec["binds"], rec["combat_actions"]) == {}
@@ -72,7 +96,7 @@ def test_recommended_layout_has_no_combat_conflicts():
                 "Cosmetic1": "E", "PurchaseQuickbuy": "G", "PushToTalk": "T",
                 "ChatWheel": "Y", "OpenHeroSheet": "B", "Scoreboard": "TAB"}
     merged = dict(defaults, **rec["binds"])
-    assert C.conflicts(merged, rec["combat_actions"]) == {}
+    assert C.conflicts(merged, rec["combat_actions"], C._accepted(rec)) == {}
 
 
 def test_autoexec_sets_every_checked_controls_cvar():

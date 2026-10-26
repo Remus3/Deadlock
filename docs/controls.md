@@ -5,11 +5,35 @@ Researched 2026-10-25 (sources at the end). Machine-readable copy:
 `config/autoexec.cfg`, the reticle in the menu; `python tools/vw_controls.py
 check` reads back what the game holds.
 
+## Final state (read back 2026-10-25 23:16, game closed)
+
+`vw_controls.py check`: bind_changes_left, conflicts_now, conflicts_after,
+convars_not_yet_saved and reticle_changes_left all empty;
+`hidden_accepted` Cosmetic1 5,E.
+- Sensitivity 1.6 at 1200 DPI (eDPI 1920, 21.6 cm/360), set by
+  `config/autoexec.cfg`; game copy sha256 a38b0d66aec5 = repo copy
+  (reticle-free autoexec, applied 23:16, previous copy e6fe29bc57d9 in
+  `ops/runtime/backup/20261025-231622/`).
+- Reticle: the 13 rows below, set by the operator in the menu; read back
+  from the hero-settings `base` block (cyan 0/255/255, pip 2 x 8, gap 3,
+  opacity 1, border 1 at 0.8, dot 2 at 1, dot border 1 at 0.8).
+- Binds: Melee MOUSE5, Item 1 Q, Item 4 E, Interact V, Ping MOUSE4, menu
+  "Cosmetic" row (`CosmeticMenu`) 5; everything else default.
+- Cosmetic1 keeps E (and 5): a hidden legacy/default action the menu does
+  not show and cannot clear. The operator verified 2026-10-25 that E with
+  an empty item slot 4 fires nothing, so it is accepted: listed under
+  `accepted_hidden` in `config/controls.recommended.json`, reported as
+  `hidden_accepted`, never as a conflict. Reverses: E firing a cosmetic in
+  a match.
+- Casting (Quick Cast, Press and Hold 0.15, Instant Cast items): menu-only;
+  no file confirms it - `cl_citadel_quickcast_ability1-4` and
+  `cl_citadel_items_quickcast_mode` read 0, unchanged since 21:37 (enum
+  unverified), alt-cast hold time 0.15 (= default). ROADMAP VW-CASTING.
+
 ## Keybinds
 
-Only six rows change from the game default. Read back 2026-10-25 (keys
-file of 21:52): rows 1-5 set (Melee MOUSE5, Item 1 Q, Item 4 E, Interact V,
-Ping MOUSE4); left: Cosmetic still on E, and the three casting options. Everything else stays default.
+Only six rows change from the game default (all read back, see Final
+state). History of the Cosmetic finding:
 Cosmetic, re-read 2026-10-25 22:36 (game closed 22:31): the operator's menu
 shows Cosmetic on 5 only, but the keys file (last written 21:52, cloud-synced,
 not rewritten at the 22:31 close) still holds `Cosmetic1` Key `E`, Key2 `5`
@@ -21,14 +45,10 @@ keys file at 23:00:34 while running and it still holds `Cosmetic1` E / 5;
 `CosmeticMenu` holds 5 / NONE. The menu row "Cosmetic" (Keybinds >
 Miscellaneous, screenshot 23:0x) shows one key, 5 - that matches
 `CosmeticMenu`, so that row is probably not `Cosmetic1` (the localization
-reading above is unconfirmed). Next: type "cosmetic" in the Keybinds search
-box; if a second row shows E, clear it (right-click / Delete on that slot).
-If no row shows E, the E slot is unreachable from the menu and the cloud
-file may not be edited (floor): leave it and check in Sandbox that E fires
-Item 4. The
-check now compares a list target (`"Cosmetic1": ["5"]`) against BOTH slots
-(Key and Key2), so 5 in either slot with E gone reads done; the old target
-`"NONE"` looked at the primary slot only.
+reading above is unconfirmed). Resolved 2026-10-25: no menu row shows E (the row is `CosmeticMenu`), the
+cloud file stays unedited (floor), and the operator tested E with an empty
+item slot 4: nothing fires. `Cosmetic1` E is accepted (Final state); the
+check target is `CosmeticMenu` 5.
 Set them in Settings > Keybinds (the game keeps binds in a Steam cloud file this
 repo may not edit, so the menu is the apply path; `vw_controls.py check` then
 shows `bind_changes_left` empty).
@@ -48,7 +68,7 @@ shows `bind_changes_left` empty).
 | F | Parry / throw held item | default | every source keeps parry on F |
 | MOUSE3 | Alternate cast (self cast) | default | |
 | MOUSE4 | Ping | was MOUSE3 | default shared MOUSE3 with alt cast |
-| 5 | Cosmetic | E removed | E now holds Item 4 (5 stays; target = 5 only, either slot) |
+| 5 | Cosmetic (`CosmeticMenu`) | default | hidden `Cosmetic1` keeps E, verified harmless (Final state) |
 | R, TAB, B, G, T, Y | reload, scoreboard, hero sheet, quickbuy, push-to-talk, chat wheel | default | |
 
 Menu-only (no verified cvar values, set by hand):
@@ -130,8 +150,8 @@ Menu-only (no verified cvar values, set by hand):
 
 ## Reticle (Settings > Game > Reticle)
 
-Set BY HAND in the menu (13 rows below); `vw_controls.py check` reads
-`reticle_changes_left`. Why not the autoexec (finding 2026-10-25 23:01):
+Set BY HAND in the menu (13 rows below; done 2026-10-25, read back empty
+`reticle_changes_left`). Why not the autoexec (finding 2026-10-25 23:01):
 the game launched 22:58 with `+exec autoexec` (process command line) and the
 autoexec's sensitivity 1.6 landed, but the Reticle page (screenshot) showed
 every row at default. The reticle is stored in the cloud file

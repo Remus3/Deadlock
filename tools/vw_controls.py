@@ -9,7 +9,10 @@ game safety floor forbids editing, so binds are changed in the in-game menu
 config/autoexec.cfg and read back from local/cfg/*convars*.vcfg. The reticle
 lives in remote/cfg/citadel_hero_settings.lst (KV3, block "base"), which the
 game pushes over the citadel_crosshair_* cvars, so it is set in Settings >
-Game > Reticle and read back from there. docs/controls.md.
+Game > Reticle and read back from there. accepted_hidden in the
+recommendation lists binds the menu never shows that the operator verified
+harmless (Cosmetic1 keeping E, 2026-10-25): they are reported under
+hidden_accepted, never as a conflict. docs/controls.md.
 """
 
 import argparse
@@ -120,16 +123,24 @@ def diff_binds(current, wanted, slots=None):
     return out
 
 
-def conflicts(table, actions):
+def conflicts(table, actions, accepted=None):
     """{key: [actions]} where two of the given actions share one key (a list
-    value = every key that action holds)."""
+    value = every key that action holds). accepted = {action: [keys]} the
+    action may keep without counting (a hidden legacy bind proven harmless)."""
     seen = {}
+    accepted = accepted or {}
     for a in actions:
         ks = table.get(a)
         for k in (ks if isinstance(ks, list) else [ks]):
-            if k and k != "NONE":
+            if k and k != "NONE" and k not in accepted.get(a, ()):
                 seen.setdefault(k, []).append(a)
     return {k: v for k, v in seen.items() if len(v) > 1}
+
+
+def _accepted(rec):
+    """{action: [keys]} from the recommendation's accepted_hidden block."""
+    return {a: list(v) for a, v in rec.get("accepted_hidden", {}).items()
+            if not a.startswith("_")}
 
 
 def cm_per_360(sens, dpi, yaw=M_YAW):
@@ -163,9 +174,13 @@ def check(steam=None):
             cur, slots = binds(text), key_slots(text)
             row["bind_changes_left"] = {a: "%s -> %s" % v
                                         for a, v in diff_binds(cur, rec["binds"], slots).items()}
-            row["conflicts_now"] = conflicts(slots, rec["combat_actions"])
+            ok = _accepted(rec)
+            row["conflicts_now"] = conflicts(slots, rec["combat_actions"], ok)
             merged = dict(slots, **rec["binds"])
-            row["conflicts_after"] = conflicts(merged, rec["combat_actions"])
+            row["conflicts_after"] = conflicts(merged, rec["combat_actions"], ok)
+            row["hidden_accepted"] = {a: ",".join(k for k in slots.get(a, []) if k in ks)
+                                      for a, ks in sorted(ok.items())
+                                      if any(k in ks for k in slots.get(a, []))}
         saved = {}
         for parts in CONVAR_FILES:
             f = app.joinpath(*parts)
