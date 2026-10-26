@@ -17,3 +17,6 @@
   is recurring work. Until then each session reads the inbox at start and /done.
 - [ ] DL-POWER: measure Balanced vs High performance power plan in game
   (machine-level; MAIN's call, file a note with the numbers).
+- [ ] DL-DEPENDABOT: PR #1 (github-actions group, 3 bumps) opened on the first
+  push, CI green on it. Never merge a bot PR as-is (operator-only authors):
+  apply the same SHA bumps in an operator commit, push at /done, close #1.

@@ -19,6 +19,9 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     was running), video file (does not exist until first launch).
   - Lanes: tools/dl_lane.py (cap 2) - worktrees under the kit sidecar root
     DL/Worktree; no loop armed.
+  - GitHub: public; secret scanning + push protection + Dependabot alerts +
+    private vulnerability reporting on (read back). First push 0656ae5: ci
+    and codeql green. Dependabot PR #1 open (ROADMAP DL-DEPENDABOT).
 
 NEXT ACTION
   DL-LAUNCH: with Steam closed, `python tools/dl_launch.py apply`, then
