@@ -77,6 +77,14 @@ autoexec values (`fps_max 237`, `fps_max_ui 120`, `rate 786432`,
 `user_convars.vcfg` - the game appears to have run `autoexec.cfg` even before
 the launch option was set. VW-AUTOEXEC-VERIFY confirms with the console echo.
 
+## Applied 2026-10-25, controls (game NOT running)
+
+| # | Change | Read back |
+|---|---|---|
+| 6 | `config/autoexec.cfg` gains the controls block (sensitivity 1.1, reticle cvars; `docs/controls.md`), copied to the game cfg; backup of the game autoexec, local and cloud convars and key files in `ops/runtime/backup/20261025-213740-controls/` (SHA256SUMS) | game copy SHA-256 == repo copy `617b53d2345d360f...` |
+
+Keybinds are not written by any tool (Steam cloud file); `docs/controls.md`.
+
 ## Why these values
 
 - `fps_max 237`: the display is 240 Hz. With V-Sync off and a variable refresh

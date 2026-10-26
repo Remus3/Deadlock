@@ -9,6 +9,14 @@
   diff `video.txt` against `ops/runtime/backup/` to learn the
   `r_citadel_dlss_settings_mode` / `r_dlss_preset` values of 1.5x and
   Transformer (record them; they stay MENU_ONLY until confirmed twice).
+- [ ] VW-CONTROLS: sensitivity 1.1 + cyan reticle applied by the autoexec
+  2026-10-25 (`docs/controls.md`). Operator, in game: Settings > Keybinds,
+  six rows (Melee Q -> MOUSE5, Item 1 Z -> Q, Item 4 V -> E, Interact
+  E -> V, Ping MOUSE3 -> MOUSE4, Cosmetic E -> none); Casting mode Quick
+  Cast, Alternate cast Press and Hold, Items Instant Cast. Confirm the mouse
+  DPI (assumed 800; sens = 880 / DPI). Then, game closed,
+  `python tools/vw_controls.py check`: `bind_changes_left` and
+  `convars_not_yet_saved` both empty.
 - [ ] VW-AUTOEXEC-VERIFY: on first launch with the launch option set, the
   console shows `[VW] autoexec loaded`; drop any cvar the console reports as
   unknown.

@@ -1,0 +1,35 @@
+{
+ "_README": "Recommended Deadlock controls (research 2026-10-25, docs/controls.md). binds = action name in the game's citadelkeys_personal.lst -> primary key; set in Settings > Keybinds (the file is a Steam cloud file this repo never edits); tools/vw_controls.py check reads them back. convars_checked = the controls cvars config/autoexec.cfg sets (sensitivity + reticle). menu = settings with no verified cvar value, set by hand.",
+ "dpi_assumed": 800,
+ "cm_per_360": 47.2,
+ "binds": {
+  "AbilityMelee": "MOUSE5",
+  "Item1": "Q",
+  "Item4": "E",
+  "Interact": "V",
+  "Ping": "MOUSE4",
+  "Cosmetic1": "NONE"
+ },
+ "combat_actions": ["AbilityMelee", "Ability1", "Ability2", "Ability3", "Ability4",
+                    "Item1", "Item2", "Item3", "Item4", "HeldItem", "Roll", "Crouch",
+                    "Mantle", "Reload", "Ping", "Interact", "Cosmetic1",
+                    "PurchaseQuickbuy", "PushToTalk", "ChatWheel", "OpenHeroSheet",
+                    "Scoreboard"],
+ "convars_checked": [
+  "sensitivity", "sensitivity_y_scale", "zoom_sensitivity_ratio",
+  "citadel_crosshair_color_r", "citadel_crosshair_color_g", "citadel_crosshair_color_b",
+  "citadel_crosshair_pip_width", "citadel_crosshair_pip_height", "citadel_crosshair_pip_gap",
+  "citadel_crosshair_pip_opacity", "citadel_crosshair_pip_outline_border",
+  "citadel_crosshair_pip_outline_opacity", "citadel_crosshair_dot_size",
+  "citadel_crosshair_dot_opacity", "citadel_crosshair_dot_outline_border",
+  "citadel_crosshair_dot_outline_opacity"
+ ],
+ "menu": {
+  "Keybinds > Abilities > Casting mode": "Quick Cast (disputed; per-ability fallback in Advanced > Hero-Specific Settings)",
+  "Keybinds > Abilities > Alternate cast mode": "Press and Hold, hold time 0.15",
+  "Keybinds > Abilities > Cancel with ability key": "Off",
+  "Keybinds > Items > Active item casting": "Instant Cast",
+  "Game > Interface > Show cumulative damage": "Off",
+  "Game > Reticle > Themed hero reticles": "On"
+ }
+}

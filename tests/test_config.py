@@ -29,5 +29,7 @@ def test_no_forbidden_commands():
 
 
 def test_every_line_is_a_known_safe_cvar():
-    assert set(_cvars()) <= {"con_enable", "fps_max", "fps_max_ui", "rate",
-                             "engine_low_latency_sleep_after_client_tick"}
+    controls = {"sensitivity", "sensitivity_y_scale", "zoom_sensitivity_ratio"}
+    extra = {k for k in _cvars() if not k.startswith("citadel_crosshair_")} - controls
+    assert extra <= {"con_enable", "fps_max", "fps_max_ui", "rate",
+                     "engine_low_latency_sleep_after_client_tick"}
