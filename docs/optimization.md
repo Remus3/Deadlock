@@ -8,7 +8,7 @@ Balanced. Deadlock build 26147187, installed the same day and never launched
 `user_convars.vcfg` and `user_keys.vcfg`).
 
 Placeholders: `<Steam>` = the Steam install, `<Deadlock>` = the game install
-(`<library>/steamapps/common/Deadlock`). `tools/dl_paths.py` resolves both.
+(`<library>/steamapps/common/Deadlock`). `tools/vw_paths.py` resolves both.
 
 ## Applied 2026-10-25 (game and Steam state at the time: game NOT running, Steam running)
 
@@ -16,7 +16,7 @@ Each change was made alone, after its backup, and read back.
 
 | # | Change | Read back |
 |---|---|---|
-| 1 | `<Deadlock>/game/citadel/cfg/autoexec.cfg` created from `config/autoexec.cfg` (no file there before) | SHA-256 of game copy equals repo copy (`695804b67a6a1ece...`) |
+| 1 | `<Deadlock>/game/citadel/cfg/autoexec.cfg` created from `config/autoexec.cfg` (no file there before) | SHA-256 of game copy equals repo copy (`695804b67a6a1ece...`); re-applied 2026-10-25 after the tree rename (comment and echo tag DL -> VW only; previous game copy backed up to `ops/runtime/backup/20261025-vw-rename/`), game copy = repo copy `c15f9421bb979b8b...` |
 | 2 | HKCU `Software\Microsoft\DirectX\UserGpuPreferences`, value `<Deadlock>\game\bin\win64\deadlock.exe` = `GpuPreference=2;` (high performance; no value before) | `reg query` returned `GpuPreference=2;` |
 | 3 | HKCU `Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`, same value name = `~ DISABLEDXMAXIMIZEDWINDOWEDMODE` (fullscreen optimizations off; no value before) | `reg query` returned `~ DISABLEDXMAXIMIZEDWINDOWEDMODE` |
 
@@ -31,14 +31,14 @@ Backups (local, gitignored, unscrubbed): `ops/runtime/backup/20261025-baseline/`
   Steam was running, and Steam rewrites `localconfig.vdf` on exit, so the file
   was not edited. Either set it in Steam (Library > Deadlock > Properties >
   General > Launch Options: `+exec autoexec`) or, with Steam closed, run
-  `python tools/dl_launch.py apply` (backs up, writes only the LaunchOptions
+  `python tools/vw_launch.py apply` (backs up, writes only the LaunchOptions
   value of the existing app block, reads back). Until then the autoexec does
-  not run. ROADMAP DL-LAUNCH.
+  not run. ROADMAP VW-LAUNCH.
 - **Video settings.** The game writes its video file on first launch; none
-  exists yet. After one launch and exit: `python tools/dl_video.py check`, then
+  exists yet. After one launch and exit: `python tools/vw_video.py check`, then
   `apply` (only keys the game already wrote are changed). The menu values that
   cannot be set from the file are in `config/video.recommended.json` "menu".
-  ROADMAP DL-VIDEO.
+  ROADMAP VW-VIDEO.
 
 ## Why these values
 
@@ -79,10 +79,10 @@ boosts fine on it) and the NVIDIA driver profile.
    (or deadlock.exe > Properties > Compatibility > untick "Disable fullscreen
    optimizations").
 4. Launch options: `ops/runtime/backup/<stamp>/localconfig-<n>.vdf` is the copy
-   `dl_launch.py apply` made; restore it with Steam closed, or clear the field
+   `vw_launch.py apply` made; restore it with Steam closed, or clear the field
    in Steam.
 5. Video: `ops/runtime/backup/<stamp>/<video file>` is the copy
-   `dl_video.py apply` made; restore it with the game closed.
+   `vw_video.py apply` made; restore it with the game closed.
 Full restore of both registry keys: import the `.reg` files from
 `ops/runtime/backup/20261025-baseline/`.
 

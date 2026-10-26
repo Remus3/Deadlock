@@ -10,11 +10,11 @@
    "Bash(git log:*)",
    "Bash(git diff:*)",
    "Bash(python -m pytest:*)",
-   "Bash(python tools/dl_paths.py:*)",
-   "Bash(python tools/dl_privacy.py:*)",
-   "Bash(python tools/dl_video.py check:*)",
-   "Bash(python tools/dl_launch.py check:*)",
-   "Bash(python tools/dl_lane.py status:*)",
+   "Bash(python tools/vw_paths.py:*)",
+   "Bash(python tools/vw_privacy.py:*)",
+   "Bash(python tools/vw_video.py check:*)",
+   "Bash(python tools/vw_launch.py check:*)",
+   "Bash(python tools/vw_lane.py status:*)",
    "Bash(gh run:*)"
   ],
   "deny": []

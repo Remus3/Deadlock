@@ -1,8 +1,9 @@
-# Deadlock - Agent Context
+# VeilWalker - Agent Context
 
 Configuration, performance tuning and measurement for Valve's Deadlock on the
 operator's own Windows 10 PC. Python 3.11+ stdlib tools, PowerShell 5.1 apply
-script, versioned game config in `config/`. Channel code `DL`.
+script, versioned game config in `config/`. Channel code `VW` (the tree was
+named Deadlock, code DL, until its rename on 2026-10-25; the game keeps its name).
 
 **This file is RULES ONLY.** Reasoning and history live in `docs/`.
 
@@ -198,11 +199,11 @@ edit. Tree-specific rules go BELOW this block, never inside it.
     checkout; open board.html in a browser. Headless runs never render.
 <!-- FLEET-COMMON END -->
 
-# DL rules (tree-specific)
+# VW rules (tree-specific)
 
-DL channel code: `DL`. Kit: v23, vendored at `ops/fleet_kit/` (never edit;
+VW channel code: `VW`. Kit: v23, vendored at `ops/fleet_kit/` (never edit;
 report a defect to MAIN). Kit conformance: `tests/test_fleet_kit_conformance.py`.
-Hand-off: `DL-NEXT-SESSION.txt` (tracked; its `SESSION: <n>` line is the item-13
+Hand-off: `VW-NEXT-SESSION.txt` (tracked; its `SESSION: <n>` line is the item-13
 session counter, /done writes n+1). Open work: `ROADMAP.md`.
 
 ## Purpose
@@ -242,12 +243,12 @@ or Steam itself exposes.
 
 - No absolute machine path, user name, Steam account id or 64-bit Steam id,
   email, machine name or token in any tracked file. Paths are resolved at run
-  time (`tools/dl_paths.py`: Steam from the registry, the library from
+  time (`tools/vw_paths.py`: Steam from the registry, the library from
   `libraryfolders.vdf`); docs write `<Steam>` and `<Deadlock>`.
 - Backups of game files go to `config/baseline/`, scrubbed by
-  `tools/dl_privacy.py scrub` before they are staged. Unscrubbed raw backups go
+  `tools/vw_privacy.py scrub` before they are staged. Unscrubbed raw backups go
   to the gitignored `ops/runtime/backup/`.
-- `tools/dl_privacy.py scan` is the leak gate: pre-commit (staged) and pre-push
+- `tools/vw_privacy.py scan` is the leak gate: pre-commit (staged) and pre-push
   (pushed range) and `tests/test_privacy.py` (every tracked file). Per-host
   needles (user name, machine name, ids) live in the gitignored
   `config/leak_needles.json`; the tracked code holds only generic shapes.
@@ -277,12 +278,12 @@ or Steam itself exposes.
 
 ## Lanes and inbox
 
-- Lanes: `tools/dl_lane.py` runs one headless job through kit
+- Lanes: `tools/vw_lane.py` runs one headless job through kit
   `fleet_lanes.run_lane` (cap 2, lane lock `ops/loop/control/lanes/<i>.lock`,
-  worktree under the kit sidecar root, `<sidecar>/DL/Worktree/lane-<i>`)
+  worktree under the kit sidecar root, `<sidecar>/VW/Worktree/lane-<i>`)
   and `fleet_headless.spawn(governor="queued")`; the route and kill switch are
   the kit's. A lane writes `progress/lane-<i>.json` in the main checkout.
-- No lane loop is armed yet (ROADMAP DL-LOOP). Until it is, every session reads
+- No lane loop is armed yet (ROADMAP VW-LOOP). Until it is, every session reads
   `moon_sync_inbox/` (sorted by mtime) at start and at /done with
   `fleet_inbox.classify`; ACK / INFORMATION / TERMINAL / ANSWER are recorded,
   never answered; ORDER / FIX / RULING get the work. Replies go to

@@ -1,11 +1,11 @@
 """Leak gate for a PUBLIC repo: no machine path, id, email, host name or token.
 
-    python tools/dl_privacy.py scan              every tracked file (exit 1 on a hit)
-    python tools/dl_privacy.py --staged          added lines of the staged diff
-    python tools/dl_privacy.py --pre-push <remote> <url>
+    python tools/vw_privacy.py scan              every tracked file (exit 1 on a hit)
+    python tools/vw_privacy.py --staged          added lines of the staged diff
+    python tools/vw_privacy.py --pre-push <remote> <url>
                                                  added lines + messages of the pushed
                                                  range (git's ref lines on stdin)
-    python tools/dl_privacy.py scrub <in> <out>  copy a game config with ids, names
+    python tools/vw_privacy.py scrub <in> <out>  copy a game config with ids, names
                                                  and paths replaced
 
 Generic shapes live here; per-host needles (user name, machine name, Steam
@@ -166,7 +166,7 @@ def main(argv=None):
     cmd = argv[0] if argv else "scan"
     if cmd == "scrub":
         if len(argv) != 3:
-            print("usage: dl_privacy.py scrub <in> <out>", file=sys.stderr)
+            print("usage: vw_privacy.py scrub <in> <out>", file=sys.stderr)
             return 2
         src = Path(argv[1]).read_bytes().decode("utf-8", "replace")
         out = scrub_text(src, load_needles()).replace("\r\n", "\n")

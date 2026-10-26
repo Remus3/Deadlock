@@ -1,4 +1,4 @@
-"""DL test root: installs the fleet kit test guard (FLEET-COMMON 16 d).
+"""VW test root: installs the fleet kit test guard (FLEET-COMMON 16 d).
 
 A suite that changes live state (ops/loop/control, the inbox, the outbox)
 fails; runtime roots would point at tmp_path (none are declared yet).

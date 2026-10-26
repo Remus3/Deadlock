@@ -1,5 +1,5 @@
 ---
-description: End-of-session ritual - gate, commit, push (tiered), roadmap, inbox, and the DL-NEXT-SESSION.txt hand-off rewritten with every unworked item carried forward. Chat output is one line.
+description: End-of-session ritual - gate, commit, push (tiered), roadmap, inbox, and the VW-NEXT-SESSION.txt hand-off rewritten with every unworked item carried forward. Chat output is one line.
 argument-hint: [optional one-line session topic]
 ---
 
@@ -28,15 +28,15 @@ main session relays only that line.
 ## Pre-flight - checklist and inbox
 
 - Every task on the printed `Session <n> checklist` is DONE or CARRIED into
-  `DL-NEXT-SESSION.txt` (section 6). A task that is neither stops the ritual.
-- Inbox: list `moon_sync_inbox/` by mtime; `fleet_inbox.classify(name, "DL")`
+  `VW-NEXT-SESSION.txt` (section 6). A task that is neither stops the ritual.
+- Inbox: list `moon_sync_inbox/` by mtime; `fleet_inbox.classify(name, "VW")`
   each new note. ACK / INFORMATION / TERMINAL / ANSWER: record, never answer.
   ORDER / FIX / RULING: done this session or carried as a hand-off item.
 
 ## 1. Gate
 
 ```
-python tools/dl_privacy.py scan
+python tools/vw_privacy.py scan
 python ops/fleet_kit/fleet_suite_gate.py run --owner <id> -- <absolute python> -m pytest -q
 ```
 
@@ -47,7 +47,7 @@ over it.
 ## 2. Commit
 
 - Stage file by file; never `git add -A`. Nothing from `ops/runtime/`, no raw
-  game backup (only `config/baseline/` copies made by `dl_privacy.py scrub`).
+  game backup (only `config/baseline/` copies made by `vw_privacy.py scrub`).
 - `python ops/fleet_kit/fleet_gitlock.py run --owner <id> -- git commit -F <file>`
   (message file in the session scratchpad; ASCII; no trailer of any kind).
 - Never `--amend`, never `--no-verify`.
@@ -68,10 +68,10 @@ Open work only. Add what this session opened; move closed items, verbatim, to
 
 ## 5. Game state read-back (only if this session touched the game)
 
-`python tools/dl_paths.py`, `python tools/dl_launch.py check`,
-`python tools/dl_video.py check`: record the readings (redacted) in the hand-off.
+`python tools/vw_paths.py`, `python tools/vw_launch.py check`,
+`python tools/vw_video.py check`: record the readings (redacted) in the hand-off.
 
-## 6. Rewrite `DL-NEXT-SESSION.txt` - CARRY FORWARD EVERY ITEM NOT ACTED ON
+## 6. Rewrite `VW-NEXT-SESSION.txt` - CARRY FORWARD EVERY ITEM NOT ACTED ON
 
 - Read the CURRENT file first; every item not acted on is carried, verbatim or
   tighter. An item leaves only when done (and the commit or doc says so) or
@@ -79,7 +79,7 @@ Open work only. Add what this session opened; move closed items, verbatim, to
 - Read n from the one column-0 `SESSION: <n>` line; write exactly one
   `SESSION: <n+1>` line, the LAST line of the new file.
 - Raw text, ASCII, LF. PUBLIC repo: no path, id, name or email; siblings by
-  channel code only. `python tools/dl_privacy.py scan` must stay clean.
+  channel code only. `python tools/vw_privacy.py scan` must stay clean.
 - Commit it through fleet_gitlock (section 2) and push it with the batch.
 
 ## 7. Board (local only, kit v23)

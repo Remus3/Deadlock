@@ -1,4 +1,4 @@
-# Apply-DeadlockConfig.ps1 - re-apply the DL repo's Deadlock configuration.
+# Apply-DeadlockConfig.ps1 - re-apply the VW repo's Deadlock configuration.
 #
 # Windows PowerShell 5.1. ASCII + LF. Parse-checked by tests/test_ps_parse.py;
 # never executed on the dev box to test it (it reconfigures the machine).
@@ -7,7 +7,7 @@
 #   1. copy config/autoexec.cfg -> <Deadlock>/game/citadel/cfg/autoexec.cfg
 #   2. HKCU DirectX UserGpuPreferences: deadlock.exe = GpuPreference=2;
 #   3. HKCU AppCompatFlags Layers: deadlock.exe += DISABLEDXMAXIMIZEDWINDOWEDMODE
-#   4. Steam launch options (tools/dl_launch.py apply) - ONLY when Steam is
+#   4. Steam launch options (tools/vw_launch.py apply) - ONLY when Steam is
 #      not running; otherwise printed for a later run.
 # Refuses everything while deadlock.exe runs. Backups: ops/runtime/backup/<stamp>/.
 # Rollback: docs/optimization.md section "Rollback".
@@ -28,7 +28,7 @@ $GpuKey = 'HKCU:\Software\Microsoft\DirectX\UserGpuPreferences'
 $LayersKey = 'HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers'
 $FsoFlag = 'DISABLEDXMAXIMIZEDWINDOWEDMODE'
 
-function Say([string]$m) { Write-Output ('[DL] ' + $m) }
+function Say([string]$m) { Write-Output ('[VW] ' + $m) }
 
 function Get-SteamRoot {
     $p = (Get-ItemProperty -Path 'HKCU:\Software\Valve\Steam' -Name SteamPath -ErrorAction SilentlyContinue).SteamPath
@@ -122,8 +122,8 @@ if (-not $SkipLaunchOptions) {
         Say ('Steam is running: launch options NOT written (Steam rewrites localconfig.vdf on exit).')
         Say ('Set them in Steam > Deadlock > Properties > Launch Options: ' + $opts)
     } elseif ($PSCmdlet.ShouldProcess('localconfig.vdf', 'LaunchOptions')) {
-        & python (Join-Path $Repo 'tools\dl_launch.py') apply
-        if ($LASTEXITCODE -ne 0) { throw ('dl_launch.py apply failed: ' + $LASTEXITCODE) }
+        & python (Join-Path $Repo 'tools\vw_launch.py') apply
+        if ($LASTEXITCODE -ne 0) { throw ('vw_launch.py apply failed: ' + $LASTEXITCODE) }
     }
 }
 

@@ -1,5 +1,5 @@
-"""dl_launch: only LaunchOptions inside apps/1422450 changes; nothing is invented."""
-import dl_launch as L
+"""vw_launch: only LaunchOptions inside apps/1422450 changes; nothing is invented."""
+import vw_launch as L
 
 VDF = (
     '"UserLocalConfigStore"\n{\n\t"Software"\n\t{\n\t\t"Valve"\n\t\t{\n\t\t\t"Steam"\n\t\t\t{\n'

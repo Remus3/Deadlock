@@ -51,6 +51,6 @@ def test_git_hooks_call_fleet_identity():
 
 
 def test_handoff_has_one_session_line_last():
-    lines = (ROOT / "DL-NEXT-SESSION.txt").read_text(encoding="ascii").splitlines()
+    lines = (ROOT / "VW-NEXT-SESSION.txt").read_text(encoding="ascii").splitlines()
     sess = [ln for ln in lines if ln.startswith("SESSION: ")]
     assert len(sess) == 1 and lines[-1] == sess[0] and sess[0][9:].isdigit()

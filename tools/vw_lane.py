@@ -1,12 +1,12 @@
-"""DL headless lane driver - one job in one lane, through the fleet kit only.
+"""VW headless lane driver - one job in one lane, through the fleet kit only.
 
-    python tools/dl_lane.py run <lane> --note <label> --prompt-file <file>
+    python tools/vw_lane.py run <lane> --note <label> --prompt-file <file>
                                   [--writes-code] [--kind build|inbox|triage]
-    python tools/dl_lane.py status
+    python tools/vw_lane.py status
 
 A run claims a repo lane (kit fleet_lanes.run_lane: lane lock
 ops/loop/control/lanes/<i>.lock, its own clean worktree at the kit's
-worktree_path - the sidecar root <sidecar>/DL/Worktree/lane-<i> when that
+worktree_path - the sidecar root <sidecar>/VW/Worktree/lane-<i> when that
 folder exists), then makes ONE kit fleet_headless.spawn call in that worktree,
 holding one machine-wide governor slot for the call only (governor="queued").
 Route, kill switch, budget, usage line and status file are the kit's
@@ -23,7 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "ops" / "fleet_kit"))
 
-CODE = "DL"
+CODE = "VW"
 LANES = ("build", "review")
 CAP = 2
 TIMEOUT_S = 3600
@@ -50,7 +50,7 @@ def plan(lane, writes_code, kind):
 def run(lane, note, prompt, writes_code=False, kind="build"):
     fh, fl = _kit()
     opts = plan(lane, writes_code, kind)
-    run_id = "dl-%s-%d" % (lane, int(time.time()))
+    run_id = "vw-%s-%d" % (lane, int(time.time()))
     with fl.run_lane(ROOT, CODE, lane, run_id, cap=CAP) as claim:
         task = "lane-%d" % claim["index"]
         fh.write_progress(ROOT, task, 5, "%s: %s" % (lane, note[:60]), opts["timeout"], "running")
@@ -72,7 +72,7 @@ def status():
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="dl_lane")
+    ap = argparse.ArgumentParser(prog="vw_lane")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
     r.add_argument("lane", choices=LANES)

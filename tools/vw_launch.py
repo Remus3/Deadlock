@@ -1,7 +1,7 @@
 """Steam launch options for Deadlock (localconfig.vdf), from config/launch_options.txt.
 
-    python tools/dl_launch.py check     current vs wanted, every Steam account (read only)
-    python tools/dl_launch.py apply     back up, write, read back - ONLY while Steam is
+    python tools/vw_launch.py check     current vs wanted, every Steam account (read only)
+    python tools/vw_launch.py apply     back up, write, read back - ONLY while Steam is
                                         not running (Steam rewrites the file on exit)
 
 Only the "LaunchOptions" value inside the existing apps/1422450 block changes;
@@ -20,11 +20,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-import dl_paths  # noqa: E402
+import vw_paths  # noqa: E402
 
 WANTED = ROOT / "config" / "launch_options.txt"
 BACKUP = ROOT / "ops" / "runtime" / "backup"
-APP = dl_paths.APP_ID
+APP = vw_paths.APP_ID
 _TOKEN = re.compile(r'"((?:[^"\\]|\\.)*)"|([{}])')
 
 
@@ -86,7 +86,7 @@ def set_option(lines, block, value):
 
 
 def configs():
-    steam = dl_paths.steam_root()
+    steam = vw_paths.steam_root()
     return sorted((steam / "userdata").glob("*/config/localconfig.vdf"))
 
 
@@ -100,7 +100,7 @@ def steam_running():
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="dl_launch")
+    ap = argparse.ArgumentParser(prog="vw_launch")
     ap.add_argument("cmd", choices=("check", "apply"))
     a = ap.parse_args(argv)
     want, rows, rc = wanted(), [], 0

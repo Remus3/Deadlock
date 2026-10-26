@@ -1,7 +1,7 @@
 # Measuring a change
 
 A setting stays only if it is measured. No baseline exists yet: the game had
-never been launched on 2026-10-25 (ROADMAP DL-MEASURE).
+never been launched on 2026-10-25 (ROADMAP VW-MEASURE).
 
 ## Method
 

@@ -1,4 +1,4 @@
-# Deadlock config and tuning
+# VeilWalker - Deadlock config and tuning
 
 Versioned settings and small tools for Valve's Deadlock on Windows: an
 autoexec, Steam launch options and video settings kept in git, a script that
@@ -12,9 +12,9 @@ expose are written.
 ## Use
 
 ```
-python tools/dl_paths.py              # find the install (paths redacted)
-python tools/dl_launch.py check       # Steam launch options vs config/
-python tools/dl_video.py check        # video file vs config/ (after first launch)
+python tools/vw_paths.py              # find the install (paths redacted)
+python tools/vw_launch.py check       # Steam launch options vs config/
+python tools/vw_video.py check        # video file vs config/ (after first launch)
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\Apply-DeadlockConfig.ps1 -WhatIf
 ```
 

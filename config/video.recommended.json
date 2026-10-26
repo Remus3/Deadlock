@@ -1,5 +1,5 @@
 {
- "_README": "Video settings for an RTX 5070 (12 GB) + Ryzen 7 7700X at 2560x1440, 240 Hz, competitive (latency first, then clarity). menu = the in-game Settings > Video label and value. keys = the Source 2 video file keys tools/dl_video.py sets, ONLY when the key already exists in the file the game wrote (it never adds a key). See docs/optimization.md.",
+ "_README": "Video settings for an RTX 5070 (12 GB) + Ryzen 7 7700X at 2560x1440, 240 Hz, competitive (latency first, then clarity). menu = the in-game Settings > Video label and value. keys = the Source 2 video file keys tools/vw_video.py sets, ONLY when the key already exists in the file the game wrote (it never adds a key). See docs/optimization.md.",
  "menu": {
   "Display Mode": "Fullscreen",
   "Resolution": "2560x1440",

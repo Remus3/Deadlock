@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-import dl_privacy as P
+import vw_privacy as P
 
 AT = "@"
 BS = chr(92)

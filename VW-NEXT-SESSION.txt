@@ -1,12 +1,12 @@
-DL hand-off (Deadlock config and tuning tree). Tracked; the repo is PUBLIC:
+VW hand-off (Deadlock config and tuning tree). Tracked; the repo is PUBLIC:
 no path, account id, name or email in this file; other trees by code only.
 
 READ FIRST
-  1. CLAUDE.md - FLEET-COMMON block (kit v23) then "DL rules": game safety
+  1. CLAUDE.md - FLEET-COMMON block (kit v23) then "VW rules": game safety
      floor, privacy, tiered push policy, lanes and inbox.
   2. ROADMAP.md - open work.
   3. docs/optimization.md - what was applied 2026-10-25, read-backs, rollback.
-  4. moon_sync_inbox/ sorted by mtime; fleet_inbox.classify(name, "DL").
+  4. moon_sync_inbox/ sorted by mtime; fleet_inbox.classify(name, "VW").
 
 STATE (reading 2026-10-25, tree created by MAIN on operator order)
   - Kit v23 vendored at ops/fleet_kit/, MANIFEST byte-identical to MAIN's;
@@ -17,15 +17,18 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     repo copy), GPU preference high performance, fullscreen optimizations off
     (both registry values read back). Deferred: Steam launch options (Steam
     was running), video file (does not exist until first launch).
-  - Lanes: tools/dl_lane.py (cap 2) - worktrees under the kit sidecar root
-    DL/Worktree; no loop armed.
+  - Lanes: tools/vw_lane.py (cap 2) - worktrees under the kit sidecar root
+    VW/Worktree; no loop armed.
+  - Renamed 2026-10-25 (operator order): tree Deadlock -> VeilWalker, code
+    DL -> VW, repo renamed on GitHub (old URL redirects), tools dl_* ->
+    vw_*, ROADMAP ids VW-*, sidecar VW/. The game keeps its name.
   - GitHub: public; secret scanning + push protection + Dependabot alerts +
     private vulnerability reporting on (read back). First push 0656ae5: ci
-    and codeql green. Dependabot PR #1 open (ROADMAP DL-DEPENDABOT).
+    and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
 
 NEXT ACTION
-  DL-LAUNCH: with Steam closed, `python tools/dl_launch.py apply`, then
-  `check` must show current == wanted. Then DL-VIDEO after the first launch.
+  VW-LAUNCH: with Steam closed, `python tools/vw_launch.py apply`, then
+  `check` must show current == wanted. Then VW-VIDEO after the first launch.
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).

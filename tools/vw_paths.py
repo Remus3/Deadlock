@@ -3,8 +3,8 @@
 Read only. Every path is resolved at run time, so no tracked file names a
 machine path (the repo is public).
 
-    python tools/dl_paths.py            print a JSON summary (paths redacted)
-    python tools/dl_paths.py --raw      print real paths (local use only)
+    python tools/vw_paths.py            print a JSON summary (paths redacted)
+    python tools/vw_paths.py --raw      print real paths (local use only)
 """
 
 import json

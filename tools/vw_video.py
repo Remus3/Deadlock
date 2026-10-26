@@ -1,7 +1,7 @@
 """Patch the Deadlock video settings file from config/video.recommended.json.
 
-    python tools/dl_video.py check            show file vs recommended (read only)
-    python tools/dl_video.py apply [--file F] back up, then set the recommended keys
+    python tools/vw_video.py check            show file vs recommended (read only)
+    python tools/vw_video.py apply [--file F] back up, then set the recommended keys
 
 Rules (CLAUDE.md game safety floor):
 - the file must already exist (the game writes it on first launch); a key that
@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-import dl_paths  # noqa: E402
+import vw_paths  # noqa: E402
 
 RECOMMENDED = ROOT / "config" / "video.recommended.json"
 BACKUP = ROOT / "ops" / "runtime" / "backup"
@@ -68,12 +68,12 @@ def game_running():
 
 
 def video_file():
-    doc = dl_paths.summary()
+    doc = vw_paths.summary()
     return Path(doc["video"][0]) if doc.get("video") else None
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="dl_video")
+    ap = argparse.ArgumentParser(prog="vw_video")
     ap.add_argument("cmd", choices=("check", "apply"))
     ap.add_argument("--file")
     a = ap.parse_args(argv)

@@ -1,5 +1,5 @@
-"""dl_video: changes only keys already present; reads values back."""
-import dl_video as V
+"""vw_video: changes only keys already present; reads values back."""
+import vw_video as V
 
 FILE = ('"video.cfg"\n{\n\t"setting.defaultres"\t\t"1920"\n\t"setting.mat_vsync"\t\t"1"\n'
         '\t"setting.other"\t\t"5"\n}\n')
