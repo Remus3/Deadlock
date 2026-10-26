@@ -82,6 +82,7 @@ the launch option was set. VW-AUTOEXEC-VERIFY confirms with the console echo.
 | # | Change | Read back |
 |---|---|---|
 | 6 | `config/autoexec.cfg` gains the controls block (sensitivity 1.1, reticle cvars; `docs/controls.md`), copied to the game cfg; backup of the game autoexec, local and cloud convars and key files in `ops/runtime/backup/20261025-213740-controls/` (SHA256SUMS) | game copy SHA-256 == repo copy `617b53d2345d360f...` |
+| 7 | 21:58: `sensitivity` 1.1 -> 2.4 (pad-limited, 21.6 cm/360; `docs/controls.md`), copied to the game cfg; backup of the previous game autoexec in `ops/runtime/backup/20261025-215845-sens/` | game copy SHA-256 == repo copy `570f5bd2c55d00e0...` |
 
 Keybinds are not written by any tool (Steam cloud file); `docs/controls.md`.
 

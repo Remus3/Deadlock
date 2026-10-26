@@ -31,9 +31,11 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
 
 NEXT ACTION
-  VW-CONTROLS at the operator's next launch: the six keybind rows and the
-  three casting options in ROADMAP VW-CONTROLS are NOT set yet (read back
-  2026-10-25 21:44); then, game closed, `vw_controls.py check` empty. Also
+  VW-CONTROLS at the operator's next launch: binds 1-5 read back set (keys
+  file 21:52); left Cosmetic E -> none and the three casting options; mouse
+  DPI step via `tools/vw_dpi.py measure` (R110 800/1200/1600, default
+  undocumented, 800 kept; sens 2.4 = 21.6 cm/360 sized to the ~22 cm
+  usable pad, game copy hash read back 21:58); then, game closed, `vw_controls.py check` empty. Also
   VW-AUTOEXEC-VERIFY (console echo), VW-VIDEO-MENU second read of the DLSS
   enum values (1.5x = 3, Transformer = 10), then VW-MEASURE (DLSS 1.5x vs
   DLAA, D3D 11 vs Vulkan). Video menu: six changes read back done 21:44,

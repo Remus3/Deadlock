@@ -63,11 +63,13 @@ def test_autoexec_sets_every_checked_controls_cvar():
                for k in rec["convars_checked"])
 
 
-def test_sensitivity_lands_in_the_researched_band():
+def test_sensitivity_in_converter_band_and_fits_the_pad():
     rec = C.recommended()
     sens = float(C.autoexec_cvars(C.AUTOEXEC.read_text(encoding="ascii"))["sensitivity"])
     cm = C.cm_per_360(sens, rec["dpi_assumed"])
-    assert 35 <= cm <= 60 and cm == rec["cm_per_360"]
+    # converter band 20-80 cm/360; a 360 fits the usable pad width (docs/controls.md)
+    assert 20 <= cm <= 80 and cm == rec["cm_per_360"]
+    assert cm <= rec["usable_pad_cm"][0]
 
 
 def test_cm_per_360_formula():

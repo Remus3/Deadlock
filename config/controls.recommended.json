@@ -1,7 +1,9 @@
 {
  "_README": "Recommended Deadlock controls (research 2026-10-25, docs/controls.md). binds = action name in the game's citadelkeys_personal.lst -> primary key; set in Settings > Keybinds (the file is a Steam cloud file this repo never edits); tools/vw_controls.py check reads them back. convars_checked = the controls cvars config/autoexec.cfg sets (sensitivity + reticle). menu = settings with no verified cvar value, set by hand.",
  "dpi_assumed": 800,
- "cm_per_360": 47.2,
+ "mouse": "Rapique R110, DPI steps 800/1200/1600 (button), default undocumented; tools/vw_dpi.py measure",
+ "cm_per_360": 21.6,
+ "usable_pad_cm": [22, 30],
  "binds": {
   "AbilityMelee": "MOUSE5",
   "Item1": "Q",

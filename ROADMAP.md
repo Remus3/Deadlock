@@ -6,17 +6,16 @@
   Reduce camera shake On. Left: confirm `r_citadel_dlss_settings_mode` 3
   = 1.5x and `r_dlss_preset` 10 = Transformer a second time (next menu
   read) before they leave MENU_ONLY.
-- [ ] VW-CONTROLS: sensitivity 1.1 + cyan reticle applied by the autoexec
+- [ ] VW-CONTROLS: sensitivity 2.4 (pad-limited, 21.6 cm/360) + cyan reticle applied by the autoexec
   2026-10-25 (`docs/controls.md`); sensitivity 1.1 read back in the saved
-  convars 21:44. NOT yet set (read back 21:44: the cloud keys file is
-  unchanged since 21:00, casting keys/convars identical to the 21:37
-  backup): operator, in game, Settings > Keybinds, six rows (Melee Q ->
-  MOUSE5, Item 1 Z -> Q, Item 4 V -> E, Interact E -> V, Ping MOUSE3 ->
-  MOUSE4, Cosmetic E -> none); Casting mode Quick Cast, Alternate cast
-  Press and Hold (0.15), Items Instant Cast. Confirm the mouse DPI
-  (assumed 800; sens = 880 / DPI). Then, game closed,
-  `python tools/vw_controls.py check`: `bind_changes_left` and
-  `convars_not_yet_saved` both empty (reticle convars also still unsaved).
+  convars 21:44. Binds read back from the keys file of 21:52: Melee MOUSE5,
+  Item 1 Q, Item 4 E, Interact V, Ping MOUSE4 set. Left (operator, in game):
+  Settings > Keybinds Cosmetic E -> none; Casting mode Quick Cast, Alternate
+  cast Press and Hold (0.15), Items Instant Cast. Mouse R110 steps
+  800/1200/1600, default undocumented: run `python tools/vw_dpi.py measure`
+  (10 cm along a ruler) and, if not 800, set sens = 1920 / DPI. Then, game
+  closed, `python tools/vw_controls.py check`: `bind_changes_left` and
+  `convars_not_yet_saved` both empty (reticle convars still unsaved 21:52).
 - [ ] VW-AUTOEXEC-VERIFY: on first launch with the launch option set, the
   console shows `[VW] autoexec loaded`; drop any cvar the console reports as
   unknown.
