@@ -57,12 +57,19 @@ Video keys, operator's first-launch value -> applied value:
 
 Unchanged (already as recommended): 2560x1440, `mat_vsync` 0.
 
-Left to the in-game menu (the file's enum values were not verified, so the
-tool does not write them): upscaling - the game picked DLSS at render scale
-0.6667 (`r_citadel_upscaling` 4, `mat_viewportscale` 0.6667); the
-recommendation is native unless 1 percent lows fall under 160 fps, decided by
-VW-MEASURE - shadow quality (file 2, recommended Medium), anti-aliasing (file
-1), particle quality (no file key). `config/video.recommended.json` "menu".
+Menu transcript 2026-10-25 (21 screenshots of every Settings page, game
+running; `docs/menu-settings-2026-10-25.md`): the game has NO particle
+quality and NO separate anti-aliasing control (AA comes from the upscaler),
+so the earlier "Particles Low" and "Anti-Aliasing" lines were dropped.
+Decisions recorded there: exclusive Fullscreen (not Borderless), NVIDIA DLSS
+at 1.5x (Quality, pinned instead of Auto) with the Transformer model, Fog
+Low, Area lights Off, Shadows Med (the operator's change, `video.txt`
+`r_citadel_shadow_quality` 2 -> 1), Reduce camera shake On. Three keys
+joined "keys" (`r_citadel_shadow_quality` 1, `r_citadel_fog_quality` 0,
+`r_arealights` false); the upscaler keys stay menu-only (`tools/vw_video.py`
+MENU_ONLY refuses them). Not applied by file: the game was running
+(`vw_video.py check` would change fog 1 -> 0 and area lights true -> false);
+the menu changes are ROADMAP VW-VIDEO-MENU.
 
 Observed: after the first launch `machine_convars.vcfg` already held the
 autoexec values (`fps_max 237`, `fps_max_ui 120`, `rate 786432`,
@@ -88,9 +95,11 @@ the launch option was set. VW-AUTOEXEC-VERIFY confirms with the console echo.
 - Fullscreen optimizations off: exclusive fullscreen behaves as exclusive
   fullscreen; often smoother frame pacing in Source titles. Revert if
   alt-tab gets slower or the overlay misbehaves.
-- Video (recommended): latency first (Reflex On + Boost, V-Sync off), then
-  readability (particles low, no motion blur, bloom, film grain or depth of
-  field), then quality where the 12 GB card has room (textures high).
+- Video (recommended): latency first (exclusive fullscreen, Reflex On +
+  Boost, V-Sync off, DLSS Quality so the GPU keeps headroom under the 237
+  cap), then readability (no AO, motion blur, bloom, depth of field; fog
+  low, area lights off), then quality where the 12 GB card has room
+  (textures high). Reasons per setting: `docs/menu-settings-2026-10-25.md`.
 
 Not changed, by operator choice: Windows Game Mode (stays off), Windows 10
 (stays). Not changed, out of scope here: the power plan (Balanced; the 7700X

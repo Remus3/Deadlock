@@ -8,7 +8,12 @@ Rules (CLAUDE.md game safety floor):
   is not already in the file is never added;
 - the game must not be running (deadlock.exe);
 - the original is copied to ops/runtime/backup/<stamp>/ first; the change is
-  read back after the write.
+  read back after the write;
+- MENU_ONLY keys (upscaler, DLSS mode/model, render scale and the hidden
+  anti-aliasing key) are never written: their value ranges are not confirmed,
+  so they are set in the in-game menu only. The game has no particle-quality
+  and no separate anti-aliasing control (menu transcript 2026-10-25,
+  docs/menu-settings-2026-10-25.md).
 """
 
 import argparse
@@ -26,11 +31,22 @@ import vw_paths  # noqa: E402
 
 RECOMMENDED = ROOT / "config" / "video.recommended.json"
 BACKUP = ROOT / "ops" / "runtime" / "backup"
+MENU_ONLY = frozenset((
+    "setting.r_citadel_upscaling",          # Stretch / FSR / FSR2 / DLSS
+    "setting.r_citadel_dlss_settings_mode",  # 1x DLAA / 1.5x / 1.7x / 2x / Auto
+    "setting.r_dlss_preset",                 # DLSS model CNN / Transformer
+    "setting.mat_viewportscale",             # render scale follows the mode
+    "setting.r_citadel_antialiasing",        # no menu control
+))
 _KV = re.compile(r'^(\s*)"(?P<k>[^"]+)"(\s+)"(?P<v>[^"]*)"(.*)$')
 
 
 def recommended_keys(path=RECOMMENDED):
-    return json.loads(Path(path).read_text(encoding="ascii"))["keys"]
+    keys = json.loads(Path(path).read_text(encoding="ascii"))["keys"]
+    bad = sorted(MENU_ONLY.intersection(keys))
+    if bad:
+        raise ValueError("menu-only keys in %s: %s" % (Path(path).name, ", ".join(bad)))
+    return keys
 
 
 def patch(text, wanted):

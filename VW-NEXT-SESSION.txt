@@ -32,7 +32,10 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
 
 NEXT ACTION
   VW-AUTOEXEC-VERIFY + VW-VIDEO-MENU at the operator's next launch (console
-  echo, menu-only values), then VW-MEASURE (decides DLSS vs native).
+  echo; the six menu changes listed in ROADMAP VW-VIDEO-MENU, from the
+  2026-10-25 menu transcript docs/menu-settings-2026-10-25.md), then with
+  the game closed `vw_video.py apply` (fog 0, area lights false) and
+  VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).
