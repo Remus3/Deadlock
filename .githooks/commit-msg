@@ -1,0 +1,6 @@
+#!/bin/sh
+# DL commit-msg: kit v13 (FLEET-COMMON 17) - fleet_identity strips every AI /
+# bot attribution line; no Co-Authored-By trailer ever lands.
+ROOT="$(git rev-parse --show-toplevel)"
+python "$ROOT/ops/fleet_kit/fleet_identity.py" commit-msg "$1" || true
+exit 0

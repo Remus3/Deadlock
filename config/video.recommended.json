@@ -1,0 +1,29 @@
+{
+ "_README": "Video settings for an RTX 5070 (12 GB) + Ryzen 7 7700X at 2560x1440, 240 Hz, competitive (latency first, then clarity). menu = the in-game Settings > Video label and value. keys = the Source 2 video file keys tools/dl_video.py sets, ONLY when the key already exists in the file the game wrote (it never adds a key). See docs/optimization.md.",
+ "menu": {
+  "Display Mode": "Fullscreen",
+  "Resolution": "2560x1440",
+  "Refresh Rate": "240 Hz",
+  "V-Sync": "Off",
+  "NVIDIA Reflex": "On + Boost",
+  "Max FPS": "237 (from autoexec)",
+  "Upscaling": "Off (native); DLSS Quality only if 1 percent lows fall under 160 fps",
+  "Texture Quality": "High (12 GB VRAM is enough)",
+  "Anti-Aliasing": "Low or Off if Upscaling is On",
+  "Shadow Quality": "Medium",
+  "Ambient Occlusion": "Off",
+  "Particle Quality": "Low (clearer fights)",
+  "Post-Processing / Depth of Field": "Off",
+  "Bloom": "Off",
+  "Film Grain / Motion Blur": "Off"
+ },
+ "keys": {
+  "setting.defaultres": "2560",
+  "setting.defaultresheight": "1440",
+  "setting.refreshrate_numerator": "240",
+  "setting.refreshrate_denominator": "1",
+  "setting.fullscreen": "1",
+  "setting.nowindowborder": "0",
+  "setting.mat_vsync": "0"
+ }
+}

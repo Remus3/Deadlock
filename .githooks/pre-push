@@ -1,0 +1,8 @@
+#!/bin/sh
+# DL pre-push: kit v13 identity gate (FLEET-COMMON 17), then the privacy scan
+# over the pushed range (added lines + commit messages). Stdin carries git's
+# ref lines; both checks get them unchanged.
+ROOT="$(git rev-parse --show-toplevel)"
+REFS="$(cat)"
+printf '%s\n' "$REFS" | python "$ROOT/ops/fleet_kit/fleet_identity.py" pre-push "$@" || exit 1
+printf '%s\n' "$REFS" | exec python "$ROOT/tools/dl_privacy.py" --pre-push "$@"

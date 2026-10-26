@@ -1,0 +1,4 @@
+#!/bin/sh
+# DL pre-commit: privacy scan of the staged added lines (public repo).
+ROOT="$(git rev-parse --show-toplevel)"
+exec python "$ROOT/tools/dl_privacy.py" --staged

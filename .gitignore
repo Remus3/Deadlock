@@ -1,0 +1,31 @@
+# Per-host config - NEVER commit (needles name this machine and account)
+config/leak_needles.json
+config/local.json
+.env
+.env.*
+*.key
+*.pem
+*.secret
+*_token.txt
+
+# Runtime state: raw (unscrubbed) backups, logs, kit control files
+ops/runtime/
+ops/loop/control/*
+logs/
+*.log
+
+# Channel (per-host, never published)
+moon_sync_inbox/
+moon_sync_outbox/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Claude per-host
+.claude/settings.local.json
+.claude/worktrees/
+_scratch/

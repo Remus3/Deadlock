@@ -1,0 +1,13 @@
+Deadlock config and tuning tools
+Copyright 2026 the operator
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This project is not affiliated with or endorsed by Valve Corporation.
+Deadlock and Steam are trademarks of Valve Corporation. The repository holds
+no game files, no game data and nothing from the game's archives: only user
+settings text (cvars, launch options, video keys) and the tools that apply
+them.
+
+ops/fleet_kit/ carries its own LICENSE and NOTICE (the shared fleet kit,
+vendored byte-for-byte).
