@@ -197,11 +197,17 @@ edit. Tree-specific rules go BELOW this block, never inside it.
     `fleet_board.py render --session <n>` (checklist on stdin) writes
     status.json and board.html to ops/loop/control/board/ in the MAIN
     checkout; open board.html in a browser. Headless runs never render.
+19. NO WIDTH-DEPENDENT LAYOUT IN CHAT (kit v24; operator order 2026-10-25).
+    Chat is read in console panes of any width and on a phone. No markdown
+    tables, box-drawing frames, ASCII art or space-aligned columns in chat:
+    one line per item (`key: value`, `- item: verdict`). A real table goes
+    in a file and chat gets one line pointing at it. Why: a table drawn at
+    one pane width breaks into stray rules and split cells at another.
 <!-- FLEET-COMMON END -->
 
 # VW rules (tree-specific)
 
-VW channel code: `VW`. Kit: v23, vendored at `ops/fleet_kit/` (never edit;
+VW channel code: `VW`. Kit: v24, vendored at `ops/fleet_kit/` (never edit;
 report a defect to MAIN). Kit conformance: `tests/test_fleet_kit_conformance.py`.
 Hand-off: `VW-NEXT-SESSION.txt` (tracked; its `SESSION: <n>` line is the item-13
 session counter, /done writes n+1). Open work: `ROADMAP.md`.
