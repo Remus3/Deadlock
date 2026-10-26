@@ -80,9 +80,42 @@ def test_autoexec_sets_every_checked_controls_cvar():
     auto = C.autoexec_cvars(C.AUTOEXEC.read_text(encoding="ascii"))
     for k in rec["convars_checked"]:
         assert k in auto, k
-    assert all(k.startswith("citadel_crosshair_") or k in
-               {"sensitivity", "sensitivity_y_scale", "zoom_sensitivity_ratio"}
-               for k in rec["convars_checked"])
+    assert set(rec["convars_checked"]) == {"sensitivity", "sensitivity_y_scale",
+                                           "zoom_sensitivity_ratio"}
+    # the reticle is not set by cvar: the hero-settings file overrides it
+    assert not any(k.startswith("citadel_crosshair_") for k in auto)
+
+
+HERO = '''<!-- kv3 encoding:text:version{x} format:generic:version{y} -->
+{
+\tbase =
+\t{
+\t\tcrosshair_pip_height = "16"
+\t\tcrosshair_color_r = "0"
+\t\tmouse_sensitivity = "1.5999999"
+\t}
+\theroes =
+\t{
+\t}
+}
+'''
+
+
+def test_hero_base_and_reticle_diff():
+    base = C.hero_base(HERO)
+    assert base == {"crosshair_pip_height": "16", "crosshair_color_r": "0",
+                    "mouse_sensitivity": "1.5999999"}
+    want = {"_README": "x", "crosshair_pip_height": 8, "crosshair_color_r": 0,
+            "crosshair_dot_size": 2}
+    assert C.diff_reticle(base, want) == {"crosshair_pip_height": "16 -> 8",
+                                          "crosshair_dot_size": "default -> 2"}
+    assert C.hero_base("{}") == {}
+
+
+def test_reticle_targets_are_the_documented_cyan_set():
+    ret = C.recommended()["reticle"]
+    assert (ret["crosshair_color_r"], ret["crosshair_color_g"], ret["crosshair_color_b"]) == (0, 255, 255)
+    assert ret["crosshair_pip_height"] == 8 and ret["crosshair_pip_gap"] == 3
 
 
 def test_sensitivity_in_converter_band_and_fits_the_pad():

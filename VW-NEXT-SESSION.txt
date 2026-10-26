@@ -31,21 +31,27 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
 
 NEXT ACTION
-  VW-CONTROLS at the operator's next launch: binds 1-5 read back set (keys
-  file 21:52); left the three casting options and Cosmetic (menu shows 5
-  only, keys file still Cosmetic1 E/5 - stale until next close; check now
-  compares both slots, target 5 only). Mouse set to 1200 DPI (operator:
-  R110 step 2 of 3) -> sens 1.6 = 21.6 cm/360, game copy read back
-  e6fe29bc57d9 22:36. Then, game closed, `vw_controls.py check` empty. Also
-  VW-AUTOEXEC-VERIFY (console echo), VW-VIDEO-MENU second read of the DLSS
-  enum values (1.5x = 3, Transformer = 10), then VW-MEASURE (DLSS 1.5x vs
-  DLAA, D3D 11 vs Vulkan). Video menu: six changes read back done 21:44,
-  nowindowborder normalized to 0 21:46 (docs/menu-settings-2026-10-25.md).
+  Game closed first. 1) Apply the reticle-free autoexec (repo copy changed
+  23:xx, game copy still the e6fe29bc57d9 one): Apply-DeadlockConfig.ps1
+  -SkipRegistry -SkipLaunchOptions, read back by hash. 2) VW-CONTROLS: the
+  operator sets the 13 reticle rows in Settings > Game > Reticle (the cloud
+  hero-settings base block overrides the cvars - autoexec cannot), searches
+  "cosmetic" in Keybinds and clears an E slot if one shows (keys file of
+  23:00:34, game running, still Cosmetic1 E/5; menu row shows 5 =
+  CosmeticMenu), sets the three casting options; then `vw_controls.py check`
+  with bind_changes_left / convars_not_yet_saved / reticle_changes_left
+  empty. 3) VW-AUTOEXEC-VERIFY: autoexec runs (cmdline + sens 1.6 landed);
+  one F7 console look for the echo and "Unknown command". Then
+  VW-VIDEO-MENU second read of the DLSS enum values (1.5x = 3, Transformer
+  = 10), then VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).
     Reverses: never.
   - Launch options are not written while Steam runs (it rewrites
     localconfig.vdf on exit). Reverses: Steam stops doing that.
+  - Reticle is menu-set, not autoexec: the cloud hero-settings base block
+    overrides citadel_crosshair_* (2026-10-25 23:01). Reverses: a launch
+    where autoexec reticle values show in the menu.
 
 SESSION: 1

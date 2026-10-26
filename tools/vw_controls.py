@@ -5,9 +5,11 @@
 Read only, always. Deadlock keeps its action keybinds in the Steam cloud file
 <Steam>/userdata/<id>/1422450/remote/cfg/citadelkeys_personal.lst, which the
 game safety floor forbids editing, so binds are changed in the in-game menu
-(Settings > Keybinds) and this tool reads them back. Sensitivity and reticle
-convars are set by config/autoexec.cfg; this tool reads back what the game
-saved in local/cfg/*convars*.vcfg after a launch. docs/controls.md.
+(Settings > Keybinds) and this tool reads them back. Sensitivity is set by
+config/autoexec.cfg and read back from local/cfg/*convars*.vcfg. The reticle
+lives in remote/cfg/citadel_hero_settings.lst (KV3, block "base"), which the
+game pushes over the citadel_crosshair_* cvars, so it is set in Settings >
+Game > Reticle and read back from there. docs/controls.md.
 """
 
 import argparse
@@ -25,6 +27,8 @@ AUTOEXEC = ROOT / "config" / "autoexec.cfg"
 KEYS_FILE = ("remote", "cfg", "citadelkeys_personal.lst")
 CONVAR_FILES = (("local", "cfg", "user_convars_0_slot0.vcfg"),
                 ("local", "cfg", "machine_convars.vcfg"))
+HERO_FILE = ("remote", "cfg", "citadel_hero_settings.lst")
+_KV3_PAIR = re.compile(r'^\s*(\w+)\s*=\s*"([^"]*)"', re.M)
 _TOKEN = re.compile(r'"([^"]*)"|([{}])')
 M_YAW = 0.022  # Source default, as saved by the game (user_convars m_yaw 0.022)
 
@@ -77,6 +81,18 @@ def key_slots(text):
                                  for k in (spec.get("Key"), spec.get("Key2"))
                                  if k and k != "NONE")
     return out
+
+
+def hero_base(text):
+    """{key: value} of the "base" block of a citadel_hero_settings.lst (KV3 text)."""
+    m = re.search(r"(?m)^\s*base\s*=\s*\{(.*?)\}", text, re.S)
+    return dict(_KV3_PAIR.findall(m.group(1))) if m else {}
+
+
+def diff_reticle(base, wanted):
+    """{key: "have -> want"} for every reticle target the hero settings miss."""
+    return {k: "%s -> %s" % (base.get(k, "default"), v) for k, v in sorted(wanted.items())
+            if not k.startswith("_") and not _same(base.get(k), v)}
 
 
 def autoexec_cvars(text):
@@ -159,6 +175,9 @@ def check(steam=None):
         row["convars_not_yet_saved"] = {k: "%s -> %s" % (saved.get(k, "default"), v)
                                         for k, v in sorted(wanted_cv.items())
                                         if k in rec["convars_checked"] and not _same(saved.get(k), v)}
+        hf = app.joinpath(*HERO_FILE)
+        base = hero_base(hf.read_text(encoding="utf-8", errors="replace")) if hf.is_file() else {}
+        row["reticle_changes_left"] = diff_reticle(base, rec.get("reticle", {}))
         rows.append(row)
     sens = float(wanted_cv.get("sensitivity", 1))
     return {"accounts": rows, "sensitivity": sens,

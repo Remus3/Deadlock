@@ -1,5 +1,5 @@
 {
- "_README": "Recommended Deadlock controls (research 2026-10-25, docs/controls.md). binds = action name in the game's citadelkeys_personal.lst -> primary key, or a list = the exact set of keys over both slots (Key, Key2); set in Settings > Keybinds (the file is a Steam cloud file this repo never edits); tools/vw_controls.py check reads them back. convars_checked = the controls cvars config/autoexec.cfg sets (sensitivity + reticle). menu = settings with no verified cvar value, set by hand.",
+ "_README": "Recommended Deadlock controls (research 2026-10-25, docs/controls.md). binds = action name in the game's citadelkeys_personal.lst -> primary key, or a list = the exact set of keys over both slots (Key, Key2); set in Settings > Keybinds (the file is a Steam cloud file this repo never edits); tools/vw_controls.py check reads them back. convars_checked = the controls cvars config/autoexec.cfg sets (sensitivity). reticle = menu-set targets read back from the hero-settings cloud file. menu = settings with no verified cvar value, set by hand.",
  "dpi_assumed": 1200,
  "mouse": "Rapique R110, DPI steps 800/1200/1600 (button), set to step 2 of 3 = 1200 (operator 2026-10-25); tools/vw_dpi.py measure",
  "cm_per_360": 21.6,
@@ -17,15 +17,16 @@
                     "Mantle", "Reload", "Ping", "Interact", "Cosmetic1",
                     "PurchaseQuickbuy", "PushToTalk", "ChatWheel", "OpenHeroSheet",
                     "Scoreboard"],
- "convars_checked": [
-  "sensitivity", "sensitivity_y_scale", "zoom_sensitivity_ratio",
-  "citadel_crosshair_color_r", "citadel_crosshair_color_g", "citadel_crosshair_color_b",
-  "citadel_crosshair_pip_width", "citadel_crosshair_pip_height", "citadel_crosshair_pip_gap",
-  "citadel_crosshair_pip_opacity", "citadel_crosshair_pip_outline_border",
-  "citadel_crosshair_pip_outline_opacity", "citadel_crosshair_dot_size",
-  "citadel_crosshair_dot_opacity", "citadel_crosshair_dot_outline_border",
-  "citadel_crosshair_dot_outline_opacity"
- ],
+ "convars_checked": ["sensitivity", "sensitivity_y_scale", "zoom_sensitivity_ratio"],
+ "reticle": {
+  "_README": "Targets in remote/cfg/citadel_hero_settings.lst base (the game's own reticle store; it overrides the citadel_crosshair_* cvars). Set in Settings > Game > Reticle; vw_controls.py check reads it back.",
+  "crosshair_color_r": 0, "crosshair_color_g": 255, "crosshair_color_b": 255,
+  "crosshair_pip_width": 2, "crosshair_pip_height": 8, "crosshair_pip_gap": 3,
+  "crosshair_pip_opacity": 1, "crosshair_pip_outline_border": 1,
+  "crosshair_pip_outline_opacity": 0.8, "crosshair_dot_size": 2,
+  "crosshair_dot_opacity": 1, "crosshair_dot_outline_border": 1,
+  "crosshair_dot_outline_opacity": 0.8
+ },
  "menu": {
   "Keybinds > Abilities > Casting mode": "Quick Cast (disputed; per-ability fallback in Advanced > Hero-Specific Settings)",
   "Keybinds > Abilities > Alternate cast mode": "Press and Hold, hold time 0.15",

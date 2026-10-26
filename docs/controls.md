@@ -1,9 +1,9 @@
 # Deadlock controls - learning sheet
 
 Researched 2026-10-25 (sources at the end). Machine-readable copy:
-`config/controls.recommended.json`; sensitivity and reticle are applied by
-`config/autoexec.cfg`; `python tools/vw_controls.py check` reads back what the
-game holds.
+`config/controls.recommended.json`; sensitivity is applied by
+`config/autoexec.cfg`, the reticle in the menu; `python tools/vw_controls.py
+check` reads back what the game holds.
 
 ## Keybinds
 
@@ -15,9 +15,17 @@ shows Cosmetic on 5 only, but the keys file (last written 21:52, cloud-synced,
 not rewritten at the 22:31 close) still holds `Cosmetic1` Key `E`, Key2 `5`
 - so E is live on both Item 4 and Cosmetic (`conflicts_now`). The menu label
 "Cosmetic" is `Cosmetic1` (localization `citadel_keybind_cosmetic1`; the
-separate `CosmeticMenu` action holds 5). Treat the file as stale until the
-next game close; if `check` still reads `5,E -> 5` after a close in which
-the row was edited, clear the E slot on the Cosmetic row explicitly. The
+separate `CosmeticMenu` action holds 5). The "stale until the
+next close" theory is FALSIFIED (2026-10-25 23:01): the game rewrote the
+keys file at 23:00:34 while running and it still holds `Cosmetic1` E / 5;
+`CosmeticMenu` holds 5 / NONE. The menu row "Cosmetic" (Keybinds >
+Miscellaneous, screenshot 23:0x) shows one key, 5 - that matches
+`CosmeticMenu`, so that row is probably not `Cosmetic1` (the localization
+reading above is unconfirmed). Next: type "cosmetic" in the Keybinds search
+box; if a second row shows E, clear it (right-click / Delete on that slot).
+If no row shows E, the E slot is unreachable from the menu and the cloud
+file may not be edited (floor): leave it and check in Sandbox that E fires
+Item 4. The
 check now compares a list target (`"Cosmetic1": ["5"]`) against BOTH slots
 (Key and Key2), so 5 in either slot with E gone reads done; the old target
 `"NONE"` looked at the primary slot only.
@@ -92,6 +100,10 @@ Menu-only (no verified cvar values, set by hand):
   previous game copy (570f5bd2c55d, sens 2.4) in
   `ops/runtime/backup/20261025-223622/`. If aim feels 1.5x slow the mouse is
   on 800 (press the DPI button once); 0.75x fast = 1600.
+- Read back 2026-10-25 23:01 (game running since 22:58 with `+exec
+  autoexec`): `user_convars` sensitivity 1.5999999 and hero-settings `base`
+  mouse_sensitivity 1.5999999 - 1.6 is live. The DPI (1200) is the
+  operator's ruling, not measured.
 - In-game Mouse sensitivity 1.6 at 1200 DPI (2.4 at 800 until 2026-10-25
   22:36; was 1.25; 1.1 for a few minutes on 2026-10-25 before the pad was
   measured), Y-axis scaling 1, Zoom
@@ -118,8 +130,19 @@ Menu-only (no verified cvar values, set by hand):
 
 ## Reticle (Settings > Game > Reticle)
 
-Set by the autoexec at every launch, so menu edits to these rows are undone
-at the next start - change `config/autoexec.cfg` instead.
+Set BY HAND in the menu (13 rows below); `vw_controls.py check` reads
+`reticle_changes_left`. Why not the autoexec (finding 2026-10-25 23:01):
+the game launched 22:58 with `+exec autoexec` (process command line) and the
+autoexec's sensitivity 1.6 landed, but the Reticle page (screenshot) showed
+every row at default. The reticle is stored in the cloud file
+`<Steam>/userdata/<id>/1422450/remote/cfg/citadel_hero_settings.lst`, block
+`base` (`crosshair_*` keys, plus `mouse_sensitivity`), and the game pushes
+that block over the `citadel_crosshair_*` cvars; those cvars are not saved
+in `user_convars`. The cvar names themselves are valid (deadlock.wiki
+Data:Convars.json lists all 13), so this is an override, not a name error.
+The cloud file is read only for this repo (floor), so the 13 cvar lines
+were dropped from `config/autoexec.cfg`; sensitivity stays there (the game
+mirrors it into `base`).
 
 | Row | Value | Default |
 |---|---|---|

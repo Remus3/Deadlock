@@ -7,19 +7,23 @@
   = 1.5x and `r_dlss_preset` 10 = Transformer a second time (next menu
   read) before they leave MENU_ONLY.
 - [ ] VW-CONTROLS: sensitivity 1.6 at 1200 DPI (operator: R110 step 2 of 3; eDPI 1920,
-  21.6 cm/360, pad-limited) + cyan reticle applied by the autoexec, game copy
-  read back e6fe29bc57d9 22:36 (`docs/controls.md`); sensitivity 1.1 read back in the saved
-  convars 21:44. Binds read back from the keys file of 21:52: Melee MOUSE5,
-  Item 1 Q, Item 4 E, Interact V, Ping MOUSE4 set. Left (operator, in game):
-  Cosmetic: menu shows 5 only but the keys file (21:52, not rewritten at the
-  22:31 close) still has Cosmetic1 Key E / Key2 5 - stale until the next
-  close; if `check` still says `5,E -> 5`, clear E on the row; Casting mode Quick Cast, Alternate
-  cast Press and Hold (0.15), Items Instant Cast. Then, game
-  closed, `python tools/vw_controls.py check`: `bind_changes_left` and
-  `convars_not_yet_saved` both empty (reticle convars still unsaved after the 22:31 close).
-- [ ] VW-AUTOEXEC-VERIFY: on first launch with the launch option set, the
-  console shows `[VW] autoexec loaded`; drop any cvar the console reports as
-  unknown.
+  21.6 cm/360) live - read back 23:01 in user_convars and hero-settings base.
+  Binds Melee MOUSE5, Item 1 Q, Item 4 E, Interact V, Ping MOUSE4 set.
+  Reticle: the autoexec cannot set it (the cloud citadel_hero_settings.lst
+  base block overrides the citadel_crosshair_* cvars; menu showed defaults
+  23:01), so the 13 cvar lines were dropped from config/autoexec.cfg;
+  operator sets the 13 rows in Settings > Game > Reticle (docs/controls.md).
+  Cosmetic: keys file rewritten 23:00:34 with the game running still has
+  Cosmetic1 E / 5 ("stale" theory falsified); the menu "Cosmetic" row shows 5
+  = CosmeticMenu. Search "cosmetic" in Keybinds and clear an E slot if one
+  shows. Also Casting mode Quick Cast, Alternate cast Press and Hold (0.15),
+  Items Instant Cast. Then, game closed: apply the new autoexec
+  (`tools/Apply-DeadlockConfig.ps1 -SkipRegistry -SkipLaunchOptions`, read
+  back by hash) and `python tools/vw_controls.py check`: bind_changes_left,
+  convars_not_yet_saved and reticle_changes_left empty.
+- [ ] VW-AUTOEXEC-VERIFY: autoexec RUNS (inferred 23:01: process command line
+  carries `+exec autoexec`, its sensitivity 1.6 landed). Left: one console
+  look (F7) for `[VW] autoexec loaded` and any "Unknown command" line.
 - [ ] VW-MEASURE: baseline then each change per `docs/measurement.md`; results
   in `docs/measurements/`. Includes DLSS 1.5x vs 1x (DLAA; switch if 1
   percent lows >= 200 fps) and D3D 11 vs Vulkan.
