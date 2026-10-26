@@ -6,16 +6,17 @@
   Reduce camera shake On. Left: confirm `r_citadel_dlss_settings_mode` 3
   = 1.5x and `r_dlss_preset` 10 = Transformer a second time (next menu
   read) before they leave MENU_ONLY.
-- [ ] VW-CONTROLS: sensitivity 2.4 (pad-limited, 21.6 cm/360) + cyan reticle applied by the autoexec
-  2026-10-25 (`docs/controls.md`); sensitivity 1.1 read back in the saved
+- [ ] VW-CONTROLS: sensitivity 1.6 at 1200 DPI (operator: R110 step 2 of 3; eDPI 1920,
+  21.6 cm/360, pad-limited) + cyan reticle applied by the autoexec, game copy
+  read back e6fe29bc57d9 22:36 (`docs/controls.md`); sensitivity 1.1 read back in the saved
   convars 21:44. Binds read back from the keys file of 21:52: Melee MOUSE5,
   Item 1 Q, Item 4 E, Interact V, Ping MOUSE4 set. Left (operator, in game):
-  Settings > Keybinds Cosmetic E -> none; Casting mode Quick Cast, Alternate
-  cast Press and Hold (0.15), Items Instant Cast. Mouse R110 steps
-  800/1200/1600, default undocumented: run `python tools/vw_dpi.py measure`
-  (10 cm along a ruler) and, if not 800, set sens = 1920 / DPI. Then, game
+  Cosmetic: menu shows 5 only but the keys file (21:52, not rewritten at the
+  22:31 close) still has Cosmetic1 Key E / Key2 5 - stale until the next
+  close; if `check` still says `5,E -> 5`, clear E on the row; Casting mode Quick Cast, Alternate
+  cast Press and Hold (0.15), Items Instant Cast. Then, game
   closed, `python tools/vw_controls.py check`: `bind_changes_left` and
-  `convars_not_yet_saved` both empty (reticle convars still unsaved 21:52).
+  `convars_not_yet_saved` both empty (reticle convars still unsaved after the 22:31 close).
 - [ ] VW-AUTOEXEC-VERIFY: on first launch with the launch option set, the
   console shows `[VW] autoexec loaded`; drop any cvar the console reports as
   unknown.

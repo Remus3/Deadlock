@@ -10,6 +10,17 @@ game holds.
 Only six rows change from the game default. Read back 2026-10-25 (keys
 file of 21:52): rows 1-5 set (Melee MOUSE5, Item 1 Q, Item 4 E, Interact V,
 Ping MOUSE4); left: Cosmetic still on E, and the three casting options. Everything else stays default.
+Cosmetic, re-read 2026-10-25 22:36 (game closed 22:31): the operator's menu
+shows Cosmetic on 5 only, but the keys file (last written 21:52, cloud-synced,
+not rewritten at the 22:31 close) still holds `Cosmetic1` Key `E`, Key2 `5`
+- so E is live on both Item 4 and Cosmetic (`conflicts_now`). The menu label
+"Cosmetic" is `Cosmetic1` (localization `citadel_keybind_cosmetic1`; the
+separate `CosmeticMenu` action holds 5). Treat the file as stale until the
+next game close; if `check` still reads `5,E -> 5` after a close in which
+the row was edited, clear the E slot on the Cosmetic row explicitly. The
+check now compares a list target (`"Cosmetic1": ["5"]`) against BOTH slots
+(Key and Key2), so 5 in either slot with E gone reads done; the old target
+`"NONE"` looked at the primary slot only.
 Set them in Settings > Keybinds (the game keeps binds in a Steam cloud file this
 repo may not edit, so the menu is the apply path; `vw_controls.py check` then
 shows `bind_changes_left` empty).
@@ -29,7 +40,7 @@ shows `bind_changes_left` empty).
 | F | Parry / throw held item | default | every source keeps parry on F |
 | MOUSE3 | Alternate cast (self cast) | default | |
 | MOUSE4 | Ping | was MOUSE3 | default shared MOUSE3 with alt cast |
-| 5 | Cosmetic | E removed | E now holds Item 4 (5 stays) |
+| 5 | Cosmetic | E removed | E now holds Item 4 (5 stays; target = 5 only, either slot) |
 | R, TAB, B, G, T, Y | reload, scoreboard, hero sheet, quickbuy, push-to-talk, chat wheel | default | |
 
 Menu-only (no verified cvar values, set by hand):
@@ -46,8 +57,10 @@ Menu-only (no verified cvar values, set by hand):
 - Mouse: Rapique R110 (tri-mode 2.4G / BT1 / BT2; Windows shows a generic
   "2.4G Wireless Receiver"). DPI button cycles 800 -> 1200 -> 1600 (Newegg
   and Fravega listings, TurboVS review; 125 Hz polling). The default step
-  and any per-step LED are NOT documented in any source found, so 800 is
-  kept (it is also the lowest step). sensitivity = 1920 / DPI:
+  and any per-step LED are NOT documented in any source found. SET
+  2026-10-25 22:36: the operator says the mouse is on step 2 of 3 = 1200 DPI
+  (their call over the inconsistent measurements below) -> sensitivity 1.6,
+  same eDPI 1920 and 21.6 cm/360. sensitivity = 1920 / DPI:
   800 -> 2.4, 1200 -> 1.6, 1600 -> 1.2.
 - Check the step (2 min, read only): ruler on the pad, run
   `python tools/vw_dpi.py measure` (raw input, so Enhance pointer precision
@@ -71,10 +84,19 @@ Menu-only (no verified cvar values, set by hand):
   axis, so the total distance is the measure to trust (x alone undercounts;
   this also explains the two low earlier readings). Step 800 confirmed ->
   sensitivity 2.4 kept; no config change, nothing applied.
-- In-game Mouse sensitivity 2.4 (was 1.25; 1.1 for a few minutes on
-  2026-10-25 before the pad was measured), Y-axis scaling 1, Zoom
+- A fourth run read 1617 DPI by total distance (nearest step 1600). With
+  798 and 1617 disagreeing, the operator ruled step 2 = 1200 (2026-10-25).
+  Applied 22:36, game closed: `config/autoexec.cfg` sensitivity 1.6 copied
+  to the game by `tools/Apply-DeadlockConfig.ps1 -SkipRegistry
+  -SkipLaunchOptions`; game copy read back sha256 e6fe29bc57d9 = repo copy;
+  previous game copy (570f5bd2c55d, sens 2.4) in
+  `ops/runtime/backup/20261025-223622/`. If aim feels 1.5x slow the mouse is
+  on 800 (press the DPI button once); 0.75x fast = 1600.
+- In-game Mouse sensitivity 1.6 at 1200 DPI (2.4 at 800 until 2026-10-25
+  22:36; was 1.25; 1.1 for a few minutes on 2026-10-25 before the pad was
+  measured), Y-axis scaling 1, Zoom
   sensitivity ratio 1.
-- eDPI 1920 (800 x 2.4). cm/360 = 360 / (0.022 x 2.4 x 800) inch = 21.6 cm;
+- eDPI 1920 (1200 x 1.6). cm/360 = 360 / (0.022 x 1.6 x 1200) inch = 21.6 cm;
   a 180 = 10.8 cm. Deadlock uses the Source yaw 0.022 (the game saves
   `m_yaw 0.022`), so Deadlock sens = CS2 sens at the same DPI.
 - Why 21.6 cm (pad-limited): the usable pad area right of the keyboard is
@@ -143,7 +165,9 @@ Change sensitivity only after day 7, by 10 percent at most.
    (game closed); then restore the old values in the menu (sensitivity 1.25,
    reticle reset arrow) - or, with the game closed, copy the backups in
    `ops/runtime/backup/20261025-213740-controls/` back (game autoexec, local and
-   cloud convars, keys files; SHA256SUMS inside).
+   cloud convars, keys files; SHA256SUMS inside). Sensitivity 1.6 -> 2.4
+   only: copy `ops/runtime/backup/20261025-223622/autoexec.cfg` back (game
+   closed) and revert `sensitivity` in the repo copy.
 2. Keybinds: Settings > Keybinds > reset (circular arrow), or rebind the six
    rows above to their old keys. The original cloud file is backed up in
    `ops/runtime/backup/20261025-210408-firstlaunch/remote/cfg/`.

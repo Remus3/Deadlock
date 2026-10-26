@@ -64,6 +64,21 @@ def binds(text):
     return out
 
 
+def key_slots(text):
+    """{action: sorted keys bound over both slots (Key, Key2), NONE dropped}.
+    The menu shows both slots; a list target in the recommendation is compared
+    against this, so "Cosmetic on 5 only" fails while E is still in either slot."""
+    keys = parse_kv(text).get("KeyBindings", {}).get("Keys", {})
+    out = {}
+    for action, spec in keys.items():
+        if isinstance(spec, dict):
+            mod = spec.get("Modifier")
+            out[action] = sorted((mod + "+" + k) if mod else k
+                                 for k in (spec.get("Key"), spec.get("Key2"))
+                                 if k and k != "NONE")
+    return out
+
+
 def autoexec_cvars(text):
     out = {}
     for line in text.splitlines():
@@ -74,18 +89,30 @@ def autoexec_cvars(text):
     return out
 
 
-def diff_binds(current, wanted):
-    """{action: (current, wanted)} for every recommended action that differs."""
-    return {a: (current.get(a), k) for a, k in sorted(wanted.items()) if current.get(a) != k}
+def diff_binds(current, wanted, slots=None):
+    """{action: (current, wanted)} for every recommended action that differs.
+    A str target is the primary key (current = binds()); a list target is the
+    exact key set over both slots (slots = key_slots(); shown "E,5")."""
+    out = {}
+    for a, k in sorted(wanted.items()):
+        if isinstance(k, list):
+            have = (slots or {}).get(a, [])
+            if have != sorted(k):
+                out[a] = (",".join(have) or "NONE", ",".join(sorted(k)) or "NONE")
+        elif current.get(a) != k:
+            out[a] = (current.get(a), k)
+    return out
 
 
 def conflicts(table, actions):
-    """{key: [actions]} where two of the given actions share one primary key."""
+    """{key: [actions]} where two of the given actions share one key (a list
+    value = every key that action holds)."""
     seen = {}
     for a in actions:
-        k = table.get(a)
-        if k and k != "NONE":
-            seen.setdefault(k, []).append(a)
+        ks = table.get(a)
+        for k in (ks if isinstance(ks, list) else [ks]):
+            if k and k != "NONE":
+                seen.setdefault(k, []).append(a)
     return {k: v for k, v in seen.items() if len(v) > 1}
 
 
@@ -116,10 +143,12 @@ def check(steam=None):
         row = {}
         kf = app.joinpath(*KEYS_FILE)
         if kf.is_file():
-            cur = binds(kf.read_text(encoding="utf-8", errors="replace"))
+            text = kf.read_text(encoding="utf-8", errors="replace")
+            cur, slots = binds(text), key_slots(text)
             row["bind_changes_left"] = {a: "%s -> %s" % v
-                                        for a, v in diff_binds(cur, rec["binds"]).items()}
-            merged = dict(cur, **rec["binds"])
+                                        for a, v in diff_binds(cur, rec["binds"], slots).items()}
+            row["conflicts_now"] = conflicts(slots, rec["combat_actions"])
+            merged = dict(slots, **rec["binds"])
             row["conflicts_after"] = conflicts(merged, rec["combat_actions"])
         saved = {}
         for parts in CONVAR_FILES:

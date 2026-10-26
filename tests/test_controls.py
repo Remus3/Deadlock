@@ -39,6 +39,28 @@ def test_diff_lists_only_differences():
     assert d == {"AbilityMelee": ("Q", "MOUSE5")}
 
 
+def _lst(rows):
+    """A citadelkeys text from {action: (Key, Key2)}."""
+    body = "".join('\t\t"%s"\n\t\t{\n\t\t\t"Key"\t\t"%s"\n\t\t\t"Key2"\t\t"%s"\n\t\t}\n'
+                   % (a, k, k2) for a, (k, k2) in rows.items())
+    return '"KeyBindings"\n{\n\t"Keys"\n\t{\n' + body + '\t}\n}\n'
+
+
+def test_list_target_compares_both_slots():
+    # the game file of 2026-10-25 21:52: Cosmetic1 Key E, Key2 5
+    text = _lst({"Item4": ("E", "NONE"), "Cosmetic1": ("E", "5")})
+    slots = C.key_slots(text)
+    assert slots == {"Item4": ["E"], "Cosmetic1": ["5", "E"]}
+    want = {"Cosmetic1": ["5"]}
+    assert C.diff_binds(C.binds(text), want, slots) == {"Cosmetic1": ("5,E", "5")}
+    assert C.conflicts(slots, ["Item4", "Cosmetic1"]) == {"E": ["Item4", "Cosmetic1"]}
+    # 5 only, in either slot, is done
+    for pair in (("NONE", "5"), ("5", "NONE")):
+        done = _lst({"Item4": ("E", "NONE"), "Cosmetic1": pair})
+        assert C.diff_binds(C.binds(done), want, C.key_slots(done)) == {}
+        assert C.conflicts(C.key_slots(done), ["Item4", "Cosmetic1"]) == {}
+
+
 def test_recommended_layout_has_no_combat_conflicts():
     rec = C.recommended()
     assert C.conflicts(rec["binds"], rec["combat_actions"]) == {}

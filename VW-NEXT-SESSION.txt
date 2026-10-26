@@ -32,10 +32,11 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
 
 NEXT ACTION
   VW-CONTROLS at the operator's next launch: binds 1-5 read back set (keys
-  file 21:52); left Cosmetic E -> none and the three casting options; mouse
-  DPI step via `tools/vw_dpi.py measure` (R110 800/1200/1600, default
-  undocumented, 800 kept; sens 2.4 = 21.6 cm/360 sized to the ~22 cm
-  usable pad, game copy hash read back 21:58); then, game closed, `vw_controls.py check` empty. Also
+  file 21:52); left the three casting options and Cosmetic (menu shows 5
+  only, keys file still Cosmetic1 E/5 - stale until next close; check now
+  compares both slots, target 5 only). Mouse set to 1200 DPI (operator:
+  R110 step 2 of 3) -> sens 1.6 = 21.6 cm/360, game copy read back
+  e6fe29bc57d9 22:36. Then, game closed, `vw_controls.py check` empty. Also
   VW-AUTOEXEC-VERIFY (console echo), VW-VIDEO-MENU second read of the DLSS
   enum values (1.5x = 3, Transformer = 10), then VW-MEASURE (DLSS 1.5x vs
   DLAA, D3D 11 vs Vulkan). Video menu: six changes read back done 21:44,
