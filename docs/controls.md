@@ -55,6 +55,14 @@ Menu-only (no verified cvar values, set by hand):
   prints `nearest_step` and the sensitivity for it. If it is not 800, either
   press the DPI button until a re-run reads 800, or change `sensitivity` in
   `config/autoexec.cfg` to the printed value and re-apply (game closed).
+- Measured 2026-10-25 (two 45 s runs, 10 cm slide): counts_x 1337 and 1509
+  (counts_y -771 and -2617, so the slides were not straight) -> 340 and 383
+  DPI, nearest step 800 both times -> sensitivity 2.4 kept (no change;
+  game autoexec.cfg already equal to the repo copy, sha256 570f5bd2c55d).
+  Both readings are under half of the lowest documented step: either the
+  slide was short or the R110 has an undocumented ~400 step. Re-measure
+  with a slower, straighter slide before trusting 800; at 400 the same
+  eDPI needs sensitivity 4.8.
 - In-game Mouse sensitivity 2.4 (was 1.25; 1.1 for a few minutes on
   2026-10-25 before the pad was measured), Y-axis scaling 1, Zoom
   sensitivity ratio 1.
