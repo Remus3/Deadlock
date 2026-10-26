@@ -237,3 +237,26 @@ effects stays the operator's choice).
    positions around corners; High/Ultra cost GPU for no competitive gain.
 6. Particles and anti-aliasing: removed from the recommendation (no such
    menu controls; AA is decision 2).
+
+## Read-back 2026-10-25 21:44 (operator: "those 6 settings are set")
+
+Game and Steam closed; files the game wrote at 21:44, diffed against the
+21:04 and 21:37 backups.
+| Menu change | File value | Confirmed |
+|---|---|---|
+| Window mode Fullscreen | `setting.fullscreen` 1, `setting.nowindowborder` 1 | yes (see note) |
+| Scaling mode 1.5x | `setting.r_citadel_dlss_settings_mode` 0 -> 3, `setting.mat_viewportscale` 0.666667 | yes |
+| DLSS Model Transformer | `setting.r_dlss_preset` 6 -> 10 | yes |
+| Fog quality Low | `setting.r_citadel_fog_quality` 0 | yes |
+| Area lights Off | `setting.r_arealights` false | yes |
+| Reduce camera shake On | `citadel_reduce_camera_shake` false -> true (user convars, local and cloud) | yes |
+
+Note: first launch wrote Borderless as 0 / 1; switching back from Borderless
+to Fullscreen set `fullscreen` 1 and left `nowindowborder` 1. `vw_video.py
+apply` (21:46, backup under `ops/runtime/backup/`) set `nowindowborder` 0,
+the documented exclusive-fullscreen pair 1 / 0; read back, check: no change
+left. Enum values learned once (1.5x = 3, Transformer = 10); they stay
+MENU_ONLY until a second read confirms them.
+Keybinds and casting modes: not changed (keys file unchanged since 21:00;
+casting keys and convars identical to the 21:37 backup). Sensitivity 1.1 is
+saved.

@@ -1,22 +1,22 @@
 # ROADMAP - open work only
 
-- [ ] VW-VIDEO-MENU: menu transcript done 2026-10-25
-  (`docs/menu-settings-2026-10-25.md`; no particle or AA control exists).
-  Operator, in game: Window mode Fullscreen; Scaling mode Auto -> 1.5x;
-  DLSS Model CNN -> Transformer; Fog quality High -> Low; Area lights
-  On -> Off; Reduce camera shake Off -> On. Then, with the game closed,
-  `python tools/vw_video.py check` (expect no change; else `apply`) and
-  diff `video.txt` against `ops/runtime/backup/` to learn the
-  `r_citadel_dlss_settings_mode` / `r_dlss_preset` values of 1.5x and
-  Transformer (record them; they stay MENU_ONLY until confirmed twice).
+- [ ] VW-VIDEO-MENU: the six menu changes are set (read back 2026-10-25
+  21:44, game closed; `docs/menu-settings-2026-10-25.md` "Read-back"):
+  Fullscreen, Scaling 1.5x, DLSS Transformer, Fog Low, Area lights Off,
+  Reduce camera shake On. Left: confirm `r_citadel_dlss_settings_mode` 3
+  = 1.5x and `r_dlss_preset` 10 = Transformer a second time (next menu
+  read) before they leave MENU_ONLY.
 - [ ] VW-CONTROLS: sensitivity 1.1 + cyan reticle applied by the autoexec
-  2026-10-25 (`docs/controls.md`). Operator, in game: Settings > Keybinds,
-  six rows (Melee Q -> MOUSE5, Item 1 Z -> Q, Item 4 V -> E, Interact
-  E -> V, Ping MOUSE3 -> MOUSE4, Cosmetic E -> none); Casting mode Quick
-  Cast, Alternate cast Press and Hold, Items Instant Cast. Confirm the mouse
-  DPI (assumed 800; sens = 880 / DPI). Then, game closed,
+  2026-10-25 (`docs/controls.md`); sensitivity 1.1 read back in the saved
+  convars 21:44. NOT yet set (read back 21:44: the cloud keys file is
+  unchanged since 21:00, casting keys/convars identical to the 21:37
+  backup): operator, in game, Settings > Keybinds, six rows (Melee Q ->
+  MOUSE5, Item 1 Z -> Q, Item 4 V -> E, Interact E -> V, Ping MOUSE3 ->
+  MOUSE4, Cosmetic E -> none); Casting mode Quick Cast, Alternate cast
+  Press and Hold (0.15), Items Instant Cast. Confirm the mouse DPI
+  (assumed 800; sens = 880 / DPI). Then, game closed,
   `python tools/vw_controls.py check`: `bind_changes_left` and
-  `convars_not_yet_saved` both empty.
+  `convars_not_yet_saved` both empty (reticle convars also still unsaved).
 - [ ] VW-AUTOEXEC-VERIFY: on first launch with the launch option set, the
   console shows `[VW] autoexec loaded`; drop any cvar the console reports as
   unknown.

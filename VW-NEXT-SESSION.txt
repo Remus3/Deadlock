@@ -31,11 +31,13 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
 
 NEXT ACTION
-  VW-AUTOEXEC-VERIFY + VW-VIDEO-MENU at the operator's next launch (console
-  echo; the six menu changes listed in ROADMAP VW-VIDEO-MENU, from the
-  2026-10-25 menu transcript docs/menu-settings-2026-10-25.md), then with
-  the game closed `vw_video.py apply` (fog 0, area lights false) and
-  VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
+  VW-CONTROLS at the operator's next launch: the six keybind rows and the
+  three casting options in ROADMAP VW-CONTROLS are NOT set yet (read back
+  2026-10-25 21:44); then, game closed, `vw_controls.py check` empty. Also
+  VW-AUTOEXEC-VERIFY (console echo), VW-VIDEO-MENU second read of the DLSS
+  enum values (1.5x = 3, Transformer = 10), then VW-MEASURE (DLSS 1.5x vs
+  DLAA, D3D 11 vs Vulkan). Video menu: six changes read back done 21:44,
+  nowindowborder normalized to 0 21:46 (docs/menu-settings-2026-10-25.md).
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).
