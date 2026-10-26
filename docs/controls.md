@@ -63,6 +63,14 @@ Menu-only (no verified cvar values, set by hand):
   slide was short or the R110 has an undocumented ~400 step. Re-measure
   with a slower, straighter slide before trusting 800; at 400 the same
   eDPI needs sensitivity 4.8.
+- Re-measured 2026-10-25 (third run, 45 s, ruler-guided 10 cm slide, mouse
+  held square to the ruler): counts_x 2233, counts_y -2211 (455 events).
+  DPI by x alone 567 (no step within 15 percent); DPI by total distance
+  sqrt(x^2+y^2) = 3142 counts -> 798, within 0.3 percent of the 800 step.
+  The equal x and y say the sensor axis sits about 45 degrees off the shell
+  axis, so the total distance is the measure to trust (x alone undercounts;
+  this also explains the two low earlier readings). Step 800 confirmed ->
+  sensitivity 2.4 kept; no config change, nothing applied.
 - In-game Mouse sensitivity 2.4 (was 1.25; 1.1 for a few minutes on
   2026-10-25 before the pad was measured), Y-axis scaling 1, Zoom
   sensitivity ratio 1.
