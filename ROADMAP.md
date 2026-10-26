@@ -1,12 +1,11 @@
 # ROADMAP - open work only
 
-- [ ] VW-LAUNCH (priority): set Steam launch options `+exec autoexec`. Steam was
-  running at setup (2026-10-25), so localconfig.vdf was not edited. With Steam
-  closed: `python tools/vw_launch.py apply`, read back with `check`. Or set it
-  in Steam's Properties. Proof: `vw_launch.py check` shows current == wanted.
-- [ ] VW-VIDEO: after the first launch and exit, `python tools/vw_video.py check`
-  then `apply`; confirm the in-game menu values from
-  `config/video.recommended.json` "menu" (Reflex, upscaling, quality).
+- [ ] VW-VIDEO-MENU: in the in-game Settings > Video confirm what the file does
+  not set (`config/video.recommended.json` "menu"): shadow Medium, particles
+  Low, anti-aliasing; upscaling stays DLSS Quality (game's pick) until
+  VW-MEASURE says native holds 1 percent lows >= 160 fps. Then re-run
+  `python tools/vw_video.py check` (expect no change) and record the keys the
+  menu wrote, so they can join "keys".
 - [ ] VW-AUTOEXEC-VERIFY: on first launch with the launch option set, the
   console shows `[VW] autoexec loaded`; drop any cvar the console reports as
   unknown.

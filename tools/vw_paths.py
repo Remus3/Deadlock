@@ -20,6 +20,9 @@ GAME_EXE = ("game", "bin", "win64", "deadlock.exe")
 CFG_REL = ("game", "citadel", "cfg")
 AUTOEXEC = "autoexec.cfg"
 VIDEO_NAMES = ("video.txt",)
+# The game writes its video file per Steam account, not in the install:
+# <Steam>/userdata/<account>/<app>/local/cfg/video.txt (read 2026-10-25).
+USERDATA_CFG = ("local", "cfg")
 DEFAULT_STEAM = r"C:\Program Files (x86)\Steam"
 
 _PATH_LINE = re.compile(r'^\s*"path"\s*"(?P<p>[^"]+)"\s*$')
@@ -87,22 +90,43 @@ def summary(steam=None):
         doc["exe"] = str(game.joinpath(*GAME_EXE))
         doc["exe_exists"] = game.joinpath(*GAME_EXE).is_file()
         doc["autoexec_exists"] = (cfg / AUTOEXEC).is_file()
-        doc["video"] = [str(cfg / n) for n in VIDEO_NAMES if (cfg / n).is_file()]
+        doc["video"] = video_files(steam, cfg)
     return doc
 
 
+def video_files(steam, cfg=None):
+    """Every existing video file: per-account userdata first, then the install cfg."""
+    out = []
+    root = Path(steam) / "userdata"
+    if root.is_dir():
+        for acct in sorted(root.iterdir()):
+            d = acct.joinpath(APP_ID, *USERDATA_CFG)
+            out += [str(d / n) for n in VIDEO_NAMES if (d / n).is_file()]
+    if cfg is not None:
+        out += [str(Path(cfg) / n) for n in VIDEO_NAMES if (Path(cfg) / n).is_file()]
+    return out
+
+
+_ACCOUNT = re.compile(r"([\\/]userdata[\\/])\d+")
+
+
 def redact(doc):
-    """Replace every real prefix with a placeholder (for logs and docs)."""
+    """Replace every real prefix and Steam account id with a placeholder."""
     steam, game = doc.get("steam"), doc.get("game")
+
+    def one(v):
+        if game:
+            v = v.replace(game, "<Deadlock>")
+        if steam:
+            v = v.replace(steam, "<Steam>")
+        return _ACCOUNT.sub(r"\1<id>", v)
+
     out = {}
     for k, v in doc.items():
         if isinstance(v, str):
-            if game:
-                v = v.replace(game, "<Deadlock>")
-            if steam:
-                v = v.replace(steam, "<Steam>")
+            v = one(v)
         elif isinstance(v, list):
-            v = ["<Deadlock>" + x[len(game):] if game and x.startswith(game) else x for x in v]
+            v = [one(x) if isinstance(x, str) else x for x in v]
         out[k] = v
     return out
 

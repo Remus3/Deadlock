@@ -1,5 +1,5 @@
 {
- "_README": "Video settings for an RTX 5070 (12 GB) + Ryzen 7 7700X at 2560x1440, 240 Hz, competitive (latency first, then clarity). menu = the in-game Settings > Video label and value. keys = the Source 2 video file keys tools/vw_video.py sets, ONLY when the key already exists in the file the game wrote (it never adds a key). See docs/optimization.md.",
+ "_README": "Video settings for an RTX 5070 (12 GB) + Ryzen 7 7700X at 2560x1440, 240 Hz, competitive (latency first, then clarity). menu = the in-game Settings > Video label and value. keys = the Source 2 video file keys tools/vw_video.py sets, ONLY when the key already exists in the file the game wrote (it never adds a key). Keys checked against the file the game wrote on first launch (2026-10-25, Version 20): only keys whose value range is unambiguous are set here; upscaling, shadow, anti-aliasing and particle values stay menu-only. See docs/optimization.md.",
  "menu": {
   "Display Mode": "Fullscreen",
   "Resolution": "2560x1440",
@@ -7,12 +7,12 @@
   "V-Sync": "Off",
   "NVIDIA Reflex": "On + Boost",
   "Max FPS": "237 (from autoexec)",
-  "Upscaling": "Off (native); DLSS Quality only if 1 percent lows fall under 160 fps",
+  "Upscaling": "Off (native); DLSS Quality only if 1 percent lows fall under 160 fps. Menu only: the game picked DLSS Quality (render scale 0.6667) on first launch and the upscaler enum is not written from the file",
   "Texture Quality": "High (12 GB VRAM is enough)",
-  "Anti-Aliasing": "Low or Off if Upscaling is On",
-  "Shadow Quality": "Medium",
+  "Anti-Aliasing": "Low or Off if Upscaling is On (menu only)",
+  "Shadow Quality": "Medium (menu only)",
   "Ambient Occlusion": "Off",
-  "Particle Quality": "Low (clearer fights)",
+  "Particle Quality": "Low (clearer fights; menu only, no file key)",
   "Post-Processing / Depth of Field": "Off",
   "Bloom": "Off",
   "Film Grain / Motion Blur": "Off"
@@ -24,6 +24,21 @@
   "setting.refreshrate_denominator": "1",
   "setting.fullscreen": "1",
   "setting.nowindowborder": "0",
-  "setting.mat_vsync": "0"
+  "setting.mat_vsync": "0",
+  "setting.r_low_latency": "2",
+  "setting.r_citadel_ssao_quality": "0",
+  "setting.r_citadel_motion_blur": "0",
+  "setting.r_depth_of_field": "false",
+  "setting.r_effects_bloom": "false",
+  "setting.r_post_bloom": "false"
+ },
+ "_keys_notes": {
+  "setting.r_low_latency": "NVIDIA Reflex: 0 off, 1 on, 2 on + boost",
+  "setting.fullscreen": "1 with nowindowborder 0 = exclusive fullscreen (first launch wrote borderless: 0 / 1)",
+  "setting.refreshrate_numerator": "first launch wrote 0/0 (desktop default); the display runs exactly 240 Hz",
+  "setting.r_citadel_ssao_quality": "ambient occlusion, 0 = off",
+  "setting.r_citadel_motion_blur": "0 = off",
+  "setting.r_depth_of_field": "depth of field, false = off",
+  "setting.r_effects_bloom": "bloom, false = off (with r_post_bloom)"
  }
 }

@@ -13,10 +13,14 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     MAIN drift row reads OK v23. Hooks: core.hooksPath .githooks
     (commit-msg fleet_identity, pre-commit privacy scan, pre-push identity +
     privacy scan of the pushed range).
-  - Game: installed, never launched. Applied: autoexec.cfg (game copy hash ==
-    repo copy), GPU preference high performance, fullscreen optimizations off
-    (both registry values read back). Deferred: Steam launch options (Steam
-    was running), video file (does not exist until first launch).
+  - Game: launched once by the operator. Applied and read back: autoexec.cfg
+    (game copy hash == repo copy), GPU preference high performance,
+    fullscreen optimizations off, Steam launch options `+exec autoexec`
+    (check: current == wanted), video.txt 10 keys (exclusive fullscreen,
+    240/1, Reflex On + Boost, AO / motion blur / DoF / bloom off; check: no
+    change left). Details, backups, rollback: docs/optimization.md.
+  - The video file is per account under the Steam userdata tree, not in the
+    install; tools/vw_paths.py finds it and redacts the id.
   - Lanes: tools/vw_lane.py (cap 2) - worktrees under the kit sidecar root
     VW/Worktree; no loop armed.
   - Renamed 2026-10-25 (operator order): tree Deadlock -> VeilWalker, code
@@ -27,8 +31,8 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
 
 NEXT ACTION
-  VW-LAUNCH: with Steam closed, `python tools/vw_launch.py apply`, then
-  `check` must show current == wanted. Then VW-VIDEO after the first launch.
+  VW-AUTOEXEC-VERIFY + VW-VIDEO-MENU at the operator's next launch (console
+  echo, menu-only values), then VW-MEASURE (decides DLSS vs native).
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).

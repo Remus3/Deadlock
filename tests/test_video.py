@@ -24,3 +24,11 @@ def test_recommended_keys_target_the_display():
     k = V.recommended_keys()
     assert (k["setting.defaultres"], k["setting.defaultresheight"]) == ("2560", "1440")
     assert k["setting.refreshrate_numerator"] == "240" and k["setting.mat_vsync"] == "0"
+
+
+def test_recommended_latency_and_clarity_keys():
+    k = V.recommended_keys()
+    assert k["setting.r_low_latency"] == "2"
+    assert k["setting.fullscreen"] == "1" and k["setting.nowindowborder"] == "0"
+    for key in ("setting.r_depth_of_field", "setting.r_effects_bloom", "setting.r_post_bloom"):
+        assert k[key] == "false"

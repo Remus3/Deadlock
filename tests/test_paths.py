@@ -31,3 +31,15 @@ def test_redact_hides_real_prefixes(tmp_path):
                            "video": [game + "/v.txt"]})
     assert doc["steam"] == "<Steam>" and doc["game"] == "<Deadlock>"
     assert doc["cfg"].startswith("<Deadlock>") and doc["video"][0].startswith("<Deadlock>")
+
+
+def test_video_file_found_under_userdata_and_redacted(tmp_path):
+    steam = tmp_path / "steam"
+    d = steam / "userdata" / "12345" / "1422450" / "local" / "cfg"
+    d.mkdir(parents=True)
+    (d / "video.txt").write_text('"video.cfg"\n{\n}\n', encoding="ascii")
+    got = vw_paths.video_files(steam)
+    assert got == [str(d / "video.txt")]
+    doc = vw_paths.redact({"steam": str(steam), "video": got})
+    assert doc["video"][0].startswith("<Steam>") and "12345" not in doc["video"][0]
+    assert "<id>" in doc["video"][0]

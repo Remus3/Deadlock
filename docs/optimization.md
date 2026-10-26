@@ -3,9 +3,9 @@
 Machine (read 2026-10-25 from the supervisor's hardware scan): AMD Ryzen 7 7700X
 (8 cores / 16 threads), 32 GB DDR5 (5200 MT/s configured), NVIDIA GeForce RTX
 5070 (12 GB), one 2560x1440 display at 240 Hz, Windows 10 Pro 22H2, power plan
-Balanced. Deadlock build 26147187, installed the same day and never launched
-(no video settings file exists yet; Steam cloud supplied the player's own
-`user_convars.vcfg` and `user_keys.vcfg`).
+Balanced. Deadlock build 26147187, installed the same day; Steam cloud
+supplied the player's own `user_convars.vcfg` and `user_keys.vcfg`. First
+launched by the operator the same evening to create the video file.
 
 Placeholders: `<Steam>` = the Steam install, `<Deadlock>` = the game install
 (`<library>/steamapps/common/Deadlock`). `tools/vw_paths.py` resolves both.
@@ -25,20 +25,50 @@ Backups (local, gitignored, unscrubbed): `ops/runtime/backup/20261025-baseline/`
 `autoexec.absent.txt`). Scrubbed copies of the two cloud config files:
 `config/baseline/`.
 
-## Deferred
+## Applied 2026-10-25, after the first launch (game NOT running, Steam NOT running)
 
-- **Steam launch options** (`config/launch_options.txt`: `+exec autoexec`).
-  Steam was running, and Steam rewrites `localconfig.vdf` on exit, so the file
-  was not edited. Either set it in Steam (Library > Deadlock > Properties >
-  General > Launch Options: `+exec autoexec`) or, with Steam closed, run
-  `python tools/vw_launch.py apply` (backs up, writes only the LaunchOptions
-  value of the existing app block, reads back). Until then the autoexec does
-  not run. ROADMAP VW-LAUNCH.
-- **Video settings.** The game writes its video file on first launch; none
-  exists yet. After one launch and exit: `python tools/vw_video.py check`, then
-  `apply` (only keys the game already wrote are changed). The menu values that
-  cannot be set from the file are in `config/video.recommended.json` "menu".
-  ROADMAP VW-VIDEO.
+The operator launched the game once and changed a few settings to make it write
+its files. Raw copies of every generated file (local `video.txt`,
+`machine_convars.vcfg`, `user_convars_0_slot0.vcfg`, `user_keys_*`, the cloud
+`remote/` files and the game cfg `autoexec.cfg`, `boot.vcfg`,
+`citadel_hero_settings.lst`), with a `SHA256SUMS` list, are in
+`ops/runtime/backup/20261025-210408-firstlaunch/` (gitignored, unscrubbed).
+
+The video file is per Steam account, not in the install:
+`<Steam>/userdata/<id>/1422450/local/cfg/video.txt` (format "video.cfg",
+Version 20). `tools/vw_paths.py` now finds it there and redacts the account id.
+
+| # | Change | Read back |
+|---|---|---|
+| 4 | `video.txt`, 10 keys (below), by `python tools/vw_video.py apply`; backup `ops/runtime/backup/20261025-210458/video.txt` | file re-read: all 10 keys hold the new value (`readback_bad` empty), `check` then shows nothing left to change; CRLF kept |
+| 5 | Steam `localconfig.vdf` apps/1422450 `LaunchOptions` = `+exec autoexec` (no value before), by `python tools/vw_launch.py apply`; backup `ops/runtime/backup/20261025-210507/localconfig-0.vdf` | `vw_launch.py check` current == wanted; diff against the backup is that one added line, inside the 1422450 block |
+| 1 | autoexec (unchanged since the rename) | game copy SHA-256 == repo copy `c15f9421bb979b8b...` |
+
+Video keys, operator's first-launch value -> applied value:
+- `setting.fullscreen` 0 -> 1 and `setting.nowindowborder` 1 -> 0 (borderless
+  window -> exclusive fullscreen)
+- `setting.refreshrate_numerator` / `_denominator` 0/0 (desktop default) ->
+  240/1 (the display runs exactly 240 Hz)
+- `setting.r_low_latency` 1 -> 2 (Reflex On -> On + Boost)
+- `setting.r_citadel_ssao_quality` 3 -> 0 (ambient occlusion off)
+- `setting.r_citadel_motion_blur` 1 -> 0
+- `setting.r_depth_of_field` true -> false
+- `setting.r_effects_bloom` true -> false, `setting.r_post_bloom` true -> false
+
+Unchanged (already as recommended): 2560x1440, `mat_vsync` 0.
+
+Left to the in-game menu (the file's enum values were not verified, so the
+tool does not write them): upscaling - the game picked DLSS at render scale
+0.6667 (`r_citadel_upscaling` 4, `mat_viewportscale` 0.6667); the
+recommendation is native unless 1 percent lows fall under 160 fps, decided by
+VW-MEASURE - shadow quality (file 2, recommended Medium), anti-aliasing (file
+1), particle quality (no file key). `config/video.recommended.json` "menu".
+
+Observed: after the first launch `machine_convars.vcfg` already held the
+autoexec values (`fps_max 237`, `fps_max_ui 120`, `rate 786432`,
+`con_enable true`), none of which were in the pre-launch cloud
+`user_convars.vcfg` - the game appears to have run `autoexec.cfg` even before
+the launch option was set. VW-AUTOEXEC-VERIFY confirms with the console echo.
 
 ## Why these values
 
@@ -78,11 +108,15 @@ boosts fine on it) and the NVIDIA driver profile.
    `reg delete "HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" /v "<Deadlock>\game\bin\win64\deadlock.exe" /f`
    (or deadlock.exe > Properties > Compatibility > untick "Disable fullscreen
    optimizations").
-4. Launch options: `ops/runtime/backup/<stamp>/localconfig-<n>.vdf` is the copy
-   `vw_launch.py apply` made; restore it with Steam closed, or clear the field
-   in Steam.
-5. Video: `ops/runtime/backup/<stamp>/<video file>` is the copy
-   `vw_video.py apply` made; restore it with the game closed.
+4. Launch options: with Steam closed, copy
+   `ops/runtime/backup/20261025-210507/localconfig-0.vdf` back over
+   `<Steam>/userdata/<id>/config/localconfig.vdf`, or clear the field in Steam
+   (Library > Deadlock > Properties > General > Launch Options).
+5. Video: with the game closed, copy
+   `ops/runtime/backup/20261025-210458/video.txt` back over
+   `<Steam>/userdata/<id>/1422450/local/cfg/video.txt` (that is the operator's
+   first-launch file; the same file is also in `20261025-210408-firstlaunch/local/`),
+   or change the values in the in-game menu.
 Full restore of both registry keys: import the `.reg` files from
 `ops/runtime/backup/20261025-baseline/`.
 
