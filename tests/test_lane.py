@@ -24,6 +24,7 @@ def test_bad_lane_or_kind_refuses():
         vw_lane.plan("build", False, "chat")
 
 
-def test_cap_within_kit_limit():
-    import fleet_lanes
-    assert 1 <= vw_lane.CAP <= fleet_lanes.LANE_CAP_MAX
+def test_cap_follows_the_kit():
+    # v25: no hard-coded cap; None = the live lane_cap_max (default 3 here).
+    assert vw_lane.CAP is None
+    assert vw_lane.cap() == 3

@@ -207,7 +207,7 @@ edit. Tree-specific rules go BELOW this block, never inside it.
 
 # VW rules (tree-specific)
 
-VW channel code: `VW`. Kit: v24, vendored at `ops/fleet_kit/` (never edit;
+VW channel code: `VW`. Kit: v25, vendored at `ops/fleet_kit/` (never edit;
 report a defect to MAIN). Kit conformance: `tests/test_fleet_kit_conformance.py`.
 Hand-off: `VW-NEXT-SESSION.txt` (tracked; its `SESSION: <n>` line is the item-13
 session counter, /done writes n+1). Open work: `ROADMAP.md`.
@@ -285,7 +285,9 @@ or Steam itself exposes.
 ## Lanes and inbox
 
 - Lanes: `tools/vw_lane.py` runs one headless job through kit
-  `fleet_lanes.run_lane` (cap 2, lane lock `ops/loop/control/lanes/<i>.lock`,
+  `fleet_lanes.run_lane` (cap: the live machine `lane_cap_max`, kit v25;
+  `should_yield(VW)` checked before each job, never a kill; lane lock
+  `ops/loop/control/lanes/<i>.lock`,
   worktree under the kit sidecar root, `<sidecar>/VW/Worktree/lane-<i>`)
   and `fleet_headless.spawn(governor="queued")`; the route and kill switch are
   the kit's. A lane writes `progress/lane-<i>.json` in the main checkout.

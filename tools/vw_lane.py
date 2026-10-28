@@ -9,6 +9,13 @@ ops/loop/control/lanes/<i>.lock, its own clean worktree at the kit's
 worktree_path - the sidecar root <sidecar>/VW/Worktree/lane-<i> when that
 folder exists), then makes ONE kit fleet_headless.spawn call in that worktree,
 holding one machine-wide governor slot for the call only (governor="queued").
+Kit v25 (LANE-CAP): the lane cap and the governor slot count are not
+hard-coded here; both follow the live machine config (fleet_lanes.load_config,
+~/.fleet/lanes.json; cap=None = lane_cap_max, default 3). VW's two lane NAMES
+(build, review; exclusive) still bound how many VW jobs run at once. Before a
+job starts (its cycle boundary) the driver asks fleet_lanes.should_yield(VW)
+and, on True, does not start it; an admission refusal is like lanes_full -
+retry next tick. Nothing here ever kills or signals a running worker.
 Route, kill switch, budget, usage line and status file are the kit's
 (FLEET-COMMON 10). Model: sonnet unless the job writes code; effort low for
 inbox / triage. Progress: progress/lane-<i>.json in the main checkout.
@@ -25,7 +32,7 @@ sys.path.insert(0, str(ROOT / "ops" / "fleet_kit"))
 
 CODE = "VW"
 LANES = ("build", "review")
-CAP = 2
+CAP = None  # v25: None = the live lane_cap_max (kit clamps any number to it)
 TIMEOUT_S = 3600
 
 
@@ -47,27 +54,57 @@ def plan(lane, writes_code, kind):
             "governor": "queued", "timeout": TIMEOUT_S}
 
 
+def cap():
+    """The effective per-tree lane cap, read live from the machine config."""
+    _fh, fl = _kit()
+    return fl.lane_cap(CAP, fl.load_config())
+
+
+def slots():
+    """The governor slots VW may hold (spawn's governor_slot cap=None): the
+    live lane_cap_max clamped to the live governor_width."""
+    _fh, fl = _kit()
+    cfg = fl.load_config()
+    return min(fl.lane_cap(CAP, cfg), int(cfg["governor_width"]))
+
+
+def _skipped(reason):
+    """A job that did not start (retry next tick); never a kill."""
+    return {"rc": None, "error": reason, "retry": True, "cost_usd": None, "duration_s": 0}
+
+
 def run(lane, note, prompt, writes_code=False, kind="build"):
     fh, fl = _kit()
     opts = plan(lane, writes_code, kind)
+    if fl.should_yield(CODE):
+        return _skipped("should_yield: another tree waits for a slot")
     run_id = "vw-%s-%d" % (lane, int(time.time()))
-    with fl.run_lane(ROOT, CODE, lane, run_id, cap=CAP) as claim:
-        task = "lane-%d" % claim["index"]
-        fh.write_progress(ROOT, task, 5, "%s: %s" % (lane, note[:60]), opts["timeout"], "running")
-        line = fh.spawn(ROOT, CODE, prompt, note=note, writes_code=opts["writes_code"],
-                        timeout=opts["timeout"], cwd=claim["worktree"], model=opts["model"],
-                        effort=opts["effort"], governor=opts["governor"], kind=opts["kind"],
-                        slot_id=task, progress_task=task,
-                        halt_file=str(ROOT / "ops" / "loop" / "control" / "HALT"))
-        ok = line.get("rc") == 0 and not line.get("error")
-        fh.write_progress(ROOT, task, 100, "%s: %s" % (lane, "done" if ok else "failed"), 0,
-                          "done" if ok else "failed")
-        return line
+    try:
+        with fl.run_lane(ROOT, CODE, lane, run_id, cap=CAP) as claim:
+            return _job(fh, claim, lane, note, prompt, opts)
+    except fl.LaneRefused as exc:  # lanes_full, lane_held or admission
+        return _skipped("lane refused (%s); retry next tick" % exc)
+
+
+def _job(fh, claim, lane, note, prompt, opts):
+    task = "lane-%d" % claim["index"]
+    fh.write_progress(ROOT, task, 5, "%s: %s" % (lane, note[:60]), opts["timeout"], "running")
+    line = fh.spawn(ROOT, CODE, prompt, note=note, writes_code=opts["writes_code"],
+                    timeout=opts["timeout"], cwd=claim["worktree"], model=opts["model"],
+                    effort=opts["effort"], governor=opts["governor"], kind=opts["kind"],
+                    slot_id=task, progress_task=task,
+                    halt_file=str(ROOT / "ops" / "loop" / "control" / "HALT"))
+    ok = line.get("rc") == 0 and not line.get("error")
+    fh.write_progress(ROOT, task, 100, "%s: %s" % (lane, "done" if ok else "failed"), 0,
+                      "done" if ok else "failed")
+    return line
 
 
 def status():
     _fh, fl = _kit()
-    return {"code": CODE, "cap": CAP, "lanes": fl.repo_lane_state(ROOT, cap=CAP),
+    return {"code": CODE, "cap": cap(), "slots": slots(),
+            "should_yield": fl.should_yield(CODE),
+            "lanes": fl.repo_lane_state(ROOT, cap=CAP),
             "worktree_0": str(fl.worktree_path(ROOT, CODE, 0))}
 
 
