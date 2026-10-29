@@ -21,3 +21,72 @@
 - [ ] VW-DEPENDABOT: PR #1 (github-actions group, 3 bumps) opened on the first
   push, CI green on it. Never merge a bot PR as-is (operator-only authors):
   apply the same SHA bumps in an operator commit, push at /done, close #1.
+
+## Companion app (standing order 2026-10-29; charter `docs/companion-app.md`)
+
+Order: research epics first, all parallel; then build in the order below
+(`after:` names the dependencies). Every epic is checked against the charter's
+safety mapping (section 3) before it closes.
+
+Research (parallel, no dependencies):
+- [ ] VW-APP-GAME: research game data, public APIs, launch options, ports and
+  outputs. Accept: `docs/research/game-data.md` lists each source with class
+  (charter 3, 1-4), rate limits, fields, and a ruling ref for any port.
+- [ ] VW-APP-HERO: research heroes, items, upgrades, abilities, archetypes,
+  counters and their interactions. Accept: a versioned local dataset plus
+  fixture tests that pin at least 10 cross-interactions per patch.
+- [ ] VW-APP-WORKSHOP: find whether Deadlock has an official Steam Workshop.
+  Accept: a recorded yes / no with sources and a scoped ruling (charter S-6).
+- [ ] VW-APP-UX: research legibility, typography, color, theme, focus and
+  controller navigation over a live game. Accept: `docs/research/ux.md` with a
+  token set (contrast measured) and overlay / companion wireframes.
+- [ ] VW-APP-SEC: security and architecture audit plan (Electron hardening,
+  update signing, supply chain, privacy). Accept: a checklist with each item
+  pass / fail / owner epic, and a code-signing decision.
+- [ ] VW-APP-LIFT: assess sibling (RC, EW, RSC, CS, MAIN) and outside designs
+  for reuse. Accept: a lift table (feature, source code, reuse / adapt / skip,
+  why).
+
+Build:
+- [ ] VW-LOOP-ARM: arm the lane loop (supersedes VW-LOOP's "once there is
+  recurring work"). Accept: a scheduled tick runs `tools/vw_lane.py`, reads the
+  inbox, writes `progress/lane-<i>.json`, prunes its worktree. after: none.
+- [ ] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater
+  (charter D-1). Accept: a per-user NSIS install from a GitHub release
+  self-updates to a newer one with SHA-256 verify, self-test and rollback,
+  never mid-match. after: VW-APP-SEC.
+- [ ] VW-APP-DB: local SQLite store with versioned migrations. Accept: migrate
+  up from empty and from the previous version idempotently, backup first.
+  after: VW-APP-SCAFFOLD.
+- [ ] VW-APP-BUS: typed versioned message bus and engine contracts. Accept: a
+  malformed message is rejected with a logged reason and no subscriber sees it.
+  after: VW-APP-SCAFFOLD.
+- [ ] VW-APP-INGEST: data ingestion services (charter 3 classes only) with
+  controlled polling. Accept: each source has a rate, ceiling, backoff and
+  cache, and a restart leaves the same DB state. after: VW-APP-GAME, VW-APP-DB.
+- [ ] VW-APP-E1: combat math / build engine. Accept: pinned math fixtures per
+  hero and item on/off comparisons; `e1.build_advice.v1` from recorded match
+  context. after: VW-APP-HERO, VW-APP-BUS.
+- [ ] VW-APP-E2: player analysis / skill-profile engine. Accept: from recorded
+  matches, tiers per dimension and explained focus items with time frames, no
+  generic advice (a test rejects template-only output). after: VW-APP-INGEST,
+  VW-APP-BUS.
+- [ ] VW-APP-E3: live macro engine. Accept: from recorded match states, goal
+  now / next / how / abort_if / alt_route that change with tier and state.
+  after: VW-APP-E1, VW-APP-E2.
+- [ ] VW-APP-OVERLAY: separate transparent click-through always-on-top window
+  (charter S-2). Accept: no focus taken, mouse ignored, shows E3 one-liner;
+  test asserts the window flags. after: VW-APP-SCAFFOLD, VW-APP-UX.
+- [ ] VW-APP-COMPANION: optional second-screen companion window. Accept:
+  player picks the display; shows live E1 / E3 detail; off by default.
+  after: VW-APP-OVERLAY.
+- [ ] VW-APP-CONTROLLER: Xbox / PS4 / PS5 navigation of the app only (charter
+  S-4). Accept: navigates companion / dashboard when focused; ignored while the
+  game has focus; nothing emitted. after: VW-APP-COMPANION.
+- [ ] VW-APP-COACH: LLM coach on conditioned inputs, stored, then distilled to
+  zero-LLM rules tagged by patch. Accept: with the LLM disabled the distilled
+  rules answer the recorded set; a patch change flags them for review.
+  after: VW-APP-E1, VW-APP-E2, VW-APP-E3.
+- [ ] VW-RUNCAP: operator asked 500 runs / 24 h; kit caps 120 (FLEET-COMMON
+  10). Accept: MAIN answers the 2026-10-29 request; adopt the kit version that
+  carries it. after: MAIN.

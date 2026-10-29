@@ -7,6 +7,9 @@ READ FIRST
   2. ROADMAP.md - open work.
   3. docs/optimization.md - what was applied 2026-10-25, read-backs, rollback.
   4. moon_sync_inbox/ sorted by mtime; fleet_inbox.classify(name, "VW").
+  5. docs/companion-app.md - STANDING ORDER 2026-10-29 (all sessions):
+     Electron companion app, three engines, research tracks, process rules,
+     safety mapping (the floor governs). Epics VW-APP-* in ROADMAP.md.
 
 STATE (reading 2026-10-25, tree created by MAIN on operator order)
   - Kit v23 vendored at ops/fleet_kit/, MANIFEST byte-identical to MAIN's;
@@ -31,6 +34,13 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
 
 NEXT ACTION
+  ON "continue" (standing order 2026-10-29): arm VW-LOOP lanes
+  (VW-LOOP-ARM) and start the VW-APP research epics in parallel
+  (VW-APP-GAME, -HERO, -WORKSHOP, -UX, -SEC, -LIFT), then build in ROADMAP
+  order. Charter captured 2026-10-29; run cap request (500 / 24 h) sent to
+  MAIN 2026-10-29 0611 (VW-RUNCAP), run at the kit's 120 until answered.
+  Inbox: ORDER 2026-10-26-0300 U5 worked and answered in that note.
+  Earlier items, all still open:
   Controls done 2026-10-25 23:16 (VW-CONTROLS, VW-VIDEO-MENU closed): reticle-
   free autoexec applied, game copy sha256 a38b0d66aec5 = repo copy;
   `vw_controls.py check` all empty (hidden Cosmetic1 E accepted, operator

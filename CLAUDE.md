@@ -298,3 +298,19 @@ or Steam itself exposes.
   `moon_sync_outbox/` first, then a byte copy into the recipient's inbox.
 - Status board: local only (kit v23 `fleet_board.py`, renders
   `ops/loop/control/board/board.html`); no claude.ai push.
+
+## Companion app (standing order 2026-10-29)
+
+- Charter and requirements: `docs/companion-app.md`; epics `VW-APP-*` in
+  `ROADMAP.md`. The order holds for every session; the operator does not
+  repeat it.
+- The game safety floor above governs the app and overrides the order.
+  Data only from the charter's four source classes (public APIs, post-match
+  data / replays, the game's own outputs, external screen capture). The
+  overlay is a separate OS window; controllers drive the app only. No
+  console port, game-state cfg or Workshop content without the charter's
+  recorded ruling.
+- "continue" starts autonomous lane work (VW-LOOP-ARM, then the VW-APP
+  research epics in parallel). Operator interjections are done or filed in
+  `ROADMAP.md`; running work is never halted for them.
+- Headless runs stay at the kit cap until MAIN ships a change (VW-RUNCAP).
