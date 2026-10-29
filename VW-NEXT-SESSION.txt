@@ -48,6 +48,12 @@ NEXT ACTION
      -> record, reset count, continue): kit-owned, REQUEST to MAIN
      2026-10-29 0614 with the 500/24h ask (VW-RUNCAP). Never reset the kit
      ledger locally; at the cap, stop until MAIN ships it.
+  C) Public presentation review (VW-PUBLIC-REVIEW, recurring): rules and
+     cadence in docs/public-presentation.md; /done step 3a starts one
+     background sonnet lane job when the pushed range touched README / docs /
+     .github / a tag / a new feature, or 7 days passed (state file
+     ops/loop/control/public_review_state.json, missing = due). Left: add
+     `--effort low` to tools/vw_lane.py; first run fires at the next /done.
   Inbox: ORDER 2026-10-26-0300 U5 worked and answered in that note.
   Earlier items, all still open:
   Controls done 2026-10-25 23:16 (VW-CONTROLS, VW-VIDEO-MENU closed): reticle-

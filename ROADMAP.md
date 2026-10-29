@@ -16,6 +16,16 @@
 - [ ] VW-LOOP: arm a lane loop / inbox responder like the other trees (a
   scheduled tick that reads the inbox and runs `tools/vw_lane.py`), once there
   is recurring work. Until then each session reads the inbox at start and /done.
+- [ ] VW-PUBLIC-REVIEW (recurring; standing order 2026-10-29,
+  `docs/public-presentation.md`): the GitHub outsider view (README, docs
+  index, About description / topics, release notes, app user docs) kept
+  non-repeated, curated and newcomer-readable. Trigger: `/done` step 3a.
+  Accept: `vw_lane.py` takes `--effort low` for this job; one lane run reads
+  only the scoped files plus `gh repo view`, commits fixes through
+  fleet_gitlock with no push of its own, reads back any About change, and
+  writes `ops/loop/control/public_review_state.json`; a second `/done` with
+  no user-facing change inside 7 days spawns nothing. Never closes; each pass
+  is recorded by the state file.
 - [ ] VW-POWER: measure Balanced vs High performance power plan in game
   (machine-level; MAIN's call, file a note with the numbers).
 - [ ] VW-DEPENDABOT: PR #1 (github-actions group, 3 bumps) opened on the first

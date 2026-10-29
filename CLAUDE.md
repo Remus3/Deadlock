@@ -317,3 +317,8 @@ or Steam itself exposes.
   research epics in parallel). Operator interjections are done or filed in
   `ROADMAP.md`; running work is never halted for them.
 - Headless runs stay at the kit cap until MAIN ships a change (VW-RUNCAP).
+- Public presentation review (standing order 2026-10-29,
+  `docs/public-presentation.md`): never per commit; `/done` step 3a starts
+  one background sonnet lane job when the pushed range touched a user-facing
+  surface or 7 days passed since the last review
+  (`ops/loop/control/public_review_state.json`).

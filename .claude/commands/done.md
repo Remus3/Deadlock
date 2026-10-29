@@ -61,6 +61,18 @@ printed an error is the failure line. Then `gh run list --branch main --limit 3`
 record the run the push triggered as green, red or pending (a docs-only push
 fires no `ci` run; that is not a failure). Never force-push.
 
+## 3a. Public presentation trigger (VW-PUBLIC-REVIEW, `docs/public-presentation.md`)
+
+After the push, read `ops/loop/control/public_review_state.json`. Due when the
+file is missing, or `git diff --name-only <last_commit>..origin/main` names a
+user-facing surface (README.md, LICENSE, NOTICE, SECURITY.md, docs/ outside
+research and archives, .github/, a new top-level dir or tools/ entry point),
+or a tag was added since, or `last_date` is 7 or more days old. Due: start
+`python tools/vw_lane.py run review --note public-review --prompt-file <file>`
+in the BACKGROUND with the job of `docs/public-presentation.md` section 4;
+never wait for it. Not due: do nothing. Names and dates only; read no file
+contents for this check.
+
 ## 4. ROADMAP.md
 
 Open work only. Add what this session opened; move closed items, verbatim, to
