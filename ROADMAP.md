@@ -87,9 +87,14 @@ Build:
   zero-LLM rules tagged by patch. Accept: with the LLM disabled the distilled
   rules answer the recorded set; a patch change flags them for review.
   after: VW-APP-E1, VW-APP-E2, VW-APP-E3.
-- [ ] VW-RUNCAP: operator asked 500 runs / 24 h; kit caps 120 (FLEET-COMMON
-  10). Accept: MAIN answers the 2026-10-29 request; adopt the kit version that
-  carries it. after: MAIN.
+- [ ] VW-RUNCAP: two operator asks, both kit-owned (FLEET-COMMON 10; VW never
+  edits or resets the kit ledger locally). (a) 500 runs / 24 h, REQUEST to
+  MAIN 2026-10-29 0611. (b) Operator order 2026-10-29: when the cap is hit,
+  usage percent remains and the session was not told to wrap up / /done,
+  record the cap-hit in the usage ledger, reset the rolling count and
+  continue; REQUEST to MAIN 2026-10-29 0614 (asks one ruling on a + b).
+  Until then VW runs at the kit's 120 and stops at the cap. Accept: MAIN
+  answers; adopt the kit version that carries it. after: MAIN.
 - [ ] VW-KIT-BOARDID: kit v25 fleet_board.py line 59 (_LINE, ID group
   `{0,15}`) silently drops checklist rows whose ID is over 16 chars (seen:
   VW-AUTOEXEC-VERIFY). FIX note sent to MAIN 2026-10-29 0612. Meanwhile render

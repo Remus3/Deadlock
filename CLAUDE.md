@@ -273,6 +273,9 @@ or Steam itself exposes.
 - Hooks: `git config core.hooksPath .githooks` (commit-msg: fleet_identity;
   pre-commit: privacy scan of staged lines; pre-push: fleet_identity then the
   privacy scan of the pushed range).
+- RELEASES (operator order 2026-10-29): SemVer 0.x, ONE patch or minor step
+  from the last tag per release, a run's commits batched into one release, no
+  time gate; `tools/vw_release.py check <ver>` must pass (`docs/release.md`).
 
 ## Gates
 

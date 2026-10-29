@@ -39,6 +39,15 @@ NEXT ACTION
   (VW-APP-GAME, -HERO, -WORKSHOP, -UX, -SEC, -LIFT), then build in ROADMAP
   order. Charter captured 2026-10-29; run cap request (500 / 24 h) sent to
   MAIN 2026-10-29 0611 (VW-RUNCAP), run at the kit's 120 until answered.
+  Operator orders 2026-10-29 (both open):
+  A) Release versioning: rules in docs/release.md, guard
+     tools/vw_release.py + tests/test_release.py, CLAUDE.md RELEASES line.
+     Every release runs `vw_release.py check <ver>` (one patch/minor step,
+     batch per run, no time gate). No tag cut yet; first is v0.1.0.
+  B) Run cap reset-and-continue (cap hit + usage left + no wrap-up order
+     -> record, reset count, continue): kit-owned, REQUEST to MAIN
+     2026-10-29 0614 with the 500/24h ask (VW-RUNCAP). Never reset the kit
+     ledger locally; at the cap, stop until MAIN ships it.
   Inbox: ORDER 2026-10-26-0300 U5 worked and answered in that note.
   Earlier items, all still open:
   Controls done 2026-10-25 23:16 (VW-CONTROLS, VW-VIDEO-MENU closed): reticle-
