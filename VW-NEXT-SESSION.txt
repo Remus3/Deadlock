@@ -51,6 +51,9 @@ NEXT ACTION
   operator confirms the three casting options in the menu (no file shows
   them). 3) VW-AUTOEXEC-VERIFY: one F7 console look for the echo and
   "Unknown command". Then VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
+  4) VW-KIT-BOARDID: fleet_board stdin parser drops IDs over 16 chars
+  (kit v25 line 59); FIX note to MAIN 2026-10-29 0612. Until the fixing kit
+  version is adopted, render the board via --progress JSON.
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).

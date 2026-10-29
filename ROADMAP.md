@@ -90,3 +90,9 @@ Build:
 - [ ] VW-RUNCAP: operator asked 500 runs / 24 h; kit caps 120 (FLEET-COMMON
   10). Accept: MAIN answers the 2026-10-29 request; adopt the kit version that
   carries it. after: MAIN.
+- [ ] VW-KIT-BOARDID: kit v25 fleet_board.py line 59 (_LINE, ID group
+  `{0,15}`) silently drops checklist rows whose ID is over 16 chars (seen:
+  VW-AUTOEXEC-VERIFY). FIX note sent to MAIN 2026-10-29 0612. Meanwhile render
+  the board via `--progress` JSON (no ID limit). Accept: adopt the kit version
+  that raises the limit or fails loudly; a stdin render shows an 18-char ID.
+  after: MAIN.
