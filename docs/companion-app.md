@@ -284,10 +284,13 @@ Layout, all under `app/` (Node 24, npm 11, CommonJS):
 - `src/main/main.js`: Electron main. `app.enableSandbox()`, single instance,
   `app://vw/` protocol serving only `src/renderer/` with the SEC-E7 CSP
   header, permissions denied, navigation / new windows / webviews blocked,
-  one IPC handler (`vw:get-info`) that checks the sender frame is `app://`.
+  IPC handlers that check the sender frame is `app://`: `vw:get-info`
+  here, plus the bus bridge `vw:bus:publish` (section 7); opens the local
+  store on startup and closes it on quit (section 8).
 - `src/main/webprefs.js`: the one webPreferences factory (contextIsolation,
   sandbox, no nodeIntegration of any kind, webSecurity on, no webview).
-- `src/preload/preload.js`: sandboxed; exposes `window.vw.getInfo()` only.
+- `src/preload/preload.js`: sandboxed; exposes `window.vw.getInfo()` and,
+  from VW-APP-BUS, `window.vw.publish()` (section 7).
 - `src/renderer/`: dashboard shell on the VW-APP-UX dark tokens;
   `tokens.css` is generated from `config/app/tokens.json`
   (`npm run tokens`; a test fails on drift).
