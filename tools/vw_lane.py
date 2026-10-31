@@ -43,6 +43,7 @@ CAP = None  # v25: None = the live lane_cap_max (kit clamps any number to it)
 TIMEOUT_S = 3600
 KINDS = ("build", "inbox", "triage", "order")
 EFFORTS = ("low", "medium", "high")
+LOG_REL = Path("ops") / "runtime" / "lane_logs"  # gitignored; stream log + fail record
 
 
 def _kit():
@@ -95,7 +96,7 @@ def run(lane, note, prompt, writes_code=False, kind="build", effort=None):
     try:
         with fl.run_lane(ROOT, CODE, lane, run_id, cap=CAP) as claim:
             try:
-                line = _job(fh, claim, lane, note, prompt, opts)
+                line = _job(fh, claim, lane, note, prompt, opts, run_id)
             finally:
                 kept = keep_and_prune(ROOT, claim["worktree"], run_id)
             line = dict(line)
@@ -105,15 +106,45 @@ def run(lane, note, prompt, writes_code=False, kind="build", effort=None):
         return _skipped("lane refused (%s); retry next tick" % exc)
 
 
-def _job(fh, claim, lane, note, prompt, opts):
+def log_paths(root, run_id):
+    """Where a run's stream log and failure record go (gitignored ops/runtime/)."""
+    base = Path(root) / LOG_REL
+    return base / ("%s.jsonl" % run_id), base / ("%s.fail.json" % run_id)
+
+
+def write_failure(path, line):
+    """Record why a run failed (rc, error, is_error, result text, stderr) so a
+    failed lane run is diagnosable after the fact (VW-REVIEW-FAIL). Never raises."""
+    keep = ("rc", "error", "is_error", "subtype", "route", "limit", "duration_s",
+            "num_turns", "model", "effort", "note")
+    rec = {k: line.get(k) for k in keep}
+    for k in ("result", "stderr"):
+        v = line.get(k)
+        rec[k] = v[-8000:] if isinstance(v, str) else v
+    try:
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text(json.dumps(rec, indent=1, default=str) + "\n",
+                              encoding="utf-8", newline="\n")
+    except OSError:
+        pass
+    return rec
+
+
+def _job(fh, claim, lane, note, prompt, opts, run_id="vw-run"):
     task = "lane-%d" % claim["index"]
+    log, fail = log_paths(ROOT, run_id)
     fh.write_progress(ROOT, task, 5, "%s: %s" % (lane, note[:60]), opts["timeout"], "running")
     line = fh.spawn(ROOT, CODE, prompt, note=note, writes_code=opts["writes_code"],
                     timeout=opts["timeout"], cwd=claim["worktree"], model=opts["model"],
                     effort=opts["effort"], governor=opts["governor"], kind=opts["kind"],
-                    slot_id=task, progress_task=task,
+                    slot_id=task, progress_task=task, log_path=str(log),
+                    return_stderr=True,
                     halt_file=str(ROOT / "ops" / "loop" / "control" / "HALT"))
-    ok = line.get("rc") == 0 and not line.get("error")
+    ok = line.get("rc") == 0 and not line.get("error") and not line.get("is_error")
+    if not ok:
+        line = dict(line)
+        line["fail_record"] = (LOG_REL / fail.name).as_posix()  # repo-relative
+        write_failure(fail, line)
     fh.write_progress(ROOT, task, 100, "%s: %s" % (lane, "done" if ok else "failed"), 0,
                       "done" if ok else "failed")
     return line
@@ -190,8 +221,9 @@ def main(argv=None):
         return 0
     prompt = Path(a.prompt_file).read_text(encoding="utf-8")
     line = run(a.lane, a.note, prompt, a.writes_code, a.kind, a.effort)
-    print(json.dumps({k: line.get(k) for k in ("rc", "error", "cost_usd", "duration_s")}))
-    return 0 if line.get("rc") == 0 and not line.get("error") else 1
+    print(json.dumps({k: line.get(k) for k in ("rc", "error", "is_error", "cost_usd",
+                                                "duration_s", "fail_record")}))
+    return 0 if line.get("rc") == 0 and not line.get("error") and not line.get("is_error")         else 1
 
 
 if __name__ == "__main__":
