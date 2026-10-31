@@ -5,6 +5,8 @@ this lands) and every later `VW-APP-*` build epic. Requirements and the safety
 mapping live in `docs/companion-app.md`; the CLAUDE.md game safety floor
 outranks everything here.
 
+Status updates after the audit are in section 7 (newest wins).
+
 How to read the checklist: each item has an ID, the rule, how it is verified
 (a test or a gate, never a promise), its owner epic, and a status today.
 - PASS: true now in this repo, with the evidence named.
@@ -245,3 +247,61 @@ What reverses it: (1) the app is offered to anyone besides the operator; or
 outright; or (3) an anti-cheat or Windows policy starts requiring signed
 companion processes. Then: Artifact Signing [MS-ATS] in the release job, with
 `publisherName` set for electron-updater, and SEC-U5 is re-decided here.
+
+## 7. Status update 2026-10-31 (VW-APP-SCAFFOLD, `app/`)
+
+Tests are `app/test/*.test.js` (node:test, `npm test`, CI `app.yml`).
+- SEC-E1 PASS: app:// only; `security.test.js` asserts every `loadURL` is
+  ORIGIN-based, no `loadFile`, and app:// resolution never leaves
+  `src/renderer/` (encoded traversal refused).
+- SEC-E2 / E3 / E4 PASS: one factory (`src/main/webprefs.js`), a test checks
+  every `new BrowserWindow(` uses it and the flags; `app.enableSandbox()`
+  asserted in main.
+- SEC-E5 PASS (static): request and check handlers both deny; a runtime
+  enumeration test needs Electron and lands with VW-APP-INGEST's exception.
+- SEC-E6 / E8 / E16 PASS: forbidden-token grep over `app/src`.
+- SEC-E7 PASS: header from the protocol handler equals the meta CSP; page
+  test rejects inline script, handlers, styles and remote URLs.
+- SEC-E9 / E10 PASS (static): will-navigate / will-redirect /
+  will-frame-navigate / window-open / webview guards wired via
+  `web-contents-created`; a driven-navigation test needs the runtime
+  (VW-APP-UPDATE-E2E run or a later Electron test harness).
+- SEC-E12 PASS: Electron 45.2.1 pinned exact; CI fails when the major leaves
+  the latest-three window.
+- SEC-E13 PARTIAL: preload shape PASS (fixed API, test); sender-frame check
+  wired; payload schema checks are VW-APP-BUS.
+- SEC-E14 PASS: fuses flipped in `scripts/after-pack.js`, read back on the
+  0.1.0 build; the packaged exe self-test passed with asar integrity on. A
+  CI post-pack fuse read is a follow-up inside VW-APP-UPDATE-E2E.
+- SEC-E15 PASS: single-instance lock; second launch focuses only when not
+  in a match.
+- SEC-G1 / G2 / G6 PASS (grep part): no Win32 process / input APIs, no FFI or
+  input packages, no globalShortcut, no netconport / gamestate tokens.
+- SEC-U1 PASS: GitHub releases API of the baked-in repo only; asset URLs
+  must be https on github.com / *.githubusercontent.com (also after
+  redirect). Feed lives in `build/feed.json`, not `electron-builder.yml`,
+  because the owner/repo is never tracked (privacy rule).
+- SEC-U2 PASS (D-1a): electron-updater is not used, so its sha512 leg is
+  replaced by the VW `SHA256SUMS.txt` check of BOTH the new installer and the
+  current version's installer (the rollback image), re-verified at apply;
+  self-test before the switch; failed self-test or boot loop re-installs the
+  rollback image. Tests: mismatch refused, tamper-at-apply refused, rollback
+  image tampered refused, rollback on failed self-test.
+- SEC-U3 PASS: apply only on natural quit or idle and never while
+  `isInMatch()`; no dialog. Test: deferred while in match. The live-match
+  provider is VW-APP-INGEST (stub, fail closed on error).
+- SEC-U4 PASS: `app-release.yml` builds on the tag in CI, self-tests the
+  packaged exe, drafts the release; the operator publishes.
+- SEC-S2 PASS: the release job alone has `contents: write`.
+- SEC-S3 PASS: lockfile committed, `npm ci` in CI, `.npmrc`
+  `ignore-scripts=true`, Electron's runtime fetch is an explicit script.
+- SEC-S4 PASS: zero runtime dependencies; dev only: electron,
+  electron-builder, @electron/fuses (packaging).
+- SEC-S5 PASS: Dependabot npm for `/app`, grouped; `npm audit --omit=dev
+  --audit-level=high` in CI (0 found at 0.1.0; 15 moderate in dev-only
+  build tooling, not shipped).
+- SEC-S6 PASS: CodeQL matrix gains `javascript-typescript`.
+- SEC-S7 N/A for now: no runtime advisory to override.
+- SEC-P6 PASS (basic): `src/main/log.js` redacts the profile path, account
+  name and Steam64 ids; logs stay in user data.
+- SEC-P7 N/A-BY-DESIGN holds: no telemetry or crash upload code.

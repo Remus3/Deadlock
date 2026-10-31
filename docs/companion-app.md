@@ -170,6 +170,28 @@ electron-builder / electron-updater handle natively and RC already runs in this
 fleet; console's verify / self-test / rollback discipline closes the gaps.
 Code signing: research item in VW-APP-SEC (unsigned NSIS triggers SmartScreen).
 
+VW decision D-1a (VW-APP-SCAFFOLD, 2026-10-31; amends D-1): keep
+electron-builder per-user NSIS, but DROP electron-updater; the update path is
+VW's own small updater (`app/src/main/updater/`), console's pattern on top of
+the NSIS installer. Flow: ETag-cached GET of this repo's releases (rate
+`checkHours`, channel stable / beta); download the installer and the
+release's `SHA256SUMS.txt`, refuse on any mismatch; also download and verify
+the CURRENT version's installer as the rollback image (no verified rollback
+image = no update); re-verify both right before apply; apply only on natural
+quit or idle, never while `isInMatch()`; run the installer silently with
+relaunch; the new build self-tests before any window and, on failure or a
+boot loop, re-installs the verified rollback image and skips that version.
+Alternatives: electron-updater as in D-1 (sha512 against `latest.yml`, but
+no self-test / rollback hook, and a runtime dependency to keep patched);
+electron-updater for download plus a VW wrapper for verify / rollback (two
+update state machines to reconcile); Squirrel (rejected in D-1). Why: the
+charter's verify / self-test / rollback / never-mid-match discipline is the
+whole requirement, a few hundred lines own it end to end and test it without
+Electron, and the app keeps zero runtime dependencies (SEC-S4). Reverses: a
+need for delta updates or for signature-checked updates (SIGN-0 reversed),
+where electron-updater's blockmap and `publisherName` check pay for
+themselves.
+
 ## 3. Safety mapping (mandatory; the floor governs)
 
 Allowed live and offline data sources, and only these:
@@ -255,3 +277,55 @@ VW-APP-LIFT does the full assessment and records what is reused.
   epics in parallel, then builds in ROADMAP order.
 - Commit / push / prune point: /done (batched; push per CLAUDE.md tiers);
   lanes prune their worktree on exit.
+
+## 6. App scaffold (VW-APP-SCAFFOLD, built 2026-10-31)
+
+Layout, all under `app/` (Node 24, npm 11, CommonJS):
+- `src/main/main.js`: Electron main. `app.enableSandbox()`, single instance,
+  `app://vw/` protocol serving only `src/renderer/` with the SEC-E7 CSP
+  header, permissions denied, navigation / new windows / webviews blocked,
+  one IPC handler (`vw:get-info`) that checks the sender frame is `app://`.
+- `src/main/webprefs.js`: the one webPreferences factory (contextIsolation,
+  sandbox, no nodeIntegration of any kind, webSecurity on, no webview).
+- `src/preload/preload.js`: sandboxed; exposes `window.vw.getInfo()` only.
+- `src/renderer/`: dashboard shell on the VW-APP-UX dark tokens;
+  `tokens.css` is generated from `config/app/tokens.json`
+  (`npm run tokens`; a test fails on drift).
+- `src/main/matchGate.js`: `isInMatch()` gate. Stub (TODO VW-APP-INGEST):
+  no provider = not in match; a provider that throws = in match (fail
+  closed, the update waits).
+- `src/main/updater/`: D-1a updater (feed, sha, state, updater core,
+  platform wiring); state in `<userData>/updates/state.json`, written
+  atomically.
+- `src/main/selftest.js`: the post-update self-test, also run as
+  `VeilWalker.exe --vw-self-test [--vw-self-test-out=<file>]` (exit 0 / 1).
+- `electron-builder.yml`: per-user NSIS (oneClick, no elevation), unsigned
+  (SIGN-0), `publish: null`; `scripts/after-pack.js` flips the SEC-E14 fuses
+  (read back on the 0.1.0 build: RunAsNode off, NODE_OPTIONS off, inspect off,
+  embedded asar integrity on, only-load-from-asar on, file-protocol extra
+  privileges off, cookie encryption on).
+- Update feed: owner/repo is never tracked (privacy rule);
+  `scripts/write-feed.js` bakes it into the gitignored `build/feed.json`
+  from `VW_UPDATE_REPO`, `GITHUB_REPOSITORY` or the origin remote. No feed
+  or a dev run = updater off.
+- `.npmrc`: `ignore-scripts=true` (SEC-S3); `npm run electron:install`
+  fetches the Electron runtime for `npm start`.
+
+Commands (in `app/`): `npm ci`, `npm test` (node:test), `npm start`,
+`npm run dist` (NSIS installer in `dist/`), `npm run sums`
+(`dist/SHA256SUMS.txt`).
+
+CI: `.github/workflows/app.yml` runs the app tests on ubuntu and windows,
+the token-sync check, `npm audit --omit=dev --audit-level=high` and the
+Electron support-window check. `.github/workflows/app-release.yml` builds
+on a `v0.*` tag whose version equals `app/package.json`, self-tests the
+packaged exe and attaches the installer and `SHA256SUMS.txt` to a DRAFT
+release; publishing it is the operator's go. Dependabot covers `app/` npm;
+CodeQL covers JavaScript.
+
+Release asset contract: `VeilWalker-Setup-<version>.exe` plus
+`SHA256SUMS.txt` (`<sha256>  <name>` lines) on the release tagged
+`v<version>`; a release without both is ignored by the updater.
+
+Open: VW-APP-UPDATE-E2E (the live two-release run) and VW-APP-WATCHDOG
+(a build that dies before main.js runs) in `ROADMAP.md`.

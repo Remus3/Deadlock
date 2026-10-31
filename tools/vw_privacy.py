@@ -39,6 +39,14 @@ RULES = (
 )
 # Placeholder emails that are documentation, not identities.
 EMAIL_OK = re.compile(r"(?i)@(example\.(com|org|net)|users\.noreply\.github\.com)$")
+# npm lockfile "deprecated" notices are registry text written by third-party
+# package publishers (some name a maintainer contact address); never this
+# host's identity. Only the email shape is waived there; needles still apply.
+LOCK_DEPRECATED = re.compile(r'^\s*"deprecated":\s*"')
+
+
+def _email_waived(path, line):
+    return path.endswith("package-lock.json") and bool(LOCK_DEPRECATED.match(line))
 
 
 def load_needles(path=NEEDLES):
@@ -49,10 +57,12 @@ def load_needles(path=NEEDLES):
     return [str(n) for n in doc.get("needles", []) if str(n).strip() and len(str(n)) >= 4]
 
 
-def line_hits(line, needles=()):
-    """Rule names hit by one line of text."""
+def line_hits(line, needles=(), path=""):
+    """Rule names hit by one line of text (path: the file it came from)."""
     hits = []
     for name, rx in RULES:
+        if name == "email" and _email_waived(path, line):
+            continue
         for m in rx.finditer(line):
             if name == "email" and EMAIL_OK.search(m.group(0)):
                 continue
@@ -69,7 +79,7 @@ def line_hits(line, needles=()):
 def scan_text(label, text, needles=()):
     out = []
     for i, line in enumerate(text.splitlines(), 1):
-        for rule in line_hits(line, needles):
+        for rule in line_hits(line, needles, label):
             out.append("%s:%d %s" % (label, i, rule))
     return out
 
@@ -112,7 +122,7 @@ def scan_diff(diff_text, needles=()):
             continue
         if line.startswith("+") and not _skip(path):
             n += 1
-            for rule in line_hits(line[1:], needles):
+            for rule in line_hits(line[1:], needles, path):
                 out.append("%s:%d %s" % (path, n, rule))
         elif not line.startswith("-"):
             n += 1

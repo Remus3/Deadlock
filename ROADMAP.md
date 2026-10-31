@@ -61,19 +61,32 @@ Follow-ups from research:
   cheat / devonly cvar is removed per the floor. after: operator launch.
 
 Build:
-- [ ] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater
-  (charter D-1). Accept: a per-user NSIS install from a GitHub release
-  self-updates to a newer one with SHA-256 verify, self-test and rollback,
-  never mid-match. after: VW-APP-SEC.
+VW-APP-SCAFFOLD closed 2026-10-31 (docs/roadmap-archive.md): `app/`
+Electron shell, per-user NSIS, VW updater (D-1a). DB and BUS are unblocked.
+- [ ] VW-APP-UPDATE-E2E: the live half of SCAFFOLD's acceptance. Tag two app
+  releases (app/package.json version = tag), operator publishes each CI draft,
+  install the first per user, let it self-update to the second; record the
+  updater state.json result, whether SmartScreen prompted on the update
+  (SIGN-0 expects not), and a forced bad-hash run refused. after: two
+  published app releases (operator go on each draft).
+- [ ] VW-APP-WATCHDOG: residual updater gap - a new build that crashes before
+  main.js runs never reaches its boot counter, so no rollback fires. Accept:
+  an out-of-process check (e.g. the next launch via a tiny stub, or a per-user
+  scheduled task) re-installs the verified rollback image; test with a fake
+  crashing build. after: none.
 - [ ] VW-APP-DB: local SQLite store with versioned migrations. Accept: migrate
   up from empty and from the previous version idempotently, backup first.
-  after: VW-APP-SCAFFOLD.
+  after: none (SCAFFOLD done; unblocked).
 - [ ] VW-APP-BUS: typed versioned message bus and engine contracts. Accept: a
-  malformed message is rejected with a logged reason and no subscriber sees it.
-  after: VW-APP-SCAFFOLD.
+  malformed message is rejected with a logged reason and no subscriber sees it;
+  also SEC-E13's runtime half (IPC from a non-app:// frame refused, payloads
+  schema-checked). after: none (SCAFFOLD done; unblocked).
 - [ ] VW-APP-INGEST: data ingestion services (charter 3 classes only) with
   controlled polling. Accept: each source has a rate, ceiling, backoff and
-  cache, and a restart leaves the same DB state. after: VW-APP-GAME, VW-APP-DB.
+  cache, and a restart leaves the same DB state; it also replaces the
+  `app/src/main/matchGate.js` isInMatch() stub (TODO(VW-APP-INGEST)) with
+  live-match detection from allowed sources, so updates hold mid-match.
+  after: VW-APP-GAME, VW-APP-DB.
 - [ ] VW-APP-E1: combat math / build engine. Accept: pinned math fixtures per
   hero and item on/off comparisons; `e1.build_advice.v1` from recorded match
   context. after: VW-APP-HERO, VW-APP-BUS.

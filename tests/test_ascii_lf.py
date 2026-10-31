@@ -5,7 +5,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-TEXT = {".py", ".md", ".txt", ".json", ".yml", ".yaml", ".ps1", ".cfg", ".vcfg", ".ini", ""}
+TEXT = {".py", ".md", ".txt", ".json", ".yml", ".yaml", ".ps1", ".cfg", ".vcfg", ".ini", "",
+        ".js", ".cjs", ".mjs", ".html", ".css"}
 
 
 def _tracked():

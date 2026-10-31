@@ -1,5 +1,22 @@
 # ROADMAP archive - closed items, verbatim, with proving path
 
+## Closed 2026-10-31 (session 3)
+
+- [x] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater
+  (charter D-1). Accept: a per-user NSIS install from a GitHub release
+  self-updates to a newer one with SHA-256 verify, self-test and rollback,
+  never mid-match. after: VW-APP-SEC.
+  Done 2026-10-31: `app/` (hardened main / sandboxed preload / app://
+  renderer on the UX tokens), `app/electron-builder.yml` (per-user NSIS,
+  unsigned per SIGN-0, fuses flipped), VW updater per D-1a
+  (`app/src/main/updater/`), `npm test` 34/34 incl. SHA-256 mismatch refused,
+  rollback on failed self-test, update deferred while in match; local
+  `npm run dist` built `dist/VeilWalker-Setup-0.1.0.exe` and the packaged
+  `--vw-self-test` passed; CI `.github/workflows/app.yml` (ubuntu + windows)
+  and draft-release job `app-release.yml`. The live two-release update run is
+  VW-APP-UPDATE-E2E. Proof: app/test/updater.test.js,
+  app/test/security.test.js, docs/companion-app.md section 6.
+
 ## Closed 2026-10-31 (session 2)
 
 - [x] VW-CVAR-CHECK: use the public API cvar list (VW-APP-GAME) to flag any

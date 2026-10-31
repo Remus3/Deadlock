@@ -1,0 +1,73 @@
+# VW companion app release (SEC-U4, SEC-S2). On a v0.x tag: build the
+# per-user NSIS installer on CI from the tagged tree, self-test the packaged
+# exe, write SHA256SUMS.txt, and attach both to a DRAFT GitHub release.
+# Publishing the draft is the operator's go (charter section 2). Unsigned
+# per SIGN-0 (docs/research/security.md section 6). Repo tags are shared
+# with the Python tools (docs/release.md): a tag whose version differs from
+# app/package.json builds nothing (an app release needs the app version
+# bumped to the tag in the same batch).
+
+name: app-release
+
+on:
+  push:
+    tags: ['v0.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build installer (windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: app
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - name: tag matches app version
+        id: match
+        run: |
+          have=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "${GITHUB_REF_NAME#v}" != "$have" ]; then
+            echo "tag $GITHUB_REF_NAME is not app $have: no app release"
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.match.outputs.go == 'true'
+        run: npm ci
+      - if: steps.match.outputs.go == 'true'
+        run: npm test
+      - if: steps.match.outputs.go == 'true'
+        run: npm run dist
+        env:
+          VW_UPDATE_REPO: ${{ github.repository }}
+      - name: packaged self-test
+        if: steps.match.outputs.go == 'true'
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist/win-unpacked/VeilWalker.exe -ArgumentList '--vw-self-test','--vw-self-test-out=selftest.json' -PassThru -Wait
+          Get-Content selftest.json
+          if ($p.ExitCode -ne 0) { exit 1 }
+      - if: steps.match.outputs.go == 'true'
+        run: npm run sums
+      - name: draft release
+        if: steps.match.outputs.go == 'true' && github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft \
+            --title "VeilWalker $v" --notes "Companion app $v. Unsigned (SIGN-0); verify with SHA256SUMS.txt." \
+            "dist/VeilWalker-Setup-$v.exe" dist/SHA256SUMS.txt

@@ -1,0 +1,65 @@
+# VW companion app tests (VW-APP-SCAFFOLD). node:test on ubuntu and windows,
+# token-sync check, runtime-dependency audit, Electron support window
+# (docs/research/security.md SEC-E12, SEC-S3, SEC-S5). Only runs when the app,
+# its token source or this file change.
+
+name: app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'config/app/tokens.json'
+      - '.github/workflows/app.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'config/app/tokens.json'
+      - '.github/workflows/app.yml'
+  schedule:
+    - cron: '17 7 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: app tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      # .npmrc sets ignore-scripts: no dependency install script runs here.
+      - run: npm ci
+      - run: npm test
+      - run: node scripts/gen-tokens.js --check
+      - name: runtime dependency audit (high and above fails)
+        if: matrix.os == 'ubuntu-latest'
+        run: npm audit --omit=dev --audit-level=high
+      - name: pinned Electron major still supported (latest three)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          pinned=$(node -p "require('./package.json').devDependencies.electron.split('.')[0]")
+          latest=$(npm view electron dist-tags.latest | cut -d. -f1)
+          echo "pinned major $pinned, latest major $latest"
+          test "$pinned" -ge $((latest - 2))

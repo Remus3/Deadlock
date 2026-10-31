@@ -1,0 +1,32 @@
+# VW-APP-SCAFFOLD packaging (charter D-1 / D-1a, docs/research/security.md).
+# Per-user NSIS, no elevation, unsigned 0.x (SIGN-0). Nothing is published
+# from here: `--publish never`; a tagged CI release job uploads the
+# installer plus SHA256SUMS.txt as a DRAFT release for the operator's go.
+appId: io.veilwalker.companion
+productName: VeilWalker
+copyright: VeilWalker contributors
+directories:
+  output: dist
+  buildResources: build
+files:
+  - package.json
+  - src/**/*
+  - build/feed.json
+  - '!**/*.map'
+asar: true
+electronLanguages: [en-US]
+afterPack: scripts/after-pack.js
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  # SIGN-0: no Authenticode, so no publisherName check either.
+  signAndEditExecutable: true
+  verifyUpdateCodeSignature: false
+nsis:
+  oneClick: true
+  perMachine: false
+  allowElevation: false
+  deleteAppDataOnUninstall: false
+  artifactName: VeilWalker-Setup-${version}.${ext}
+publish: null

@@ -1,5 +1,5 @@
-# Dependabot version updates: GitHub Actions only (the tools are stdlib-only
-# Python). Weekly, one grouped PR. Nothing auto-merges; a bot PR is never
+# Dependabot version updates: GitHub Actions, and npm for the companion app
+# (app/, SEC-S5; the tools are stdlib-only Python). Weekly, one grouped PR. Nothing auto-merges; a bot PR is never
 # merged as-is (commits carry the operator identity only, FLEET-COMMON 17).
 version: 2
 updates:
@@ -9,4 +9,11 @@ updates:
       interval: weekly
     groups:
       github-actions:
+        patterns: ['*']
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+    groups:
+      app-npm:
         patterns: ['*']

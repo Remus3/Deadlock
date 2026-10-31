@@ -33,6 +33,14 @@ def test_placeholders_pass():
     assert P.line_hits(r"C:\Program Files (x86)\Steam") == []
 
 
+def test_lockfile_deprecated_notice_email_is_waived_only_there():
+    line = '      "deprecated": "Old glob. Support: contact x' + AT + 'mailhost.net",'
+    assert P.line_hits(line, (), "app/package-lock.json") == []
+    assert P.line_hits(line, (), "app/other.json") == ["email"]
+    assert P.line_hits('  "author": "x' + AT + 'mailhost.net",', (), "app/package-lock.json") == ["email"]
+    assert P.line_hits(line + " mybox", ["mybox"], "app/package-lock.json") == ["needle"]
+
+
 def test_scrub_removes_ids_names_and_paths():
     raw = ('"name"\t\t"Some Player"\n'
            '"x" "7656119' + '8000000001"\n'

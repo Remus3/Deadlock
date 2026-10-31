@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VeilWalker</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<main class="shell">
+  <header class="bar">
+    <h1 class="brand">VeilWalker</h1>
+    <span class="chip" id="version">-</span>
+  </header>
+  <section class="panel" aria-labelledby="status-h">
+    <h2 id="status-h">Status</h2>
+    <p class="line"><span class="label">Match</span> <span id="match" class="value">-</span></p>
+    <p class="line"><span class="label">Update</span> <span id="update" class="value muted">-</span></p>
+  </section>
+  <p class="muted note">Separate window. Reads nothing from the game process and sends it nothing.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
