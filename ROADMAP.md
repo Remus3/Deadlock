@@ -47,14 +47,17 @@ Research (parallel, no dependencies):
 - [ ] VW-APP-HERO: research heroes, items, upgrades, abilities, archetypes,
   counters and their interactions. Accept: a versioned local dataset plus
   fixture tests that pin at least 10 cross-interactions per patch.
-- [ ] VW-APP-WORKSHOP: find whether Deadlock has an official Steam Workshop.
+- [x] VW-APP-WORKSHOP: find whether Deadlock has an official Steam Workshop.
   Accept: a recorded yes / no with sources and a scoped ruling (charter S-6).
+  DONE 2026-10-31: NO official Workshop; no mod feature (`docs/research/workshop.md`).
 - [ ] VW-APP-UX: research legibility, typography, color, theme, focus and
   controller navigation over a live game. Accept: `docs/research/ux.md` with a
   token set (contrast measured) and overlay / companion wireframes.
-- [ ] VW-APP-SEC: security and architecture audit plan (Electron hardening,
+- [x] VW-APP-SEC: security and architecture audit plan (Electron hardening,
   update signing, supply chain, privacy). Accept: a checklist with each item
-  pass / fail / owner epic, and a code-signing decision.
+  pass / fail / owner epic, and a code-signing decision. Done 2026-10-31:
+  `docs/research/security.md` (41 items; signing SIGN-0, unsigned 0.x with
+  SHA-256 verify). VW-APP-SCAFFOLD may start.
 - [ ] VW-APP-LIFT: assess sibling (RC, EW, RSC, CS, MAIN) and outside designs
   for reuse. Accept: a lift table (feature, source code, reuse / adapt / skip,
   why).
