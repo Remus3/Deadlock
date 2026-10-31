@@ -2,7 +2,7 @@ VW hand-off (Deadlock config and tuning tree). Tracked; the repo is PUBLIC:
 no path, account id, name or email in this file; other trees by code only.
 
 READ FIRST
-  1. CLAUDE.md - FLEET-COMMON block (kit v23) then "VW rules": game safety
+  1. CLAUDE.md - FLEET-COMMON block (kit v25) then "VW rules": game safety
      floor, privacy, tiered push policy, lanes and inbox.
   2. ROADMAP.md - open work.
   3. docs/optimization.md - what was applied 2026-10-25, read-backs, rollback.
@@ -12,8 +12,8 @@ READ FIRST
      safety mapping (the floor governs). Epics VW-APP-* in ROADMAP.md.
 
 STATE (reading 2026-10-25, tree created by MAIN on operator order)
-  - Kit v23 vendored at ops/fleet_kit/, MANIFEST byte-identical to MAIN's;
-    MAIN drift row reads OK v23. Hooks: core.hooksPath .githooks
+  - Kit v25 vendored at ops/fleet_kit/ (adopted 2774b87, provenance MATCH),
+    MANIFEST byte-identical to MAIN's. Hooks: core.hooksPath .githooks
     (commit-msg fleet_identity, pre-commit privacy scan, pre-push identity +
     privacy scan of the pushed range).
   - Game: launched once by the operator. Applied and read back: autoexec.cfg
@@ -24,7 +24,7 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     change left). Details, backups, rollback: docs/optimization.md.
   - The video file is per account under the Steam userdata tree, not in the
     install; tools/vw_paths.py finds it and redacts the id.
-  - Lanes: tools/vw_lane.py (cap 2) - worktrees under the kit sidecar root
+  - Lanes: tools/vw_lane.py (cap: live machine lane_cap_max, kit v25) - worktrees under the kit sidecar root
     VW/Worktree; no loop armed.
   - Renamed 2026-10-25 (operator order): tree Deadlock -> VeilWalker, code
     DL -> VW, repo renamed on GitHub (old URL redirects), tools dl_* ->
@@ -54,7 +54,8 @@ NEXT ACTION
      .github / a tag / a new feature, or 7 days passed (state file
      ops/loop/control/public_review_state.json, missing = due). Left: add
      `--effort low` to tools/vw_lane.py; first run fires at the next /done.
-  Inbox: ORDER 2026-10-26-0300 U5 worked and answered in that note.
+  Inbox: ORDER 2026-10-26-0300 U5 worked and answered in that note. No
+  new inbox note at /done 2026-10-31 (newest still the kit v25 ORDER).
   Earlier items, all still open:
   Controls done 2026-10-25 23:16 (VW-CONTROLS, VW-VIDEO-MENU closed): reticle-
   free autoexec applied, game copy sha256 a38b0d66aec5 = repo copy;
@@ -69,6 +70,8 @@ NEXT ACTION
   4) VW-KIT-BOARDID: fleet_board stdin parser drops IDs over 16 chars
   (kit v25 line 59); FIX note to MAIN 2026-10-29 0612. Until the fixing kit
   version is adopted, render the board via --progress JSON.
+  5) VW-POWER: measure Balanced vs High performance power plan in game
+  (ROADMAP). 6) VW-DEPENDABOT: Dependabot PR #1 still open (ROADMAP).
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).
@@ -82,4 +85,4 @@ DO NOT RE-LITIGATE
     clear it; operator: E with an empty item slot 4 fires nothing,
     2026-10-25). Reverses: E firing a cosmetic in a match.
 
-SESSION: 1
+SESSION: 2
