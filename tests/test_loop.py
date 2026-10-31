@@ -210,10 +210,23 @@ def test_tick_inbox_then_launches_jobs(tmp_path):
 # ---------------------------------------------------------------- schedule
 
 def test_task_xml_shape():
-    xml = vw_loop.task_xml(r"X:\py\pythonw.exe", Path(r"X:\tree"), start="2026-01-01T00:00:00")
+    root = Path(r"X:\tree")
+    xml = vw_loop.task_xml(r"X:\py\pythonw.exe", root, start="2026-01-01T00:00:00")
     assert "<Interval>PT15M</Interval>" in xml and "IgnoreNew" in xml
     assert "<Hidden>true</Hidden>" in xml
-    assert '"X:\\tree\\tools\\vw_loop.py" tick' in xml.replace("&quot;", '"')
+    # Expected path built from the same Path type as task_xml uses, so the
+    # separator matches the host (backslash on Windows, "/" on the CI runner).
+    script = root / "tools" / "vw_loop.py"
+    assert '"%s" tick' % script in xml.replace("&quot;", '"')
+
+
+def test_task_xml_script_path_posix(monkeypatch):
+    # Simulates the ubuntu CI host on any box: posix Path joins with "/".
+    from pathlib import PurePosixPath
+    monkeypatch.setattr(vw_loop, "Path", PurePosixPath)
+    xml = vw_loop.task_xml("/usr/bin/python3", PurePosixPath("/srv/tree"),
+                           start="2026-01-01T00:00:00")
+    assert '"/srv/tree/tools/vw_loop.py" tick' in xml.replace("&quot;", '"')
 
 
 def test_read_back_parses_query():
