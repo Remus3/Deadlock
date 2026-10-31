@@ -1,7 +1,8 @@
 """VW headless lane driver - one job in one lane, through the fleet kit only.
 
     python tools/vw_lane.py run <lane> --note <label> --prompt-file <file>
-                                  [--writes-code] [--kind build|inbox|triage]
+                                  [--writes-code] [--kind build|inbox|triage|order]
+                                  [--effort low|medium|high]
     python tools/vw_lane.py status
 
 A run claims a repo lane (kit fleet_lanes.run_lane: lane lock
@@ -18,11 +19,17 @@ and, on True, does not start it; an admission refusal is like lanes_full -
 retry next tick. Nothing here ever kills or signals a running worker.
 Route, kill switch, budget, usage line and status file are the kit's
 (FLEET-COMMON 10). Model: sonnet unless the job writes code; effort low for
-inbox / triage. Progress: progress/lane-<i>.json in the main checkout.
+inbox / triage, and --effort sets it for any job (low for the public review,
+VW-PUBLIC-REVIEW). Progress: progress/lane-<i>.json in the main checkout.
+PRUNE ON EXIT (VW-LOOP-ARM): when the job ends, commits the lane made are
+kept under refs/fleet-lanes/<lane worktree>-<run id> (the kit's own keep
+namespace) and a CLEAN lane worktree is removed and pruned; a dirty one is a
+crashed run's work and is left for a session (the kit refuses to reuse it).
 """
 
 import argparse
 import json
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -34,6 +41,8 @@ CODE = "VW"
 LANES = ("build", "review")
 CAP = None  # v25: None = the live lane_cap_max (kit clamps any number to it)
 TIMEOUT_S = 3600
+KINDS = ("build", "inbox", "triage", "order")
+EFFORTS = ("low", "medium", "high")
 
 
 def _kit():
@@ -42,14 +51,18 @@ def _kit():
     return fleet_headless, fleet_lanes
 
 
-def plan(lane, writes_code, kind):
-    """The spawn options a job gets (pure; tested)."""
+def plan(lane, writes_code, kind, effort=None):
+    """The spawn options a job gets (pure; tested). effort None = the kind's
+    default (low for inbox / triage, else the model default)."""
     if lane not in LANES:
         raise ValueError("lane must be one of %s" % ", ".join(LANES))
-    if kind not in ("build", "inbox", "triage"):
-        raise ValueError("kind must be build, inbox or triage")
-    return {"model": None if writes_code else "sonnet",
-            "effort": "low" if kind in ("inbox", "triage") else None,
+    if kind not in KINDS:
+        raise ValueError("kind must be one of %s" % ", ".join(KINDS))
+    if effort is not None and effort not in EFFORTS:
+        raise ValueError("effort must be one of %s" % ", ".join(EFFORTS))
+    if effort is None and kind in ("inbox", "triage"):
+        effort = "low"
+    return {"model": None if writes_code else "sonnet", "effort": effort,
             "writes_code": bool(writes_code), "kind": kind,
             "governor": "queued", "timeout": TIMEOUT_S}
 
@@ -73,15 +86,21 @@ def _skipped(reason):
     return {"rc": None, "error": reason, "retry": True, "cost_usd": None, "duration_s": 0}
 
 
-def run(lane, note, prompt, writes_code=False, kind="build"):
+def run(lane, note, prompt, writes_code=False, kind="build", effort=None):
     fh, fl = _kit()
-    opts = plan(lane, writes_code, kind)
+    opts = plan(lane, writes_code, kind, effort)
     if fl.should_yield(CODE):
         return _skipped("should_yield: another tree waits for a slot")
     run_id = "vw-%s-%d" % (lane, int(time.time()))
     try:
         with fl.run_lane(ROOT, CODE, lane, run_id, cap=CAP) as claim:
-            return _job(fh, claim, lane, note, prompt, opts)
+            try:
+                line = _job(fh, claim, lane, note, prompt, opts)
+            finally:
+                kept = keep_and_prune(ROOT, claim["worktree"], run_id)
+            line = dict(line)
+            line["kept"] = kept
+            return line
     except fl.LaneRefused as exc:  # lanes_full, lane_held or admission
         return _skipped("lane refused (%s); retry next tick" % exc)
 
@@ -100,6 +119,52 @@ def _job(fh, claim, lane, note, prompt, opts):
     return line
 
 
+def _git_run(*args):
+    _fh, fl = _kit()
+    git = fl.find_git(cwd=ROOT)
+    if not git:
+        return subprocess.CompletedProcess(args, 1, "", "git not found")
+    return fl._git(*args, git=git)
+
+
+def keep_and_prune(repo, worktree, run_id, run=None):
+    """Keep the lane's commits under refs/fleet-lanes/, then remove a clean lane
+    worktree and prune its registration. Returns {"ref", "pruned", "reason"}.
+    Never cleans a dirty worktree; never raises (a failed prune is retried by
+    the kit's ensure_worktree on the next run)."""
+    run = run or _git_run
+    out = {"ref": None, "pruned": False, "reason": None}
+    wt = Path(worktree)
+    try:
+        if not wt.exists():
+            run("-C", str(repo), "worktree", "prune")
+            out["reason"] = "no worktree"
+            return out
+        head = run("-C", str(wt), "rev-parse", "--verify", "HEAD")
+        base = run("-C", str(repo), "rev-parse", "--verify", "HEAD")
+        if head.returncode == 0 and base.returncode == 0:
+            h = head.stdout.strip()
+            if h != base.stdout.strip() and run("-C", str(repo), "merge-base", "--is-ancestor",
+                                                h, base.stdout.strip()).returncode != 0:
+                ref = "refs/fleet-lanes/%s-%s" % (wt.name, run_id)
+                if run("-C", str(repo), "update-ref", ref, h).returncode != 0:
+                    out["reason"] = "could not keep lane commits; worktree left"
+                    return out
+                out["ref"] = ref
+        st = run("-C", str(wt), "status", "--porcelain")
+        if st.returncode != 0 or st.stdout.strip():
+            out["reason"] = "dirty worktree left for a session"
+            return out
+        if run("-C", str(repo), "worktree", "remove", str(wt)).returncode != 0:
+            out["reason"] = "worktree remove failed"
+            return out
+        run("-C", str(repo), "worktree", "prune")
+        out["pruned"] = True
+    except (OSError, subprocess.SubprocessError) as exc:
+        out["reason"] = "prune error: %s" % str(exc)[:80]
+    return out
+
+
 def status():
     _fh, fl = _kit()
     return {"code": CODE, "cap": cap(), "slots": slots(),
@@ -116,14 +181,15 @@ def main(argv=None):
     r.add_argument("--note", required=True)
     r.add_argument("--prompt-file", required=True)
     r.add_argument("--writes-code", action="store_true")
-    r.add_argument("--kind", default="build", choices=("build", "inbox", "triage"))
+    r.add_argument("--kind", default="build", choices=KINDS)
+    r.add_argument("--effort", default=None, choices=EFFORTS)
     sub.add_parser("status")
     a = ap.parse_args(argv)
     if a.cmd == "status":
         print(json.dumps(status(), indent=1, default=str))
         return 0
     prompt = Path(a.prompt_file).read_text(encoding="utf-8")
-    line = run(a.lane, a.note, prompt, a.writes_code, a.kind)
+    line = run(a.lane, a.note, prompt, a.writes_code, a.kind, a.effort)
     print(json.dumps({k: line.get(k) for k in ("rc", "error", "cost_usd", "duration_s")}))
     return 0 if line.get("rc") == 0 and not line.get("error") else 1
 

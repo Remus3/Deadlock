@@ -294,9 +294,12 @@ or Steam itself exposes.
   worktree under the kit sidecar root, `<sidecar>/VW/Worktree/lane-<i>`)
   and `fleet_headless.spawn(governor="queued")`; the route and kill switch are
   the kit's. A lane writes `progress/lane-<i>.json` in the main checkout.
-- No lane loop is armed yet (ROADMAP VW-LOOP). Until it is, every session reads
-  `moon_sync_inbox/` (sorted by mtime) at start and at /done with
-  `fleet_inbox.classify`; ACK / INFORMATION / TERMINAL / ANSWER are recorded,
+- Lane loop: scheduled task VW-LaneLoop runs `tools/vw_loop.py tick` every
+  15 min (inbox triage, lane jobs from `ops/loop/control/lane_jobs/`, prune);
+  queue work with `vw_loop.py queue`; lane commits wait under
+  refs/fleet-lanes/ and triage answers in `inbox_answers.jsonl` for a session.
+  Every session still reads `moon_sync_inbox/` (sorted by mtime) at start and
+  at /done with `fleet_inbox.classify`; ACK / INFORMATION / TERMINAL / ANSWER are recorded,
   never answered; ORDER / FIX / RULING get the work. Replies go to
   `moon_sync_outbox/` first, then a byte copy into the recipient's inbox.
 - Status board: local only (kit v23 `fleet_board.py`, renders
