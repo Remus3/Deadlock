@@ -179,6 +179,7 @@ These restate the floor so a test can hold it; the floor is the authority.
   what the DB and bus epics justify in writing (SQLite binding choice recorded
   in VW-APP-DB); every addition named here with a reason. Owner: each epic.
   Status: FAIL (no app deps yet; the budget applies from the first).
+  VW-APP-DB adds none: built-in `node:sqlite` (D-DB, companion-app.md 8).
 - SEC-S5 Dependabot extended to `npm` for the app directory, grouped, never
   auto-merged; `npm audit --omit=dev` (high and above) fails CI. Owner:
   VW-APP-SCAFFOLD. Status: FAIL.
@@ -195,7 +196,8 @@ These restate the floor so a test can hold it; the floor is the authority.
   `tests/test_privacy.py`, `.githooks/`). Owner: repo.
 - SEC-P2 The SQLite DB, logs, captures and coach data live in the app's
   user-data dir, never in the repo; the repo's `.gitignore` also covers any
-  in-tree dev data dir. Owner: VW-APP-DB. Status: FAIL (no app yet).
+  in-tree dev data dir. Owner: VW-APP-DB. Status: PASS 2026-10-31
+  (`<userData>/data/`, `storePaths` test; `app/.gitignore` covers `*.db*`).
 - SEC-P3 API keys (Steam Web API, LLM) stored with Electron `safeStorage`
   (DPAPI on Windows), never in plain JSON, never logged. Owner: VW-APP-INGEST
   (Steam key), VW-APP-COACH (LLM key). Status: FAIL.

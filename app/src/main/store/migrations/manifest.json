@@ -1,0 +1,6 @@
+{
+  "comment": "SHA-256 of each migration (LF text). Append-only: a released line never changes.",
+  "migrations": {
+    "0001_init.sql": "a9eda0ea817d18d9d2027294b9587f6cdb0b29878421dac946cfa2dfba5a7ba6"
+  }
+}

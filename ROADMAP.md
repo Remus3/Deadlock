@@ -74,9 +74,8 @@ Electron shell, per-user NSIS, VW updater (D-1a). DB and BUS are unblocked.
   an out-of-process check (e.g. the next launch via a tiny stub, or a per-user
   scheduled task) re-installs the verified rollback image; test with a fake
   crashing build. after: none.
-- [ ] VW-APP-DB: local SQLite store with versioned migrations. Accept: migrate
-  up from empty and from the previous version idempotently, backup first.
-  after: none (SCAFFOLD done; unblocked).
+VW-APP-DB closed 2026-10-31 (docs/roadmap-archive.md): `app/src/main/store/`
+on built-in `node:sqlite` (D-DB), per-user DB, pinned migrations, backup.
 - [ ] VW-APP-INGEST: data ingestion services (charter 3 classes only) with
   controlled polling. Accept: each source has a rate, ceiling, backoff and
   cache, and a restart leaves the same DB state; it also replaces the

@@ -3,3 +3,8 @@ dist/
 out/
 build/feed.json
 *.log
+# SEC-P2: a dev DB never lands in the tree (the real one is in userData).
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

@@ -17,6 +17,7 @@ const { createGithubFeed } = require('./updater/feed');
 const { createUpdater } = require('./updater/updater');
 const { makeDownload, runInstaller } = require('./updater/platform');
 const { createBus, createBusIpcHandler, CHANNEL: BUS_CHANNEL } = require('./bus');
+const { openStore, storePaths } = require('./store');
 
 const APP_ROOT = path.join(__dirname, '..', '..');
 const RENDERER = path.join(APP_ROOT, 'src', 'renderer');
@@ -35,6 +36,7 @@ if (!GOT_LOCK) app.quit();
 let log = () => {};
 let updater = null;
 let bus = null;
+let store = null;
 let mainWindow = null;
 let quitting = false;
 
@@ -46,6 +48,20 @@ function readFeedConfig() {
     // no feed baked in: updater stays off (fail closed)
   }
   return null;
+}
+
+// VW-APP-DB: per-user SQLite store. A refused DB (newer schema, foreign
+// file, failed migration) leaves the app running without a store; the
+// pre-migration backup stays in <userData>/data/backups/.
+function openAppStore() {
+  try {
+    const s = openStore(Object.assign(storePaths(app.getPath('userData')), { log }));
+    log('store open at schema v' + s.version + (s.applied.length ? ' (migrated from v' + s.from + ')' : ''));
+    return s;
+  } catch (e) {
+    log('store refused: ' + (e && e.code) + ' ' + (e && e.message));
+    return null;
+  }
 }
 
 function hardenWebContents() {
@@ -169,6 +185,7 @@ app.whenReady().then(async () => {
   denyPermissions();
   registerProtocol();
   registerIpc(state);
+  store = openAppStore();
 
   updater = setupUpdater(state);
   if (updater) {
@@ -205,6 +222,11 @@ app.on('before-quit', (ev) => {
     .applyIfSafe('quit')
     .catch((e) => log('apply on quit error: ' + (e && e.message)))
     .finally(() => app.quit());
+});
+
+app.on('will-quit', () => {
+  if (store) store.close();
+  store = null;
 });
 
 app.on('window-all-closed', () => app.quit());

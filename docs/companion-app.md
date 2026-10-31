@@ -376,3 +376,49 @@ rejection is still caught); renderer may publish an explicit allow-list
 (`renderer: true` per contract) over all types (untrusted input must not
 forge engine output); JSDoc types, no TypeScript build (the scaffold has
 none).
+
+## 8. Local store (VW-APP-DB, built 2026-10-31)
+
+Layout, all under `app/src/main/store/`:
+- `store.js`: `openStore({ file, backupDir, keepBackups, migrationsDir })`
+  and `storePaths(userData)`. The DB is `<userData>/data/veilwalker.db`,
+  backups in `<userData>/data/backups/` (SEC-P2: per-user, resolved at run
+  time from Electron's `app.getPath('userData')`, never in the repo;
+  `app/.gitignore` also covers `*.db*`). `main.js` opens it after
+  `whenReady`; a refused DB leaves the app running without a store and logs
+  the reason.
+- `migrations/NNNN_name.sql`: ordered 1..N, contiguous; each file's SHA-256
+  (LF text) pinned in `migrations/manifest.json` and, for released ones, a
+  second time in `test/store.test.js`. Released files never change: a new
+  schema version is a new file plus a manifest line. v1 = `kv` settings.
+- `schema_version (version, name, sha256, applied_at)`: one row per applied
+  migration; the current version is its max.
+
+Open rules: a DB newer than the newest shipped migration is refused untouched
+(`DB_TOO_NEW`); a DB with tables but no `schema_version` is refused
+(`NOT_VW_DB`); an applied migration whose recorded SHA-256 differs from the
+shipped file is refused (`MIGRATION_CHANGED`). With pending migrations on an
+existing DB a consistent copy is written first (`VACUUM INTO`,
+`veilwalker-v<from>-<utc stamp>.db`) and the backup dir is pruned to the
+newest 5. All pending migrations run in ONE `BEGIN IMMEDIATE` transaction;
+any failure rolls the batch back (the DB stays at its old version,
+byte-equal) and the backup is kept. Migrations may not issue BEGIN / COMMIT
+/ ROLLBACK / SAVEPOINT (the loader refuses; the runner also checks the
+transaction is still open after each). Nothing pending = no write and no
+backup (idempotent). A fresh DB has nothing to back up.
+Tests: `app/test/store.test.js`.
+
+VW decision D-DB (VW-APP-DB, 2026-10-31): Node's built-in `node:sqlite`
+(`DatabaseSync`), zero runtime dependencies. Read back: Node 24.15 loads it
+with no flag and no warning (SQLite 3.51.3); Electron 45.2.1's main process
+(Node 24.22.1, SQLite 3.53.4) loads it with no flag and ran this store's
+migrate and idempotent reopen. It is a Node built-in, so asar packaging and
+the SEC-E14 fuses (RunAsNode off) do not affect it. Alternatives:
+`better-sqlite3` (mature and fast, but a native module rebuilt per Electron
+ABI, needs install scripts against SEC-S3 `ignore-scripts`, and a runtime
+dependency under SEC-S4); `sql.js` (WASM, no native build, but in-memory
+with manual file export, so no crash-safe journal); `sqlite3` (async
+native, same rebuild cost, less maintained). Why: no dependency, no native
+rebuild, a synchronous API fits the single main-process writer. What
+reverses it: Electron drops or flags `node:sqlite`, or its API changes
+incompatibly; then `better-sqlite3` behind the same `openStore` surface.

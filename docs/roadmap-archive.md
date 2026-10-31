@@ -14,6 +14,17 @@
   over 64 KiB, or for engine types. `npm test` 52/52 (bus 18).
   Proof: app/test/bus.test.js, docs/companion-app.md section 7,
   docs/research/security.md SEC-E13.
+- [x] VW-APP-DB: local SQLite store with versioned migrations. Accept: migrate
+  up from empty and from the previous version idempotently, backup first.
+  after: none (SCAFFOLD done; unblocked).
+  Done 2026-10-31: `app/src/main/store/` on Node's built-in `node:sqlite`
+  (decision D-DB: zero runtime deps; read back loading without flags in
+  Node 24.15 and in Electron 45.2.1's main process). DB in
+  `<userData>/data/`, `schema_version` table, SHA-256-pinned ordered
+  migrations, `VACUUM INTO` backup before any migration (newest 5 kept),
+  all-or-nothing apply, DB_TOO_NEW / NOT_VW_DB / MIGRATION_CHANGED refusals;
+  opened from `main.js`. `npm test` 51/51 (store 17). Proof:
+  app/test/store.test.js, docs/companion-app.md section 8.
 
 - [x] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater
   (charter D-1). Accept: a per-user NSIS install from a GitHub release
