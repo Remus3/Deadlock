@@ -13,14 +13,12 @@
 - [ ] VW-MEASURE: baseline then each change per `docs/measurement.md`; results
   in `docs/measurements/`. Includes DLSS 1.5x vs 1x (DLAA; switch if 1
   percent lows >= 200 fps) and D3D 11 vs Vulkan.
-- [ ] VW-LOOP: arm a lane loop / inbox responder like the other trees (a
-  scheduled tick that reads the inbox and runs `tools/vw_lane.py`), once there
-  is recurring work. Until then each session reads the inbox at start and /done.
 - [ ] VW-PUBLIC-REVIEW (recurring; standing order 2026-10-29,
   `docs/public-presentation.md`): the GitHub outsider view (README, docs
   index, About description / topics, release notes, app user docs) kept
   non-repeated, curated and newcomer-readable. Trigger: `/done` step 3a.
-  Accept: `vw_lane.py` takes `--effort low` for this job; one lane run reads
+  Accept: `vw_lane.py` takes `--effort low` for this job (landed 2026-10-31,
+  `tests/test_loop.py`); one lane run reads
   only the scoped files plus `gh repo view`, commits fixes through
   fleet_gitlock with no push of its own, reads back any About change, and
   writes `ops/loop/control/public_review_state.json`; a second `/done` with
@@ -28,11 +26,6 @@
   is recorded by the state file.
 - [ ] VW-POWER: measure Balanced vs High performance power plan in game
   (machine-level; MAIN's call, file a note with the numbers).
-- [ ] VW-DEPENDABOT: PR #1 (github-actions group, 3 bumps) opened on the first
-  push, CI green on it. Never merge a bot PR as-is (operator-only authors):
-  apply the same SHA bumps in an operator commit, push at /done, close #1.
-  2026-10-31: bumps applied locally (setup-python v7.1.0, codeql init/analyze
-  v4.39.1). /done: after the push, `gh pr close 1 --comment` naming that commit.
 
 ## Companion app (standing order 2026-10-29; charter `docs/companion-app.md`)
 
@@ -40,36 +33,19 @@ Order: research epics first, all parallel; then build in the order below
 (`after:` names the dependencies). Every epic is checked against the charter's
 safety mapping (section 3) before it closes.
 
-Research (parallel, no dependencies):
-- [ ] VW-APP-GAME: research game data, public APIs, launch options, ports and
-  outputs. Accept: `docs/research/game-data.md` lists each source with class
-  (charter 3, 1-4), rate limits, fields, and a ruling ref for any port.
-- [ ] VW-APP-HERO: research heroes, items, upgrades, abilities, archetypes,
-  counters and their interactions. Accept: a versioned local dataset plus
-  fixture tests that pin at least 10 cross-interactions per patch.
-- [x] VW-APP-WORKSHOP: find whether Deadlock has an official Steam Workshop.
-  Accept: a recorded yes / no with sources and a scoped ruling (charter S-6).
-  DONE 2026-10-31: NO official Workshop; no mod feature (`docs/research/workshop.md`).
-- [x] VW-APP-UX: research legibility, typography, color, theme, focus and
-  controller navigation over a live game. Accept: `docs/research/ux.md` with a
-  token set (contrast measured) and overlay / companion wireframes. Done
-  2026-10-31: `docs/research/ux.md`, `config/app/tokens.json` (46 pairs
-  measured by `tools/vw_contrast.py`, `tests/test_ux_tokens.py`),
-  `docs/research/wireframes/` (overlay, companion).
-- [x] VW-APP-SEC: security and architecture audit plan (Electron hardening,
-  update signing, supply chain, privacy). Accept: a checklist with each item
-  pass / fail / owner epic, and a code-signing decision. Done 2026-10-31:
-  `docs/research/security.md` (41 items; signing SIGN-0, unsigned 0.x with
-  SHA-256 verify). VW-APP-SCAFFOLD may start.
-- [x] VW-APP-LIFT: assess sibling (RC, EW, RSC, CS, MAIN) and outside designs
-  for reuse. Accept: a lift table (feature, source code, reuse / adapt / skip,
-  why). Done 2026-10-31: `docs/research/lift.md` (21 sibling rows, 7 outside
-  rows, receiving epic per row; GPL-sourced rows are adapt-only).
+Research epics: all six closed 2026-10-31 (docs/roadmap-archive.md).
+Follow-ups from research:
+- [ ] VW-APP-CONLOG: check whether the `-condebug` launch option makes the game
+  write `console.log` (a game output, charter class 3). Accept: one launch
+  with the option, the file path and a redacted sample recorded in
+  `docs/research/game-data.md`; launch option edited only while Steam is
+  closed. after: operator launch.
+- [ ] VW-CVAR-CHECK: use the public API cvar list (VW-APP-GAME) to flag any
+  cheat or development-only cvar in `config/autoexec.cfg`. Accept: a check in
+  tools with a test; a flagged cvar is removed per the safety floor.
+  after: none.
 
 Build:
-- [ ] VW-LOOP-ARM: arm the lane loop (supersedes VW-LOOP's "once there is
-  recurring work"). Accept: a scheduled tick runs `tools/vw_lane.py`, reads the
-  inbox, writes `progress/lane-<i>.json`, prunes its worktree. after: none.
 - [ ] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater
   (charter D-1). Accept: a per-user NSIS install from a GitHub release
   self-updates to a newer one with SHA-256 verify, self-test and rollback,
@@ -106,6 +82,14 @@ Build:
   zero-LLM rules tagged by patch. Accept: with the LLM disabled the distilled
   rules answer the recorded set; a patch change flags them for review.
   after: VW-APP-E1, VW-APP-E2, VW-APP-E3.
+- [ ] VW-LOOP-SCOPE: loop scope decision 2026-10-31 (session 2): the tick
+  does NOT merge lane commits (kept under refs/fleet-lanes/, a session
+  merges), triage ANSWERs wait in ops/loop/control/inbox_answers.jsonl for a
+  session to send, and 2 lanes run at once (build, review) though the
+  machine cap reads 7. Alternatives: auto-merge on green, more lanes. Why:
+  every main-branch change stays reviewed by a session; reversible. Each
+  session start: merge refs/fleet-lanes/* and send pending answers.
+  Reverses: a clean week of lane runs, then a ruling to auto-merge.
 - [ ] VW-RUNCAP: two operator asks, both kit-owned (FLEET-COMMON 10; VW never
   edits or resets the kit ledger locally). (a) 500 runs / 24 h, REQUEST to
   MAIN 2026-10-29 0611. (b) Operator order 2026-10-29: when the cap is hit,

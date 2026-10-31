@@ -25,53 +25,64 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
   - The video file is per account under the Steam userdata tree, not in the
     install; tools/vw_paths.py finds it and redacts the id.
   - Lanes: tools/vw_lane.py (cap: live machine lane_cap_max, kit v25) - worktrees under the kit sidecar root
-    VW/Worktree; no loop armed.
+    VW/Worktree; loop armed 2026-10-31 (VW-LaneLoop, tools/vw_loop.py).
   - Renamed 2026-10-25 (operator order): tree Deadlock -> VeilWalker, code
     DL -> VW, repo renamed on GitHub (old URL redirects), tools dl_* ->
     vw_*, ROADMAP ids VW-*, sidecar VW/. The game keeps its name.
   - GitHub: public; secret scanning + push protection + Dependabot alerts +
     private vulnerability reporting on (read back). First push 0656ae5: ci
-    and codeql green. Dependabot PR #1 open (ROADMAP VW-DEPENDABOT).
+    and codeql green. Dependabot PR #1: bumps applied in 439612b, closed at
+    /done session 2 (read back at session 3 start).
 
 NEXT ACTION
-  ON "continue" (standing order 2026-10-29): arm VW-LOOP lanes
-  (VW-LOOP-ARM) and start the VW-APP research epics in parallel
-  (VW-APP-GAME, -HERO, -WORKSHOP, -UX, -SEC, -LIFT), then build in ROADMAP
-  order. Charter captured 2026-10-29; run cap request (500 / 24 h) sent to
-  MAIN 2026-10-29 0611 (VW-RUNCAP), run at the kit's 120 until answered.
-  Operator orders 2026-10-29 (both open):
+  FIRST at session start: (a) read back the /done session 2 push: `gh run
+  list --branch main --limit 3` (ci + codeql for the batch ending in the
+  /done commit; record green/red) and `gh pr view 1` (closed with a comment
+  naming 439612b; if still open, close it so). (b) Merge any lane commits
+  under refs/fleet-lanes/ and send pending answers in
+  ops/loop/control/inbox_answers.jsonl (VW-LOOP-SCOPE). (c) Read the first
+  public-review lane result (public_review_state.json; started at /done 2).
+  ON "continue": build the companion app in ROADMAP order via lanes
+  (queue jobs with `tools/vw_loop.py queue`): VW-APP-SCAFFOLD first
+  (unblocked by VW-APP-SEC), then VW-APP-DB and VW-APP-BUS, then INGEST /
+  E1. Also VW-CVAR-CHECK (no dependency). Research epics all closed
+  2026-10-31 (docs/roadmap-archive.md).
+  Session 2 (2026-10-31) landed: VW-LOOP-ARM + VW-PUBLIC-REVIEW --effort
+  (36362e5; task VW-LaneLoop every 15 min, read back Status Ready, manual
+  run Last Result 0), VW-DEPENDABOT bumps (439612b), VW-APP-SEC (61303aa,
+  signing: unsigned 0.x + SHA-256 verify), -UX (2dbacd1), -LIFT (2652060),
+  -WORKSHOP (c7d21f2, no official Workshop), -GAME (fb0d231), -HERO
+  (66762ba). Full suite green through the suite gate at /done.
+  PROCESS: sub-agents sharing one session scratchpad must use unique file
+  names (one agent's progress helper was overwritten on 2026-10-31).
+  Board: a render shows the done group plus fresh running progress files,
+  so row count exceeds open tasks by design (checked fleet_board.build;
+  not a defect).
+  Operator orders 2026-10-29 (still open):
   A) Release versioning: rules in docs/release.md, guard
      tools/vw_release.py + tests/test_release.py, CLAUDE.md RELEASES line.
      Every release runs `vw_release.py check <ver>` (one patch/minor step,
      batch per run, no time gate). No tag cut yet; first is v0.1.0.
-  B) Run cap reset-and-continue (cap hit + usage left + no wrap-up order
-     -> record, reset count, continue): kit-owned, REQUEST to MAIN
-     2026-10-29 0614 with the 500/24h ask (VW-RUNCAP). Never reset the kit
-     ledger locally; at the cap, stop until MAIN ships it.
-  C) Public presentation review (VW-PUBLIC-REVIEW, recurring): rules and
-     cadence in docs/public-presentation.md; /done step 3a starts one
-     background sonnet lane job when the pushed range touched README / docs /
-     .github / a tag / a new feature, or 7 days passed (state file
-     ops/loop/control/public_review_state.json, missing = due). Left: add
-     `--effort low` to tools/vw_lane.py; first run fires at the next /done.
-  Inbox: ORDER 2026-10-26-0300 U5 worked and answered in that note. No
-  new inbox note at /done 2026-10-31 (newest still the kit v25 ORDER).
-  Earlier items, all still open:
-  Controls done 2026-10-25 23:16 (VW-CONTROLS, VW-VIDEO-MENU closed): reticle-
-  free autoexec applied, game copy sha256 a38b0d66aec5 = repo copy;
-  `vw_controls.py check` all empty (hidden Cosmetic1 E accepted, operator
-  verified harmless); DLSS enums 3 / 10 confirmed by a second read.
-  VW-VIDEO-FULLSCREEN closed 2026-10-26: operator chose exclusive
-  fullscreen 240 Hz; applied with the game closed, read back 1/0, 240/1.
-  1) (none) 2) VW-CASTING: the
-  operator confirms the three casting options in the menu (no file shows
-  them). 3) VW-AUTOEXEC-VERIFY: one F7 console look for the echo and
-  "Unknown command". Then VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
-  4) VW-KIT-BOARDID: fleet_board stdin parser drops IDs over 16 chars
-  (kit v25 line 59); FIX note to MAIN 2026-10-29 0612. Until the fixing kit
-  version is adopted, render the board via --progress JSON.
-  5) VW-POWER: measure Balanced vs High performance power plan in game
-  (ROADMAP). 6) VW-DEPENDABOT: Dependabot PR #1 still open (ROADMAP).
+  B) Run cap reset-and-continue: kit-owned, REQUEST to MAIN 2026-10-29 0614
+     with the 500/24h ask (VW-RUNCAP). Never reset the kit ledger locally;
+     at the cap, stop until MAIN ships it.
+  C) Public presentation review (VW-PUBLIC-REVIEW, recurring): rules in
+     docs/public-presentation.md; /done step 3a.
+  Inbox: no new note at /done 2026-10-31 session 2 (newest still the kit
+  v25 ORDER; all three recorded in inbox_seen.jsonl).
+  Operator-only acts (batched, next time in game):
+  1) VW-CASTING: confirm the three casting options in the menu (no file
+  shows them). 2) VW-AUTOEXEC-VERIFY: one F7 console look for the echo and
+  "Unknown command". 3) VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
+  4) VW-POWER: Balanced vs High performance power plan in game.
+  5) VW-APP-CONLOG needs one launch with -condebug (set only while Steam is
+  closed).
+  Waiting on MAIN: VW-RUNCAP (run at kit 120 / 24 h); VW-KIT-BOARDID
+  (fleet_board stdin parser drops IDs over 16 chars, FIX note 2026-10-29
+  0612; render via --progress JSON until the fixing kit is adopted).
+  Earlier closed context: controls done 2026-10-25 23:16 (reticle-free
+  autoexec, game copy sha256 a38b0d66aec5 = repo copy); exclusive
+  fullscreen 240 Hz applied 2026-10-26, read back 1/0, 240/1.
 
 DO NOT RE-LITIGATE
   - No game binary, VPK, memory or input automation, ever (CLAUDE.md floor).
@@ -84,5 +95,10 @@ DO NOT RE-LITIGATE
   - Cosmetic1 keeping E is accepted (hidden legacy action, menu cannot
     clear it; operator: E with an empty item slot 4 fires nothing,
     2026-10-25). Reverses: E firing a cosmetic in a match.
+  - Loop tick never merges lane commits or sends notes on its own
+    (VW-LOOP-SCOPE, 2026-10-31). Reverses: a ruling to auto-merge after a
+    clean week of lane runs.
+  - App releases ship unsigned in 0.x with SHA-256 verify (VW-APP-SEC
+    SIGN-0). Reverses: the app goes to anyone else or SmartScreen blocks it.
 
-SESSION: 2
+SESSION: 3
