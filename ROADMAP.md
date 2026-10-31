@@ -31,6 +31,8 @@
 - [ ] VW-DEPENDABOT: PR #1 (github-actions group, 3 bumps) opened on the first
   push, CI green on it. Never merge a bot PR as-is (operator-only authors):
   apply the same SHA bumps in an operator commit, push at /done, close #1.
+  2026-10-31: bumps applied locally (setup-python v7.1.0, codeql init/analyze
+  v4.39.1). /done: after the push, `gh pr close 1 --comment` naming that commit.
 
 ## Companion app (standing order 2026-10-29; charter `docs/companion-app.md`)
 
