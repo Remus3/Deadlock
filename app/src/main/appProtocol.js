@@ -41,9 +41,17 @@ function resolveRequest(rawUrl, root) {
     return null;
   }
   if (u.protocol !== SCHEME + ':' || u.host !== HOST) return null;
-  let rel = decodeURIComponent(u.pathname || '/');
+  let rel;
+  try {
+    rel = decodeURIComponent(u.pathname || '/');
+  } catch (e) {
+    return null;
+  }
   if (rel === '/' || rel === '') rel = '/index.html';
-  if (rel.includes('\0')) return null;
+  // A backslash or a decoded dot-dot segment is refused on every platform
+  // (posix treats a backslash as a name character, Windows as a separator).
+  if (rel.includes('\0') || rel.includes('\\')) return null;
+  if (rel.split('/').includes('..')) return null;
   const base = path.resolve(root);
   const file = path.resolve(base, '.' + rel);
   if (file !== base && !file.startsWith(base + path.sep)) return null;
