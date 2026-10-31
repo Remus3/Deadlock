@@ -24,6 +24,17 @@
   writes `ops/loop/control/public_review_state.json`; a second `/done` with
   no user-facing change inside 7 days spawns nothing. Never closes; each pass
   is recorded by the state file.
+  BLOCKED 2026-10-31 (VW-REVIEW-FAIL): all three lane runs (10:38, 11:14,
+  16:01) exited rc 1, is_error, 0 tokens, ~195 s. Root cause, from the new
+  fail record (`ops/runtime/lane_logs/<run_id>.fail.json`, commit 8c60219):
+  the split-route proxy answered HTTP 429 to all 10 CLI retries with "Server
+  is temporarily limiting requests (not your usage limit) - Pinned account is
+  unavailable (rate-limited, errored, or already tried)". A proxy-side fault,
+  not a usage limit (kit limit=null, so no fallback hop; correct per
+  FLEET-COMMON 10). Not worked around: no route change, no retry loop.
+  `public_review_state.json` stays unwritten, so the next `/done` retries.
+  Unblocks when the second-account proxy's pinned account serves again
+  (proxy owner's side; report to MAIN if it persists).
 - [ ] VW-POWER: measure Balanced vs High performance power plan in game
   (machine-level; MAIN's call, file a note with the numbers).
 

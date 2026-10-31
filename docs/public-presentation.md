@@ -79,3 +79,7 @@ State file (gitignored, per host): `ops/loop/control/public_review_state.json`
 - Ends by writing the state file (HEAD it reviewed, today, result) in the main
   checkout and its progress file `progress/lane-<i>.json`. A failed run leaves
   `last_commit` unchanged, so the next `/done` retries it.
+- A failed run is diagnosable after the fact: `vw_lane.py` keeps the stream
+  log `ops/runtime/lane_logs/<run_id>.jsonl` and writes
+  `<run_id>.fail.json` (rc, is_error, route, limit, result text, stderr);
+  the CLI prints its path as `fail_record`. Both are gitignored.
