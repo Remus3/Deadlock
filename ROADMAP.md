@@ -50,17 +50,21 @@ Research (parallel, no dependencies):
 - [x] VW-APP-WORKSHOP: find whether Deadlock has an official Steam Workshop.
   Accept: a recorded yes / no with sources and a scoped ruling (charter S-6).
   DONE 2026-10-31: NO official Workshop; no mod feature (`docs/research/workshop.md`).
-- [ ] VW-APP-UX: research legibility, typography, color, theme, focus and
+- [x] VW-APP-UX: research legibility, typography, color, theme, focus and
   controller navigation over a live game. Accept: `docs/research/ux.md` with a
-  token set (contrast measured) and overlay / companion wireframes.
+  token set (contrast measured) and overlay / companion wireframes. Done
+  2026-10-31: `docs/research/ux.md`, `config/app/tokens.json` (46 pairs
+  measured by `tools/vw_contrast.py`, `tests/test_ux_tokens.py`),
+  `docs/research/wireframes/` (overlay, companion).
 - [x] VW-APP-SEC: security and architecture audit plan (Electron hardening,
   update signing, supply chain, privacy). Accept: a checklist with each item
   pass / fail / owner epic, and a code-signing decision. Done 2026-10-31:
   `docs/research/security.md` (41 items; signing SIGN-0, unsigned 0.x with
   SHA-256 verify). VW-APP-SCAFFOLD may start.
-- [ ] VW-APP-LIFT: assess sibling (RC, EW, RSC, CS, MAIN) and outside designs
+- [x] VW-APP-LIFT: assess sibling (RC, EW, RSC, CS, MAIN) and outside designs
   for reuse. Accept: a lift table (feature, source code, reuse / adapt / skip,
-  why).
+  why). Done 2026-10-31: `docs/research/lift.md` (21 sibling rows, 7 outside
+  rows, receiving epic per row; GPL-sourced rows are adapt-only).
 
 Build:
 - [ ] VW-LOOP-ARM: arm the lane loop (supersedes VW-LOOP's "once there is
