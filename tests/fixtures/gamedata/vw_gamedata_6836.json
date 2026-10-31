@@ -1,0 +1,477 @@
+{
+ "client_version": 6836,
+ "fetched": "2026-10-31",
+ "heroes": {
+  "hero_inferno": {
+   "abilities": [
+    "ability_incendiary_projectile",
+    "ability_flame_dash",
+    "ability_afterburn",
+    "ability_fire_bomb"
+   ],
+   "base_health_regen": 2,
+   "heavy_melee_damage": 116,
+   "hero_type": "mystic",
+   "id": 1,
+   "light_melee_damage": 50,
+   "max_health": 830,
+   "max_move_speed": 6.7,
+   "name": "Infernus",
+   "sprint_speed": 1.6,
+   "stamina": 3,
+   "weapon": "citadel_weapon_inferno_set"
+  }
+ },
+ "items": {
+  "ability_afterburn": {
+   "conditional": {},
+   "id": 1593133799,
+   "name": "Afterburn",
+   "spirit_scale": {
+    "DPS": 0.66
+   },
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BuildUpBulletPercentPerHit": 8.1,
+    "BuildUpDuration": 17.0,
+    "BurnDuration": 3.0,
+    "BurnDurationBase": 3.0,
+    "ChannelMoveSpeed": -1.0,
+    "CritBuildup": 15.4,
+    "DPS": 14.0,
+    "RefillDuration": 0.5,
+    "RefillDurationCrit": 1.0,
+    "TickRate": 0.5
+   },
+   "type": "ability"
+  },
+  "ability_fire_bomb": {
+   "conditional": {},
+   "id": 1142270357,
+   "name": "Concussive Combustion",
+   "spirit_scale": {
+    "Damage": 0.974938
+   },
+   "stats": {
+    "AbilityCooldown": 190.0,
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "ChannelMoveSpeed": -1.0,
+    "Damage": 125.0,
+    "ExplodeDelay": 3.25,
+    "Radius": 12.0,
+    "StunDuration": 1.25
+   },
+   "type": "ability"
+  },
+  "ability_flame_dash": {
+   "conditional": {
+    "FlameDashJumpBonus": 50.0,
+    "SlowResistance": 50.0
+   },
+   "id": 3516947824,
+   "name": "Flame Dash",
+   "spirit_scale": {
+    "DPS": 0.7
+   },
+   "stats": {
+    "AbilityCastDelay": 0.2,
+    "AbilityCooldown": 38.0,
+    "AbilityDuration": 3.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "AuraLingerDuration": 1.0,
+    "ChannelMoveSpeed": 18.0,
+    "DPS": 30.0,
+    "DashAirSpeed": 8.0,
+    "DashSpeed": 12.0,
+    "FlameAuraRadius": 4.5,
+    "GroundAuraSpacing": 1.0,
+    "GroundFlameDuration": 4.0,
+    "SideMoveSpeedReduction": -65.0,
+    "SpeedBurstSpeed": 20.0,
+    "TickRate": 0.5
+   },
+   "type": "ability"
+  },
+  "ability_incendiary_projectile": {
+   "conditional": {
+    "SlowPercent": 28.0
+   },
+   "id": 491391007,
+   "name": "Napalm",
+   "spirit_scale": {
+    "Damage": 0.6
+   },
+   "stats": {
+    "AbilityCastDelay": 0.1,
+    "AbilityCastRange": 20.0,
+    "AbilityCharges": 1.0,
+    "AbilityCooldown": 25.0,
+    "AbilityCooldownBetweenCharge": 6.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "ChannelMoveSpeed": 18.0,
+    "Damage": 40.0,
+    "DebuffDuration": 8.0,
+    "GrowthPerMeter": 0.5,
+    "HeightOffGround": 50.0,
+    "IncomingDamagePercentFromCaster": 16.0,
+    "InitialWidth": 1.0,
+    "ParticleRadiusMultiplier": 1.15,
+    "SlowDuration": 4.0,
+    "TickRate": 0.5
+   },
+   "type": "ability"
+  },
+  "citadel_weapon_inferno_set": {
+   "conditional": {},
+   "id": 556186193,
+   "name": "Incendiary Remarks",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "ChannelMoveSpeed": -1.0
+   },
+   "type": "weapon",
+   "weapon": {
+    "bullet_damage": 5.5,
+    "bullets": 1,
+    "clip_size": 27,
+    "crit_bonus_end": 1.65,
+    "crit_bonus_start": 1.65,
+    "cycle_time": 0.105,
+    "damage_falloff_end_range": 2165.35,
+    "damage_falloff_start_range": 708.661
+   }
+  },
+  "upgrade_banshee_slugs": {
+   "conditional": {
+    "BulletResistReduction": -16.0,
+    "HealAmpReceivePenaltyPercent": -40.0,
+    "HealAmpRegenPenaltyPercent": -40.0,
+    "MagicResistReduction": -16.0
+   },
+   "cost": 6400,
+   "id": 3884003354,
+   "name": "Crippling Headshot",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusHealth": 125.0,
+    "ChannelMoveSpeed": -1.0,
+    "DebuffDuration": 12.0,
+    "DiminishingMultiplier": 0.5
+   },
+   "tier": 4,
+   "type": "upgrade"
+  },
+  "upgrade_blitz_bullets": {
+   "conditional": {},
+   "cost": 1600,
+   "id": 4104549924,
+   "name": "Swift Striker",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusFireRate": 20.0,
+    "BonusSprintSpeed": 0.75,
+    "ChannelMoveSpeed": -1.0
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_clip_size": {
+   "conditional": {},
+   "cost": 800,
+   "id": 1548066885,
+   "name": "Extended Magazine",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BaseAttackDamagePercent": 8.0,
+    "BonusClipSizePercent": 30.0,
+    "ChannelMoveSpeed": -1.0
+   },
+   "tier": 1,
+   "type": "upgrade"
+  },
+  "upgrade_headhunter": {
+   "conditional": {
+    "BonusMoveSpeed": 1.75
+   },
+   "cost": 3200,
+   "id": 4053935515,
+   "name": "Headhunter",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldown": 8.0,
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BaseAttackDamagePercent": 5.0,
+    "BonusHealth": 50.0,
+    "ChannelMoveSpeed": -1.0,
+    "HeadShotBonusDamage": 75.0,
+    "HealPercentPerHeadshot": 4.0,
+    "MovementSpeedBonusDuration": 3.0,
+    "ProcChance": 100.0
+   },
+   "tier": 3,
+   "type": "upgrade"
+  },
+  "upgrade_headshot_booster2": {
+   "conditional": {
+    "BulletResistReduction": -12.0
+   },
+   "cost": 1600,
+   "id": 1770441818,
+   "name": "Weakening Headshot",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusHealth": 60.0,
+    "ChannelMoveSpeed": -1.0,
+    "DebuffDuration": 12.0,
+    "DiminishingMultiplier": 0.5
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_high_velocity_mag": {
+   "conditional": {},
+   "cost": 800,
+   "id": 3077079169,
+   "name": "High-Velocity Rounds",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BaseAttackDamagePercent": 8.0,
+    "BonusBulletSpeedPercent": 45.0,
+    "ChannelMoveSpeed": -1.0
+   },
+   "tier": 1,
+   "type": "upgrade"
+  },
+  "upgrade_improved_bullet_armor": {
+   "conditional": {
+    "BulletResistBelowThreshold": 15.0
+   },
+   "cost": 3200,
+   "id": 3140772621,
+   "name": "Bullet Resilience",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BulletResist": 35.0,
+    "ChannelMoveSpeed": -1.0,
+    "HealthThreshold": 50.0,
+    "OutOfCombatHealthRegen": 5.0
+   },
+   "tier": 3,
+   "type": "upgrade"
+  },
+  "upgrade_improved_spirit": {
+   "conditional": {},
+   "cost": 800,
+   "id": 968099481,
+   "name": "Extra Spirit",
+   "slot": "spirit",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "ChannelMoveSpeed": -1.0,
+    "TechPower": 10.0
+   },
+   "tier": 1,
+   "type": "upgrade"
+  },
+  "upgrade_magic_shield": {
+   "conditional": {},
+   "cost": 1600,
+   "id": 3970837787,
+   "name": "Enchanter's Emblem",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "ChannelMoveSpeed": -1.0,
+    "CooldownReduction": 5.0,
+    "LifeThreshold": 65.0,
+    "OutOfCombatHealthRegen": 2.0,
+    "TechPower": 15.0,
+    "TechResist": 18.0
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_melee_rebuttal": {
+   "conditional": {
+    "BonusDamagePercent": 30.0
+   },
+   "cost": 800,
+   "id": 4204808176,
+   "name": "Rebuttal",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusHealth": 75.0,
+    "BuffDuration": 6.0,
+    "ChannelMoveSpeed": -1.0,
+    "MeleeResistPercent": 18.0,
+    "ParryCooldownReduction": 1.25,
+    "ParrySuccessHealPercentage": 100.0
+   },
+   "tier": 1,
+   "type": "upgrade"
+  },
+  "upgrade_metal_skin": {
+   "conditional": {
+    "ActiveMoveSpeedPenalty": -1.5,
+    "GravityScale": 20.0,
+    "GroundDashReductionPercent": -20.0
+   },
+   "cost": 3200,
+   "id": 1378931225,
+   "name": "Metal Skin",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCooldown": 24.0,
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityDuration": 5.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BulletResist": 12.0,
+    "ChannelMoveSpeed": -1.0
+   },
+   "tier": 3,
+   "type": "upgrade"
+  },
+  "upgrade_rapid_rounds": {
+   "conditional": {},
+   "cost": 800,
+   "id": 668299740,
+   "name": "Rapid Rounds",
+   "slot": "weapon",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusFireRate": 9.0,
+    "ChannelMoveSpeed": -1.0
+   },
+   "tier": 1,
+   "type": "upgrade"
+  },
+  "upgrade_regenerating_bullet_shield": {
+   "conditional": {
+    "BaseAttackDamagePercent": 22.0,
+    "BonusFireRate": 7.0
+   },
+   "cost": 1600,
+   "id": 1235347618,
+   "name": "Battle Vest",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BulletResist": 18.0,
+    "ChannelMoveSpeed": -1.0,
+    "LifeThreshold": 65.0,
+    "OutOfCombatHealthRegen": 3.0
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_restorative_locket": {
+   "conditional": {},
+   "cost": 1600,
+   "id": 2059712766,
+   "name": "Restorative Locket",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCastDelay": 0.1,
+    "AbilityCastRange": 32.0,
+    "AbilityCooldown": 20.0,
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "ChannelMoveSpeed": -1.0,
+    "HealPerStack": 16.0,
+    "MaxStacks": 25.0,
+    "MaxStaminaRestore": 3.0,
+    "Radius": 32.0,
+    "TechResist": 8.0
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_soaring_spirit": {
+   "conditional": {},
+   "cost": 1600,
+   "id": 7409189,
+   "name": "Improved Spirit",
+   "slot": "spirit",
+   "stats": {
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusHealth": 75.0,
+    "BonusSprintSpeed": 1.0,
+    "ChannelMoveSpeed": -1.0,
+    "OutOfCombatHealthRegen": 1.5,
+    "TechPower": 18.0
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_spirit_sap": {
+   "conditional": {
+    "MagicResistReduction": -9.0
+   },
+   "cost": 1600,
+   "id": 1219329868,
+   "name": "Spirit Sap",
+   "slot": "spirit",
+   "stats": {
+    "AbilityCastDelay": 0.1,
+    "AbilityCastRange": 35.0,
+    "AbilityCooldown": 22.0,
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityDuration": 12.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BonusHealth": 50.0,
+    "ChannelMoveSpeed": -1.0,
+    "TechPowerReduction": -30.0
+   },
+   "tier": 2,
+   "type": "upgrade"
+  },
+  "upgrade_weapon_shielding": {
+   "conditional": {
+    "BulletResist": 18.0,
+    "CombatBarrier": 300.0
+   },
+   "cost": 1600,
+   "id": 805079544,
+   "name": "Weapon Shielding",
+   "slot": "vitality",
+   "stats": {
+    "AbilityCooldown": 35.0,
+    "AbilityCooldownBetweenCharge": -1.0,
+    "AbilityUnitTargetLimit": 1.0,
+    "BarrierDuration": 8.0,
+    "ChannelMoveSpeed": -1.0,
+    "DamageThreshold": 250.0,
+    "DamageWindow": 4.0,
+    "OutOfCombatHealthRegen": 2.5
+   },
+   "tier": 2,
+   "type": "upgrade"
+  }
+ },
+ "license": "Valve game data via a third-party API; not redistributed (D-HERO-1)",
+ "schema": "vw.gamedata.v1",
+ "source": "https://api.deadlock-api.com (/v1/assets/heroes, /v1/assets/items)"
+}

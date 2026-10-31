@@ -72,7 +72,7 @@ ceiling:
   reference data, refreshed with the client version.
 - `GET /v1/assets/convars`: every cvar in the patch's client / server dll
   with its `FCVAR_*` flags. NOT used by the app; noted for VW's autoexec
-  tooling (a cheat-flag check of `config/autoexec.cfg`, filed as an idea).
+  tooling (a cheat-flag check of `config/autoexec.cfg`, proposed item VW-CVAR-CHECK).
 
 Endpoints NOT used, each with its ruling:
 
@@ -139,7 +139,7 @@ Endpoints NOT used, each with its ruling:
   `-condebug` does not capture `cvarlist` output as older games did, so
   whether it writes `game/citadel/console.log` at all is unconfirmed. Next
   step: a read-only existence probe after the operator next plays with the
-  option (filed as VW-APP-CONLOG). If the file exists, it is the S-5
+  option (proposed item VW-APP-CONLOG). If the file exists, it is the S-5
   alternative for live events (deaths, purchases if logged), read-only and
   tailed by offset.
 - Game state integration (`gamestate_integration_*.cfg`): S-7. No evidence
@@ -151,7 +151,7 @@ Endpoints NOT used, each with its ruling:
 - Windows Graphics Capture (window or monitor) or DXGI desktop duplication,
   per S-3. It is the only LIVE in-match source: HUD reads (souls, HP,
   timers) through CV in a separate process. OBS Game Capture is forbidden.
-  Details belong to the VW-APP-CV epic.
+  Details belong to the VW-APP-INGEST epic.
 
 ## Launch options and ports
 
