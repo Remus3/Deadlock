@@ -329,3 +329,50 @@ Release asset contract: `VeilWalker-Setup-<version>.exe` plus
 
 Open: VW-APP-UPDATE-E2E (the live two-release run) and VW-APP-WATCHDOG
 (a build that dies before main.js runs) in `ROADMAP.md`.
+
+## 7. Message bus and engine contracts (VW-APP-BUS, built 2026-10-31)
+
+Code: `app/src/main/bus/` (pure Node, zero runtime dependencies, no
+electron import); proof `app/test/bus.test.js`.
+- `schema.js`: a small in-repo validator (kinds string / number / boolean /
+  array / object / map, `nullable`). Every string and array has an upper
+  bound; objects are closed (an unknown key is an error); `__proto__`,
+  `constructor`, `prototype` keys are refused; errors are `<path>: <reason>`
+  and never echo the input value.
+- `contracts.js`: the registry. Type = `<engine>.<name>.v<n>`; engines
+  `e1`, `e2`, `e3`, `ui`. Registered v1 types:
+  - `e1.build_advice.v1` {hero?, patch?, next_items[{item, rank, gain_pct,
+    reason}], reasons[], counters[{threat, response}], math_refs[]}; rule:
+    each next item's `reason` indexes an existing reason; `math_refs` name
+    the pure functions used (e.g. `vw_combat.effective_hp`).
+  - `e2.skill_profile.v1` {tiers{dimension: {tier 1-5, confidence 0-1,
+    trend up|flat|down}}, focus_items[{text, from_min, to_min}],
+    hero_fit[{hero, reasons[1..]}]}; rule: a time frame runs forward.
+  - `e3.macro.v1` {goal_now, goal_next, how, abort_if[], alt_route|null}.
+  - `ui.layout.v1` {cards[MACRO|BUILD|MATCH|PROFILE], overlay_anchor,
+    scale 0.75-2} (docs/research/ux.md section 5): the only type a renderer
+    may publish. Engine outputs are main-side only.
+  A new version is a new entry beside the old one; a published schema is
+  never edited.
+- `bus.js`: `createBus({log})` -> `publish({type, payload}, {source})`,
+  `subscribe(type, fn)` (returns unsubscribe; an unregistered type throws).
+  An unknown type, an unknown version of a known type (the reason names the
+  registered versions), a malformed envelope or a schema / rule failure is
+  rejected with one logged `bus reject` line and no subscriber runs. Each
+  subscriber gets one deep-frozen copy; a throwing or rejecting subscriber is
+  logged (`bus subscriber error`) and the rest still run. Re-entrant
+  publishes stop at depth 8.
+- `ipc.js` (SEC-E13 runtime half): channel `vw:bus:publish`, registered in
+  `main.js`; the preload adds `window.vw.publish(message)` (invoke only).
+  Main refuses, logged, before the bus: a sender frame that is not `app://`,
+  a message over 64 KiB or not serialisable, an engine type from the
+  renderer; then the bus validates as above.
+
+Decisions (VW-APP-BUS, adjudicated in-lane): in-repo validator over a JSON
+Schema library (SEC-S4 zero runtime dependencies; alternatives ajv,
+zod - rejected as runtime deps); synchronous in-process delivery over an
+async queue (deterministic tests and ordering; an async subscriber's
+rejection is still caught); renderer may publish an explicit allow-list
+(`renderer: true` per contract) over all types (untrusted input must not
+forge engine output); JSDoc types, no TypeScript build (the scaffold has
+none).

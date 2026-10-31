@@ -16,6 +16,7 @@ const { createStateStore } = require('./updater/state');
 const { createGithubFeed } = require('./updater/feed');
 const { createUpdater } = require('./updater/updater');
 const { makeDownload, runInstaller } = require('./updater/platform');
+const { createBus, createBusIpcHandler, CHANNEL: BUS_CHANNEL } = require('./bus');
 
 const APP_ROOT = path.join(__dirname, '..', '..');
 const RENDERER = path.join(APP_ROOT, 'src', 'renderer');
@@ -33,6 +34,7 @@ if (!GOT_LOCK) app.quit();
 
 let log = () => {};
 let updater = null;
+let bus = null;
 let mainWindow = null;
 let quitting = false;
 
@@ -110,6 +112,8 @@ function registerIpc(state) {
       update: s.lastResult ? { result: s.lastResult.result, version: s.lastResult.version || null } : null,
     };
   });
+  // SEC-E13 runtime half (VW-APP-BUS): sender frame and payload checked here.
+  ipcMain.handle(BUS_CHANNEL, createBusIpcHandler({ bus, isAppUrl, log: (l) => log(l) }));
 }
 
 function setupUpdater(state) {
@@ -160,6 +164,7 @@ app.whenReady().then(async () => {
   if (!GOT_LOCK) return undefined;
   log = createLog(path.join(app.getPath('userData'), 'logs', 'main.log'));
   const state = createStateStore(path.join(app.getPath('userData'), 'updates', 'state.json'));
+  bus = createBus({ log: (l) => log(l) });
   hardenWebContents();
   denyPermissions();
   registerProtocol();

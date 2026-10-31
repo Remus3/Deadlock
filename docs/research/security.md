@@ -102,7 +102,8 @@ Sources (read 2026-10-31):
   / `senderFrame.url` is `app://` and validates every payload against the bus
   schema ([E-SEC] 17, 20). Verify: test sends from a fake frame and a
   malformed payload; both refused with a logged reason. Owner: VW-APP-BUS
-  (preload shape: VW-APP-SCAFFOLD). Status: FAIL.
+  (preload shape: VW-APP-SCAFFOLD). Status: PASS 2026-10-31 (VW-APP-BUS,
+  `app/src/main/bus/ipc.js`, `app/test/bus.test.js`).
 - SEC-E14 Fuses flipped at package time with `@electron/fuses`
   ([E-FUSE], [E-SEC] 19): RunAsNode off, EnableNodeOptionsEnvironmentVariable
   off, EnableNodeCliInspectArguments off, EnableEmbeddedAsarIntegrityValidation

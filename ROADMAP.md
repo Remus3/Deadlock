@@ -77,10 +77,6 @@ Electron shell, per-user NSIS, VW updater (D-1a). DB and BUS are unblocked.
 - [ ] VW-APP-DB: local SQLite store with versioned migrations. Accept: migrate
   up from empty and from the previous version idempotently, backup first.
   after: none (SCAFFOLD done; unblocked).
-- [ ] VW-APP-BUS: typed versioned message bus and engine contracts. Accept: a
-  malformed message is rejected with a logged reason and no subscriber sees it;
-  also SEC-E13's runtime half (IPC from a non-app:// frame refused, payloads
-  schema-checked). after: none (SCAFFOLD done; unblocked).
 - [ ] VW-APP-INGEST: data ingestion services (charter 3 classes only) with
   controlled polling. Accept: each source has a rate, ceiling, backoff and
   cache, and a restart leaves the same DB state; it also replaces the

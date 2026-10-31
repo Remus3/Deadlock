@@ -6,4 +6,6 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('vw', Object.freeze({
   getInfo: () => ipcRenderer.invoke('vw:get-info'),
+  // VW-APP-BUS: one fixed channel; main validates sender and payload.
+  publish: (message) => ipcRenderer.invoke('vw:bus:publish', message),
 }));

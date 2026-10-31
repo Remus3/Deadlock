@@ -2,6 +2,19 @@
 
 ## Closed 2026-10-31 (session 3)
 
+- [x] VW-APP-BUS: typed versioned message bus and engine contracts. Accept: a
+  malformed message is rejected with a logged reason and no subscriber sees it;
+  also SEC-E13's runtime half (IPC from a non-app:// frame refused, payloads
+  schema-checked). after: none (SCAFFOLD done; unblocked).
+  Done 2026-10-31: `app/src/main/bus/` (in-repo validator, contracts
+  `e1.build_advice.v1`, `e2.skill_profile.v1`, `e3.macro.v1`,
+  `ui.layout.v1`, bus, IPC bridge `vw:bus:publish`); unknown type / version
+  and schema failures rejected with a logged reason before any subscriber;
+  subscriber exceptions isolated; renderer refused from a non-app:// frame,
+  over 64 KiB, or for engine types. `npm test` 52/52 (bus 18).
+  Proof: app/test/bus.test.js, docs/companion-app.md section 7,
+  docs/research/security.md SEC-E13.
+
 - [x] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater
   (charter D-1). Accept: a per-user NSIS install from a GitHub release
   self-updates to a newer one with SHA-256 verify, self-test and rollback,
