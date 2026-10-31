@@ -39,8 +39,11 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
 
 NEXT ACTION
   FIRST at session start: (a) read back the /done session 3 push: `gh run
-  list --branch main --limit 5` (ci, app.yml and codeql for the batch
-  ending in the /done 3 commit; record green/red). (b) Merge any lane
+  list --branch main --limit 5` (ci for the hand-off commit; record
+  green/red). Read back at /done 3: 8980677 ci green, codeql green, app RED
+  on ubuntu (SEC-E1 backslash case resolved on posix); fixed in a73250b
+  (VW-APP-CI-FIX, resolver refuses backslash / dot-dot on every OS): ci,
+  app and codeql green. (b) Merge any lane
   commits under refs/fleet-lanes/ and send pending answers in
   ops/loop/control/inbox_answers.jsonl (VW-LOOP-SCOPE). (c) Inbox: look for
   MAIN's answer to the VW FIX note 2026-10-31 1612 (split-route proxy HTTP
