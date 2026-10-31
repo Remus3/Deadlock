@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="960" height="540" font-family="Segoe UI, sans-serif">
+  <title>VW overlay wireframe (VW-APP-UX), 1920x1080 design px</title>
+  <!-- Game frame: the overlay draws nothing here; hatched zones are the game's own HUD, kept clear. -->
+  <rect x="0" y="0" width="1920" height="1080" fill="#3a4250"/>
+  <rect x="660" y="0" width="600" height="110" fill="none" stroke="#9aa4b4" stroke-dasharray="12 8"/>
+  <text x="960" y="62" fill="#9aa4b4" font-size="26" text-anchor="middle">game HUD: scores / timer (keep clear)</text>
+  <rect x="560" y="900" width="800" height="180" fill="none" stroke="#9aa4b4" stroke-dasharray="12 8"/>
+  <text x="960" y="1000" fill="#9aa4b4" font-size="26" text-anchor="middle">game HUD: health / abilities (keep clear)</text>
+  <rect x="0" y="760" width="320" height="320" fill="none" stroke="#9aa4b4" stroke-dasharray="12 8"/>
+  <text x="160" y="930" fill="#9aa4b4" font-size="24" text-anchor="middle">game HUD corner</text>
+  <circle cx="960" cy="540" r="10" fill="none" stroke="#9aa4b4" stroke-width="3"/>
+  <text x="960" y="590" fill="#9aa4b4" font-size="22" text-anchor="middle">crosshair zone: never drawn over (r 240)</text>
+  <circle cx="960" cy="540" r="240" fill="none" stroke="#9aa4b4" stroke-dasharray="6 10"/>
+  <!-- VW overlay: one anchored stack, right edge, default anchor right-middle, offset 24 px. -->
+  <g transform="translate(1496,380)">
+    <rect x="0" y="0" width="400" height="64" rx="10" fill="#0a0d12" fill-opacity="0.82"/>
+    <rect x="0" y="0" width="6" height="64" fill="#6cd0ff"/>
+    <text x="22" y="42" fill="#f4f6fa" font-size="28" font-weight="600">NOW  Push mid guardian</text>
+    <rect x="0" y="76" width="400" height="52" rx="10" fill="#0a0d12" fill-opacity="0.82"/>
+    <text x="22" y="111" fill="#c3cad6" font-size="24">NEXT  Buy: item A (+18% TTK)</text>
+    <rect x="0" y="140" width="400" height="52" rx="10" fill="#0a0d12" fill-opacity="0.82"/>
+    <rect x="0" y="140" width="6" height="52" fill="#ff8a80"/>
+    <text x="22" y="175" fill="#ff8a80" font-size="24" font-weight="600">! ABORT if 2+ enemies unseen</text>
+  </g>
+  <text x="1696" y="620" fill="#f4f6fa" font-size="20" text-anchor="middle">3 lines max; line 3 only when it applies</text>
+  <text x="24" y="40" fill="#f4f6fa" font-size="22">Separate OS window: transparent, frameless, click-through, no focus, always on top (S-2)</text>
+</svg>

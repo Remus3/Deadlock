@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="960" height="540" font-family="Segoe UI, sans-serif">
+  <title>VW companion wireframe (VW-APP-UX), second screen, dark theme</title>
+  <rect x="0" y="0" width="1920" height="1080" fill="#0f1218"/>
+  <!-- Header: match state, one line. -->
+  <rect x="0" y="0" width="1920" height="72" fill="#181c24"/>
+  <text x="32" y="47" fill="#eef1f6" font-size="28" font-weight="600">Match 14:32   Souls +2.1k   Patch tag</text>
+  <text x="1888" y="47" fill="#a7b0bf" font-size="22" text-anchor="end">LB / RB: column   A: expand   B: back</text>
+  <!-- Column 1: macro (E3). Focus ring shown on its first card. -->
+  <g transform="translate(32,104)">
+    <text x="0" y="28" fill="#a7b0bf" font-size="22">MACRO (E3)</text>
+    <rect x="0" y="44" width="600" height="160" rx="12" fill="#181c24" stroke="#ffd54a" stroke-width="4"/>
+    <text x="24" y="94" fill="#eef1f6" font-size="30" font-weight="600">Now: push mid guardian</text>
+    <text x="24" y="136" fill="#a7b0bf" font-size="22">How: group with 2 allies at mid, 40 s window</text>
+    <text x="24" y="172" fill="#ff7a70" font-size="22">Abort if: 2+ enemies missing</text>
+    <rect x="0" y="224" width="600" height="110" rx="12" fill="#181c24" stroke="#64708a" stroke-width="2"/>
+    <text x="24" y="270" fill="#eef1f6" font-size="26">Next: take the urn</text>
+    <text x="24" y="308" fill="#a7b0bf" font-size="22">Alt route: farm jungle, rejoin at 16:00</text>
+  </g>
+  <!-- Column 2: build (E1). -->
+  <g transform="translate(660,104)">
+    <text x="0" y="28" fill="#a7b0bf" font-size="22">BUILD (E1)</text>
+    <rect x="0" y="44" width="600" height="160" rx="12" fill="#181c24" stroke="#64708a" stroke-width="2"/>
+    <text x="24" y="94" fill="#eef1f6" font-size="30" font-weight="600">Next buy: item A</text>
+    <text x="24" y="136" fill="#5bd68a" font-size="22">TTK vs enemy carry: 4.1 s to 3.4 s</text>
+    <text x="24" y="172" fill="#a7b0bf" font-size="22">A: show the math</text>
+    <rect x="0" y="224" width="600" height="110" rx="12" fill="#181c24" stroke="#64708a" stroke-width="2"/>
+    <text x="24" y="270" fill="#eef1f6" font-size="26">Counter: enemy heal build</text>
+    <text x="24" y="308" fill="#a7b0bf" font-size="22">Item B cuts their healing; 3 of 6 stack it</text>
+  </g>
+  <!-- Column 3: match (allies / enemies). -->
+  <g transform="translate(1288,104)">
+    <text x="0" y="28" fill="#a7b0bf" font-size="22">MATCH</text>
+    <rect x="0" y="44" width="600" height="290" rx="12" fill="#181c24" stroke="#64708a" stroke-width="2"/>
+    <text x="24" y="94" fill="#5cc3ff" font-size="24">Allies: 6 rows, hero / souls / key items</text>
+    <text x="24" y="190" fill="#ff7a70" font-size="24">Enemies: 6 rows, hero / souls / key items</text>
+    <text x="24" y="300" fill="#a7b0bf" font-size="20">Rows expand on A; nothing auto-scrolls</text>
+  </g>
+  <!-- Footer: data freshness and source class, always visible. -->
+  <rect x="0" y="1020" width="1920" height="60" fill="#181c24"/>
+  <text x="32" y="1058" fill="#a7b0bf" font-size="20">Sources: API 12 s ago (class 1) / capture live (class 4) / coach off</text>
+</svg>
