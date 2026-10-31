@@ -116,6 +116,31 @@ Not changed, by operator choice: Windows Game Mode (stays off), Windows 10
 (stays). Not changed, out of scope here: the power plan (Balanced; the 7700X
 boosts fine on it) and the NVIDIA driver profile.
 
+## Cvar flag check (VW-CVAR-CHECK, 2026-10-31)
+
+`python tools/vw_cvar_check.py check --live` lists every statement of the repo
+autoexec (and, read only, the game copy) as `ok`, `cheat`, `devonly`,
+`unknown` or `command`, and exits 1 when a cheat or development-only cvar is
+present. Flag source: the community API cvar list for the current patch
+(`vw_cvar_check.py fetch`, cached in the gitignored
+`ops/runtime/gamedata/raw/`), plus any `cvarlist` dump passed with `--dump`.
+
+Result at patch 6836 (repo copy == game copy, SHA-256 `a38b0d66aec57179...`):
+0 cheat, 0 devonly; `sensitivity`, `sensitivity_y_scale`,
+`zoom_sensitivity_ratio` ok; `echo` a command; `con_enable`, `fps_max`,
+`fps_max_ui`, `rate`, `engine_low_latency_sleep_after_client_tick` unknown,
+because the API list carries only the client and server dll cvars, not the
+engine's. Nothing removed; the game file was not written.
+
+To close the unknowns (ROADMAP VW-CVAR-DUMP): in game, open the console (F7
+with `con_enable true`), run `cvarlist`, copy the output into
+`ops/runtime/cvarlist.txt` (gitignored; lines `name : value : flags : help`),
+then run `python tools/vw_cvar_check.py check --live --dump
+ops/runtime/cvarlist.txt`. A dump line whose flags carry `cheat` or `dev` is
+flagged. If the console will not copy, try `con_logfile` before `cvarlist`
+(not yet confirmed to exist in Deadlock). A flagged cvar is removed from
+`config/autoexec.cfg`, recorded here, and re-applied with the game closed.
+
 ## Rollback
 
 1. autoexec: delete `<Deadlock>/game/citadel/cfg/autoexec.cfg` (send it to the

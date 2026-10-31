@@ -1,0 +1,34 @@
+{
+ "ag2_preserve_params_on_reload": {
+  "flags": 8194,
+  "type": "bool"
+ },
+ "ai_debug_dyninteractions": {
+  "flags": 16384,
+  "type": "int32"
+ },
+ "ai_debug_enemy_position": {
+  "flags": 16384,
+  "type": "bool"
+ },
+ "cl_showfps": {
+  "flags": 524288,
+  "type": "int32"
+ },
+ "m_yaw": {
+  "flags": 33408,
+  "type": "float32"
+ },
+ "sensitivity": {
+  "flags": 33408,
+  "type": "float32"
+ },
+ "sensitivity_y_scale": {
+  "flags": 33408,
+  "type": "float32"
+ },
+ "zoom_sensitivity_ratio": {
+  "flags": 32896,
+  "type": "float32"
+ }
+}

@@ -72,7 +72,9 @@ ceiling:
   reference data, refreshed with the client version.
 - `GET /v1/assets/convars`: every cvar in the patch's client / server dll
   with its `FCVAR_*` flags. NOT used by the app; noted for VW's autoexec
-  tooling (a cheat-flag check of `config/autoexec.cfg`, proposed item VW-CVAR-CHECK).
+  tooling: `tools/vw_cvar_check.py` (VW-CVAR-CHECK, 2026-10-31) caches it
+  with `fetch` and flags cheat (bit 14) / development-only (bit 1) cvars.
+  Patch 6836: 3499 cvars; engine2 cvars (`fps_max`, `rate`, ...) are absent.
 
 Endpoints NOT used, each with its ruling:
 

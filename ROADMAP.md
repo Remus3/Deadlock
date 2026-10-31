@@ -40,10 +40,14 @@ Follow-ups from research:
   with the option, the file path and a redacted sample recorded in
   `docs/research/game-data.md`; launch option edited only while Steam is
   closed. after: operator launch.
-- [ ] VW-CVAR-CHECK: use the public API cvar list (VW-APP-GAME) to flag any
-  cheat or development-only cvar in `config/autoexec.cfg`. Accept: a check in
-  tools with a test; a flagged cvar is removed per the safety floor.
-  after: none.
+- [ ] VW-CVAR-DUMP: the API cvar list covers the client / server dll only,
+  so the engine cvars in the autoexec (`con_enable`, `fps_max`, `fps_max_ui`,
+  `rate`, `engine_low_latency_sleep_after_client_tick`) read `unknown` in
+  `vw_cvar_check.py`. Left: operator, in game, runs `cvarlist` in the console
+  and saves the text to the gitignored `ops/runtime/cvarlist.txt` (steps in
+  `docs/optimization.md` "Cvar flag check"); then
+  `vw_cvar_check.py check --live --dump ops/runtime/cvarlist.txt` and any
+  cheat / devonly cvar is removed per the floor. after: operator launch.
 
 Build:
 - [ ] VW-APP-SCAFFOLD: Electron scaffold + installer + GitHub-release updater

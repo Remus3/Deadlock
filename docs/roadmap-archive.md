@@ -2,6 +2,15 @@
 
 ## Closed 2026-10-31 (session 2)
 
+- [x] VW-CVAR-CHECK: use the public API cvar list (VW-APP-GAME) to flag any
+  cheat or development-only cvar in `config/autoexec.cfg`. Accept: a check in
+  tools with a test; a flagged cvar is removed per the safety floor.
+  after: none.
+  DONE 2026-10-31: `tools/vw_cvar_check.py` (API list FCVAR_CHEAT bit 14,
+  FCVAR_DEVELOPMENTONLY bit 1, plus `cvarlist` dumps); repo and game
+  autoexec: 0 cheat, 0 devonly, 3 ok, 5 unknown (engine cvars, follow-up
+  VW-CVAR-DUMP); nothing removed.
+  Proof: tests/test_cvar_check.py, docs/optimization.md "Cvar flag check".
 - [x] VW-LOOP (superseded by VW-LOOP-ARM, done 2026-10-31): arm a lane loop / inbox responder like the other trees (a
   scheduled tick that reads the inbox and runs `tools/vw_lane.py`), once there
   is recurring work. Until then each session reads the inbox at start and /done.
