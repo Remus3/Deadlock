@@ -1,6 +1,14 @@
 #!/bin/sh
 # VW commit-msg: kit v13 (FLEET-COMMON 17) - fleet_identity strips every AI /
-# bot attribution line; no Co-Authored-By trailer ever lands.
+# bot attribution line; no Co-Authored-By trailer ever lands. Then the subject
+# (first non-comment, non-blank line) must be at most 72 characters; detail
+# goes in the body (MAIN ORDER 2026-10-31 W44).
 ROOT="$(git rev-parse --show-toplevel)"
 python "$ROOT/ops/fleet_kit/fleet_identity.py" commit-msg "$1" || true
+SUBJ="$(grep -v '^#' "$1" | grep -v '^[[:space:]]*$' | head -n 1 | tr -d '\r')"
+LEN=$(printf '%s' "$SUBJ" | wc -c | tr -d ' ')
+if [ "$LEN" -gt 72 ]; then
+    echo "commit-msg: subject is $LEN characters, the limit is 72; move detail to the body" >&2
+    exit 1
+fi
 exit 0

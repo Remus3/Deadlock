@@ -14,7 +14,11 @@ never been launched on 2026-10-25 (ROADMAP VW-MEASURE).
 4. Three runs per configuration; report the median. A change is kept when it
    improves 1 percent lows or latency without a loss elsewhere beyond run noise.
 5. Results go in `docs/measurements/<date>-<topic>.md` with the config commit
-   they measured.
+   they measured: `python tools/vw_frametime.py run1.csv run2.csv run3.csv
+   --process project8.exe --label "<topic>" --md docs/measurements/<date>-<topic>.md`
+   prints each run and the median (avg fps, 1 and 0.1 percent lows as the
+   mean of the slowest 1 / 0.1 percent of frame times, CapFrameX style;
+   definitions in the tool's docstring).
 
 ## Order
 

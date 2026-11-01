@@ -1,0 +1,12 @@
+fps_max 120 (archive release)
+	Frame rate limiter
+
+old_gone_cvar 1 (archive)
+	<no description>
+
+cl_interp_ratio 2 (archive)
+	<no description>
+
+rate 80000 (archive userinfo)
+	<no description>
+

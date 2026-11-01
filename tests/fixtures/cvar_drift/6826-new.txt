@@ -1,0 +1,12 @@
+fps_max 120 (archive release)
+	Frame rate limiter
+
+cl_interp_ratio_v2 2 (archive)
+	<no description>
+
+rate 80000 (archive userinfo)
+	<no description>
+
+noclip_speed 5 (cheat)
+	<no description>
+

@@ -61,6 +61,10 @@ NEXT ACTION
   devonly, 5 engine cvars unknown -> VW-CVAR-DUMP), VW-APP-SCAFFOLD
   (efe5f01), VW-APP-BUS (0d62c07), VW-APP-DB (0d57133), docs (1eb6c7f).
   Follow-ups filed: VW-APP-UPDATE-E2E, VW-APP-WATCHDOG, VW-CVAR-DUMP.
+  Headless drive 2026-11-01 (MAIN ORDER 2026-10-31 2215, W44): topics +
+  README (items 1-2), tools/vw_frametime.py, commit-msg 72-char subject
+  refusal, tools/vw_cvar_drift.py (VW-CVAR-DRIFT); ONE ANSWER sent. Not
+  pushed: pushes at the next /done (code batch, after the local gate).
   PROCESS: sub-agents sharing one session scratchpad must use unique file
   names (one agent's progress helper was overwritten on 2026-10-31).
   pytest.ini addopts carries -q, so `pytest -q` prints no pass count;
@@ -83,7 +87,12 @@ NEXT ACTION
   Operator-only acts (batched, next time in game):
   1) VW-CASTING: confirm the three casting options in the menu (no file
   shows them). 2) VW-AUTOEXEC-VERIFY: one F7 console look for the echo and
-  "Unknown command". 3) VW-MEASURE (DLSS 1.5x vs DLAA, D3D 11 vs Vulkan).
+  "Unknown command". 3) VW-MEASURE: FIRST one baseline match at the
+  current config - three 60 s + 60 s Sandbox runs per docs/measurement.md,
+  each captured with PresentMon to a CSV in the gitignored ops/runtime/;
+  then `python tools/vw_frametime.py r1.csv r2.csv r3.csv --process
+  project8.exe --md docs/measurements/<date>-baseline.md` (W44 ORDER item
+  3); then DLSS 1.5x vs DLAA, D3D 11 vs Vulkan.
   4) VW-POWER: Balanced vs High performance power plan in game.
   5) VW-APP-CONLOG needs one launch with -condebug (set only while Steam is
   closed). 6) VW-CVAR-DUMP: run `cvarlist` in the console and save the

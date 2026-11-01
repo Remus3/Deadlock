@@ -12,7 +12,11 @@
   look (F7) for `[VW] autoexec loaded` and any "Unknown command" line.
 - [ ] VW-MEASURE: baseline then each change per `docs/measurement.md`; results
   in `docs/measurements/`. Includes DLSS 1.5x vs 1x (DLAA; switch if 1
-  percent lows >= 200 fps) and D3D 11 vs Vulkan.
+  percent lows >= 200 fps) and D3D 11 vs Vulkan. Tool landed 2026-11-01
+  (VW-FRAMETIME, W44): `tools/vw_frametime.py` reads PresentMon CSVs, prints
+  avg fps and CapFrameX-style 1 / 0.1 percent lows, median of three runs,
+  `--md` into `docs/measurements/`. Left: the operator's baseline match
+  (operator ask in the hand-off).
 - [ ] VW-PUBLIC-REVIEW (recurring; standing order 2026-10-29,
   `docs/public-presentation.md`): the GitHub outsider view (README, docs
   index, About description / topics, release notes, app user docs) kept
@@ -35,6 +39,16 @@
   `public_review_state.json` stays unwritten, so the next `/done` retries.
   Unblocks when the second-account proxy's pinned account serves again
   (proxy owner's side; report to MAIN if it persists).
+  MAIN ORDER 2026-10-31 2215 items 1-2 done in session (2026-11-01): topics
+  deadlock, valve, autoexec, game-config, windows set and read back; README
+  has CI + license badges, linked docs, a Status line, the app/ blurb and
+  "How this repo is built".
+- [ ] VW-CVAR-DRIFT (recurring, per game patch): `tools/vw_cvar_drift.py
+  fetch` then `check` diffs the autoexec convars against the public
+  GameTracking-Deadlock dump at the two newest patches and flags removed /
+  renamed / absent / cheat / devonly, read-only. First read 2026-11-01:
+  builds 6812 -> 6826, all 8 autoexec convars ok (exit 0). Run after each
+  patch; a flagged convar is fixed per the floor.
 - [ ] VW-POWER: measure Balanced vs High performance power plan in game
   (machine-level; MAIN's call, file a note with the numbers).
 
