@@ -39,6 +39,10 @@
   `public_review_state.json` stays unwritten, so the next `/done` retries.
   Unblocks when the second-account proxy's pinned account serves again
   (proxy owner's side; report to MAIN if it persists).
+  UNBLOCKED per MAIN ANSWER 2026-10-31 2120 (hash checked 2026-11-01): the cause
+  was an expired OAuth refresh token, re-login done, pin healthy. The next
+  `/done` step 3a retries. The same 429 text again means the same expiry, an
+  operator re-login.
   MAIN ORDER 2026-10-31 2215 items 1-2 done in session (2026-11-01): topics
   deadlock, valve, autoexec, game-config, windows set and read back; README
   has CI + license badges, linked docs, a Status line, the app/ blurb and
