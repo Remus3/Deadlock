@@ -3,6 +3,7 @@ the inbox through the kit, queues and claims lane jobs, and the lane worktree
 is kept-and-pruned on exit. Every root here is tmp_path; nothing live is
 touched and nothing is spawned."""
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -178,12 +179,37 @@ def test_inbox_pass_routes_each_class(tmp_path):
     counts = vw_loop.inbox_pass(tmp_path, tmp_path, fi=fi,
                                 spawn_triage=lambda pr, note: spawned.append(note) or
                                 {"result": pr})
-    assert counts == {"skip": 1, "ack": 1, "work": 1, "triage": 1, "answer": 1}
+    assert counts == {"pending": 0, "skip": 1, "ack": 1, "work": 1, "triage": 1, "answer": 1}
     assert len(fi.seen) == 4 and fi.work == ["c.md"] and len(spawned) == 1
     job = json.loads((tmp_path / vw_loop.JOBS_REL / ("order-" + "f" * 16 + ".json")).read_text())
     assert job["kind"] == "order" and job["writes_code"] and job["lane"] == "build"
     ans = (tmp_path / vw_loop.ANSWERS_REL).read_text().splitlines()
     assert json.loads(ans[0])["sent"] is False
+
+
+def test_inbox_pass_requeues_pending_orders_first(tmp_path):
+    note = tmp_path / "p.md"
+    note.write_text("x", encoding="ascii")
+    fi = _FI([])
+    fi.pending_work = lambda root: [
+        {"note": "p.md", "sha256": "a" * 64, "cls": "ORDER", "sender": "MAIN"},
+        {"note": "gone.md", "sha256": "b" * 64, "cls": "FIX", "sender": "MAIN"}]
+    counts = vw_loop.inbox_pass(tmp_path, tmp_path, fi=fi)
+    assert counts["pending"] == 2
+    jobs = vw_loop.queued(tmp_path)
+    assert [p.name for p in jobs] == ["order-" + "a" * 16 + ".json"]
+    done = jobs[0].with_suffix(".done")
+    jobs[0].rename(done)
+    vw_loop.inbox_pass(tmp_path, tmp_path, fi=fi)
+    assert vw_loop.queued(tmp_path) == []
+
+
+def test_pick_jobs_orders_first(tmp_path):
+    first = _job(tmp_path, "build")
+    order = vw_loop.queue_job(tmp_path, vw_loop.make_job("build", "o", "p", kind="order"),
+                              name="order-" + "c" * 16)
+    os.utime(order, (first.stat().st_mtime + 5, first.stat().st_mtime + 5))
+    assert vw_loop.pick_jobs(tmp_path, set()) == [order]
 
 
 def test_tick_halt_runs_nothing(tmp_path):

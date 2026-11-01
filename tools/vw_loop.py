@@ -10,7 +10,11 @@
 Every tick (Windows Task Scheduler, every TICK_MIN minutes, hidden pythonw, a
 second instance ignored while one runs):
   a. HALT (ops/loop/control/HALT) -> nothing runs, progress says halted.
-  b. Inbox (FLEET-COMMON 14, kit fleet_inbox): scan moon_sync_inbox/ by mtime.
+  b. Inbox (FLEET-COMMON 14, kit fleet_inbox): PENDING ORDERS FIRST (kit v27):
+     every queued, not-done WORK row (fleet_inbox.pending_work) whose note is
+     still in the inbox and has no job file yet gets its `order` lane job
+     queued again, and order jobs are picked before any other job. Then scan
+     moon_sync_inbox/ by mtime.
      SKIP / ACK -> mark_seen (a ledger line, no note). WORK (ORDER / FIX /
      RULING) -> enqueue_work, mark_seen, and one `order` lane job is queued for
      it. TRIAGE -> ONE kit spawn (sonnet, effort low, triage_spawn_kwargs);
@@ -214,9 +218,10 @@ def busy_lanes(root, lane_state=None):
 
 
 def pick_jobs(root, busy):
-    """Queued jobs to start now: the oldest per free lane (pure over files)."""
+    """Queued jobs to start now: the oldest per free lane (pure over files);
+    order jobs (pending ORDER / FIX / RULING, kit v27) before any other."""
     picks, taken = [], set(busy)
-    for p in queued(root):
+    for p in sorted(queued(root), key=lambda q: not q.name.startswith("order-")):
         doc = _read_json(p)
         if not doc or doc.get("lane") not in vw_lane.LANES or doc["lane"] in taken:
             continue
@@ -241,11 +246,12 @@ def order_prompt(note_path, decision):
 
 
 def inbox_pass(root, inbox=None, spawn_triage=None, fi=None):
-    """Step b. Returns counts {"skip", "ack", "work", "triage", "answer"}."""
+    """Step b. Returns counts {"pending", "skip", "ack", "work", "triage", "answer"}."""
     if fi is None:
         import fleet_inbox as fi  # noqa: PLC0415
     inbox = Path(inbox) if inbox else Path(root) / INBOX_REL
-    counts = dict.fromkeys(("skip", "ack", "work", "triage", "answer"), 0)
+    counts = dict.fromkeys(("pending", "skip", "ack", "work", "triage", "answer"), 0)
+    counts["pending"] = _pending_orders(root, inbox, fi)
     for path, d in fi.scan(root, inbox, CODE):
         if d.action in (fi.SKIP, fi.ACK):
             fi.mark_seen(root, path, d)
@@ -268,6 +274,27 @@ def inbox_pass(root, inbox=None, spawn_triage=None, fi=None):
                     "ts": _stamp(), "note": path.name, "to": d.sender, "cls": d.cls,
                     "hop": d.hop, "answer": answer[:4000], "sent": False})
     return counts
+
+
+def _pending_orders(root, inbox, fi):
+    """Kit v27 pending ORDERs first: re-queue the `order` job of every pending
+    WORK row whose note is still in the inbox and that has no job file (queued,
+    running, done or failed: queue_job never doubles one). Returns the count of
+    pending rows seen."""
+    rows = getattr(fi, "pending_work", None)
+    rows = rows(root) if rows else []
+    for row in rows:
+        name, sha = row.get("note") or "", row.get("sha256") or ""
+        path = Path(inbox) / name
+        if not name or not sha or not path.is_file():
+            continue
+        cls = row.get("cls") or "ORDER"
+        sender = row.get("sender") or "?"
+        d = type("PendingDecision", (), {"cls": cls, "sender": sender})()
+        job = make_job("build", "order " + name[:60], order_prompt(path, d),
+                       writes_code=True, kind="order", key={"note": name, "sha256": sha})
+        queue_job(root, job, name="order-%s" % sha[:16])
+    return len(rows)
 
 
 def _triage(root, path, d, fi, spawn_triage):
