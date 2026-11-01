@@ -1,6 +1,6 @@
 """vw_lane: spawn options follow FLEET-COMMON 10 (sonnet unless code, low effort for inbox)."""
+import fleet_headless
 import pytest
-
 import vw_lane
 
 
@@ -11,6 +11,33 @@ def test_build_without_code_is_sonnet():
 
 def test_code_job_uses_the_default_model():
     assert vw_lane.plan("build", True, "build")["model"] is None
+
+
+def test_writes_code_job_gets_named_permissions_and_no_blanket_bypass():
+    extra = vw_lane.plan("build", True, "order")["extra"]
+    assert extra[:3] == ("--permission-mode", "acceptEdits", "--allowedTools")
+    assert len(extra) == 4
+    tools = extra[3].split(",")
+    assert ("Bash(python ops/fleet_kit/fleet_gitlock.py run --owner * -- git commit:*)"
+            in tools)
+    assert ("PowerShell(python ops/fleet_kit/fleet_suite_gate.py run --owner * -- "
+            "python -m pytest:*)" in tools)
+    text = " ".join(extra)
+    assert "bypass" not in text.lower() and "push" not in text
+    assert "vw_video" not in text and "vw_launch" not in text
+    fleet_headless.check_door(False, extra, True)  # the kit's door takes this shape
+
+
+def test_read_only_job_gets_no_extra_permissions():
+    assert vw_lane.plan("review", False, "build", "low")["extra"] == ()
+
+
+def test_job_passes_the_planned_permissions_to_spawn(monkeypatch, tmp_path):
+    monkeypatch.setattr(vw_lane, "ROOT", tmp_path)
+    fh = _FakeKit({"rc": 0, "error": None, "is_error": False})
+    opts = vw_lane.plan("build", True, "order")
+    vw_lane._job(fh, {"index": 0, "worktree": str(tmp_path)}, "build", "n", "p", opts, "r")
+    assert fh.kw["extra"] == opts["extra"]
 
 
 def test_inbox_is_low_effort():

@@ -204,6 +204,112 @@ def test_inbox_pass_requeues_pending_orders_first(tmp_path):
     assert vw_loop.queued(tmp_path) == []
 
 
+def _order_job_file(root, sha="d" * 64):
+    key = {"note": "o.md", "sha256": sha, "cls": "ORDER", "to": "MAIN", "hop": 1}
+    job = vw_loop.make_job("build", "o", "p", writes_code=True, kind="order", key=key)
+    return vw_loop.claim_job(vw_loop.queue_job(root, job, name="order-" + sha[:16]))
+
+
+def _real_inbox(monkeypatch, root, sha="d" * 64):
+    """The kit's ledger under tmp, with one queued WORK row for o.md."""
+    import fleet_inbox as fi
+    note = root / "o.md"
+    note.write_text("x", encoding="ascii")
+    monkeypatch.setattr(fi, "_sha256", lambda p: sha)
+    fi.enqueue_work(root, note, _D("work", cls="ORDER"))
+    return fi
+
+
+def _answers(root):
+    path = root / vw_loop.ANSWERS_REL
+    if not path.exists():
+        return []
+    return [json.loads(x) for x in path.read_text().splitlines()]
+
+
+def test_order_prompt_carries_the_note_text(tmp_path):
+    note = tmp_path / "o.md"
+    note.write_text("# From MAIN - ORDER\nDo the marker-4711 thing.\n", encoding="ascii")
+    prompt = vw_loop.order_prompt(note, _D("work", cls="ORDER"))
+    assert "marker-4711" in prompt and str(tmp_path) not in prompt
+    assert "owner id" in prompt and "deny" in prompt
+
+
+def test_order_prompt_is_bounded_under_the_kit_argv_limit(tmp_path):
+    import fleet_headless
+    note = tmp_path / "o.md"
+    note.write_text("x" * (vw_loop.ORDER_NOTE_MAX + 500), encoding="ascii")
+    prompt = vw_loop.order_prompt(note, _D("work", cls="ORDER"))
+    assert "truncated" in prompt and len(prompt) < fleet_headless.ARGV_PROMPT_MAX
+
+
+def test_order_rc0_without_a_kept_commit_stays_pending_and_retries(tmp_path, monkeypatch):
+    fi = _real_inbox(monkeypatch, tmp_path)
+    c = _order_job_file(tmp_path)
+    rc = vw_loop.run_job(c, run=lambda *a: {"rc": 0, "error": None, "kept": {"ref": None}},
+                         root=tmp_path)
+    assert rc == 1 and len(fi.pending_work(tmp_path)) == 1
+    assert [p.name for p in vw_loop.queued(tmp_path)] == ["order-" + "d" * 16 + ".json"]
+    assert _answers(tmp_path) == []
+
+
+def test_order_is_retried_twice_then_reported_blocked_and_stays_pending(tmp_path, monkeypatch):
+    fi = _real_inbox(monkeypatch, tmp_path)
+    c = _order_job_file(tmp_path)
+    tries = []
+
+    def fake(*a):
+        tries.append(1)
+        return {"rc": 0, "error": None, "kept": {"ref": None}}
+    while c is not None:
+        vw_loop.run_job(c, run=fake, root=tmp_path)
+        left = vw_loop.queued(tmp_path)
+        c = vw_loop.claim_job(left[0]) if left else None
+    assert len(tries) == 1 + vw_loop.MAX_ORDER_RETRIES
+    assert list((tmp_path / vw_loop.JOBS_REL).glob("*.failed"))
+    assert len(fi.pending_work(tmp_path)) == 1
+    owed = _answers(tmp_path)
+    assert [a["state"] for a in owed] == ["blocked"] and owed[0]["sent"] is False
+    assert "BLOCKED" in owed[0]["answer"] and owed[0]["to"] == "MAIN"
+
+
+def test_order_with_a_kept_commit_tells_the_session_and_stays_pending(tmp_path, monkeypatch):
+    fi = _real_inbox(monkeypatch, tmp_path)
+    c = _order_job_file(tmp_path)
+    ref = "refs/fleet-lanes/lane-0-r"
+    rc = vw_loop.run_job(c, run=lambda *a: {"rc": 0, "error": None, "kept": {"ref": ref}},
+                         root=tmp_path)
+    assert rc == 0 and list((tmp_path / vw_loop.JOBS_REL).glob("*.done"))
+    assert len(fi.pending_work(tmp_path)) == 1
+    owed = _answers(tmp_path)
+    assert owed[0]["state"] == "merge" and ref in owed[0]["answer"]
+
+
+def test_order_failed_run_with_is_error_counts_as_failed(tmp_path, monkeypatch):
+    _real_inbox(monkeypatch, tmp_path)
+    c = _order_job_file(tmp_path)
+    line = {"rc": 0, "error": None, "is_error": True, "kept": {"ref": "refs/fleet-lanes/x"}}
+    assert vw_loop.run_job(c, run=lambda *a: line, root=tmp_path) == 1
+    assert _answers(tmp_path) == []
+
+
+def test_close_order_needs_the_answer_in_the_outbox(tmp_path, monkeypatch):
+    fi = _real_inbox(monkeypatch, tmp_path)
+    assert vw_loop.close_order(tmp_path, "o.md", "a.md")["ok"] is False
+    assert len(fi.pending_work(tmp_path)) == 1
+    (tmp_path / vw_loop.OUTBOX_REL).mkdir()
+    (tmp_path / vw_loop.OUTBOX_REL / "a.md").write_text("x", encoding="ascii")
+    assert vw_loop.close_order(tmp_path, "o.md", "a.md") == {"ok": True, "closed": 1}
+    assert fi.pending_work(tmp_path) == []
+    assert vw_loop.close_order(tmp_path, "o.md", "a.md")["ok"] is False
+
+
+def test_a_build_job_still_closes_on_rc(tmp_path):
+    c = vw_loop.claim_job(_job(tmp_path))
+    assert vw_loop.run_job(c, run=lambda *a: {"rc": 0, "error": None}, root=tmp_path) == 0
+    assert list((tmp_path / vw_loop.JOBS_REL).glob("*.done"))
+
+
 def test_pick_jobs_orders_first(tmp_path):
     first = _job(tmp_path, "build")
     order = vw_loop.queue_job(tmp_path, vw_loop.make_job("build", "o", "p", kind="order"),

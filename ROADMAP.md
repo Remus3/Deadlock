@@ -127,6 +127,18 @@ on built-in `node:sqlite` (D-DB), per-user DB, pinned migrations, backup.
   every main-branch change stays reviewed by a session; reversible. Each
   session start: merge refs/fleet-lanes/* and send pending answers.
   Reverses: a clean week of lane runs, then a ruling to auto-merge.
+  MAIN FIX 2026-11-01 0825: an order job closes on evidence (a kept commit),
+  retried at most twice, and its WORK row stays pending until a session merges
+  and sends the ANSWER (`vw_loop.py close-order`); the owed work is a line in
+  inbox_answers.jsonl, state merge or blocked. Decision: a session merges and
+  answers. Alternative: the loop does both. Why: a lane cannot reach MAIN's
+  outbox, so the session is where a note's provenance is checked before its
+  work reaches main.
+- [ ] VW-TEST-WSL-SHELL: `tests/test_commit_msg_hook.py` fails 2 tests when the
+  suite starts from a PowerShell shell: `shutil.which` lands on the Windows
+  WSL `bash.EXE`, which cannot read the hook path (rc 127). From Git Bash the
+  whole suite is green. Seen 2026-11-01. Accept: the test finds Git's shell or
+  skips on the WSL stub, and the suite is green from both shells.
 - [ ] VW-RUNCAP: two operator asks, both kit-owned (FLEET-COMMON 10; VW never
   edits or resets the kit ledger locally). (a) 500 runs / 24 h, REQUEST to
   MAIN 2026-10-29 0611. (b) Operator order 2026-10-29: when the cap is hit,

@@ -25,6 +25,10 @@ PRUNE ON EXIT (VW-LOOP-ARM): when the job ends, commits the lane made are
 kept under refs/fleet-lanes/<lane worktree>-<run id> (the kit's own keep
 namespace) and a CLEAN lane worktree is removed and pruned; a dirty one is a
 crashed run's work and is left for a session (the kit refuses to reuse it).
+PERMISSIONS (MAIN FIX 2026-11-01 0825): a headless child has nobody to approve a
+prompt, so a writes_code job gets acceptEdits plus the named gate, gitlock and
+git commands of LANE_COMMANDS (plan()["extra"]). No blanket bypass, no push, no
+apply tool (a lane never writes a game file). Read-only jobs get nothing extra.
 """
 
 import argparse
@@ -44,6 +48,21 @@ TIMEOUT_S = 3600
 KINDS = ("build", "inbox", "triage", "order")
 EFFORTS = ("low", "medium", "high")
 LOG_REL = Path("ops") / "runtime" / "lane_logs"  # gitignored; stream log + fail record
+LANE_COMMANDS = (  # what a writes_code lane runs unattended; gitlock only for a commit
+    "git status", "git diff", "git log", "git show", "git rev-parse", "git add",
+    "python -m pytest", "python tools/vw_privacy.py", "python tools/vw_release.py check",
+    "npm test", "npm --prefix app test",
+    "python ops/fleet_kit/fleet_suite_gate.py run --owner * -- python -m pytest",
+    "python ops/fleet_kit/fleet_gitlock.py run --owner * -- git commit",
+)
+
+
+def lane_permissions():
+    """The spawn extra of a writes_code job (pure; tested). The tree's project
+    settings run PowerShell as well as Bash, so each command is named for both."""
+    tools = ["%s(%s:*)" % (shell, cmd) for cmd in LANE_COMMANDS
+             for shell in ("Bash", "PowerShell")]
+    return ("--permission-mode", "acceptEdits", "--allowedTools", ",".join(tools))
 
 
 def _kit():
@@ -65,7 +84,8 @@ def plan(lane, writes_code, kind, effort=None):
         effort = "low"
     return {"model": None if writes_code else "sonnet", "effort": effort,
             "writes_code": bool(writes_code), "kind": kind,
-            "governor": "queued", "timeout": TIMEOUT_S}
+            "governor": "queued", "timeout": TIMEOUT_S,
+            "extra": lane_permissions() if writes_code else ()}
 
 
 def cap():
@@ -138,7 +158,7 @@ def _job(fh, claim, lane, note, prompt, opts, run_id="vw-run"):
                     timeout=opts["timeout"], cwd=claim["worktree"], model=opts["model"],
                     effort=opts["effort"], governor=opts["governor"], kind=opts["kind"],
                     slot_id=task, progress_task=task, log_path=str(log),
-                    return_stderr=True,
+                    return_stderr=True, extra=opts["extra"],
                     halt_file=str(ROOT / "ops" / "loop" / "control" / "HALT"))
     ok = line.get("rc") == 0 and not line.get("error") and not line.get("is_error")
     if not ok:
