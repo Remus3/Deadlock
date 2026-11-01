@@ -17,7 +17,7 @@ def test_every_kit_file_matches_the_manifest():
     bad = [n for n, h in man["files"].items()
            if hashlib.sha256((KIT / n).read_bytes()).hexdigest() != h]
     assert not bad, bad
-    assert man["version"] == 25
+    assert man["version"] == 26
 
 
 def test_claude_md_embeds_the_block_byte_exact():
@@ -33,8 +33,12 @@ def test_claude_md_embeds_the_block_byte_exact():
 def test_settings_wire_the_kit_hooks():
     s = json.loads((ROOT / ".claude" / "settings.json").read_text(encoding="ascii"))
     cmds = [h["command"] for ev in s["hooks"].values() for g in ev for h in g["hooks"]]
-    assert 'python "$CLAUDE_PROJECT_DIR/ops/fleet_kit/fleet_subagent_first.py"' in cmds
-    assert 'python "$CLAUDE_PROJECT_DIR/ops/fleet_kit/fleet_claims.py" hook' in cmds
+    launcher = 'bash "$CLAUDE_PROJECT_DIR/ops/fleet_kit/fleet_hook.sh" '
+    pre = {h["command"]: h for g in s["hooks"]["PreToolUse"] for h in g["hooks"]}
+    for cmd in (launcher + "fleet_subagent_first.py", launcher + "fleet_claims.py hook"):
+        assert cmd in pre, cmd
+        assert pre[cmd]["timeout"] == 15
+    assert not any("|| true" in c for c in pre)
     assert 'python "$CLAUDE_PROJECT_DIR/ops/fleet_kit/fleet_claims.py" release-hook' in cmds
     assert "python ops/fleet_kit/fleet_done.py stop-hook" in cmds
 
