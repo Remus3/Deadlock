@@ -52,6 +52,8 @@ LANE_COMMANDS = (  # what a writes_code lane runs unattended; gitlock only for a
     "git status", "git diff", "git log", "git show", "git rev-parse", "git add",
     "python -m pytest", "python tools/vw_privacy.py", "python tools/vw_release.py check",
     "npm test", "npm --prefix app test",
+)
+LANE_OWNER_COMMANDS = (  # a wildcard in the middle: the rule ends " *", not ":*"
     "python ops/fleet_kit/fleet_suite_gate.py run --owner * -- python -m pytest",
     "python ops/fleet_kit/fleet_gitlock.py run --owner * -- git commit",
 )
@@ -59,9 +61,11 @@ LANE_COMMANDS = (  # what a writes_code lane runs unattended; gitlock only for a
 
 def lane_permissions():
     """The spawn extra of a writes_code job (pure; tested). The tree's project
-    settings run PowerShell as well as Bash, so each command is named for both."""
-    tools = ["%s(%s:*)" % (shell, cmd) for cmd in LANE_COMMANDS
-             for shell in ("Bash", "PowerShell")]
+    settings run PowerShell as well as Bash, so each command is named for both.
+    A rule with a wildcard in the middle does not match in the ":*" form (a live
+    lane probe was denied, 2026-11-01), so those rules use the " *" form."""
+    rules = ["%s:*" % cmd for cmd in LANE_COMMANDS] + ["%s *" % c for c in LANE_OWNER_COMMANDS]
+    tools = ["%s(%s)" % (shell, rule) for rule in rules for shell in ("Bash", "PowerShell")]
     return ("--permission-mode", "acceptEdits", "--allowedTools", ",".join(tools))
 
 

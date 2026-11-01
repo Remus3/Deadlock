@@ -18,10 +18,11 @@ def test_writes_code_job_gets_named_permissions_and_no_blanket_bypass():
     assert extra[:3] == ("--permission-mode", "acceptEdits", "--allowedTools")
     assert len(extra) == 4
     tools = extra[3].split(",")
-    assert ("Bash(python ops/fleet_kit/fleet_gitlock.py run --owner * -- git commit:*)"
+    assert ("Bash(python ops/fleet_kit/fleet_gitlock.py run --owner * -- git commit *)"
             in tools)
     assert ("PowerShell(python ops/fleet_kit/fleet_suite_gate.py run --owner * -- "
-            "python -m pytest:*)" in tools)
+            "python -m pytest *)" in tools)
+    assert "Bash(git add:*)" in tools
     text = " ".join(extra)
     assert "bypass" not in text.lower() and "push" not in text
     assert "vw_video" not in text and "vw_launch" not in text
