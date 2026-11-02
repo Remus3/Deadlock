@@ -117,9 +117,9 @@ NEXT ACTION
      tools/vw_release.py + tests/test_release.py, CLAUDE.md RELEASES line.
      Every release runs `vw_release.py check <ver>` (one patch/minor step,
      batch per run, no time gate). No tag cut yet; first is v0.1.0.
-  B) Run cap reset-and-continue: kit-owned, REQUEST to MAIN 2026-10-29 0614
-     with the 500/24h ask (VW-RUNCAP). Never reset the kit ledger locally;
-     at the cap, stop until MAIN ships it.
+  B) Run cap: MAIN's v26 ruling granted 500 through the machine config (read
+     back 500, kit v28) and declined an automatic reset. Never reset the kit
+     ledger locally; `budget reset` is interactive, on the operator's word.
   C) Public presentation review (VW-PUBLIC-REVIEW, recurring): rules in
      docs/public-presentation.md; /done step 3a. Due and unblocked, see (d).
   Operator-only acts (batched, next time in game):
@@ -137,12 +137,6 @@ NEXT ACTION
   text to the gitignored ops/runtime/cvarlist.txt (steps in
   docs/optimization.md "Cvar flag check").
   Operator go needed: VW-APP-UPDATE-E2E (publish two app release drafts).
-  Waiting on MAIN: VW-RUNCAP (roadmap says run at kit 120 / 24 h; the machine
-  config read at /done 4 shows runs_cap VW 500, so re-check item (a) and whether
-  MAIN answered item (b) before closing); VW-KIT-BOARDID (fleet_board stdin
-  parser dropped IDs over 16 chars, FIX note 2026-10-29 0612; the vendored
-  v27 parser reads ID_MAX = 48 with a comment naming that note, so check
-  a stdin render of an 18-char ID and close it).
   Earlier closed context: controls done 2026-10-25 23:16 (reticle-free
   autoexec, game copy sha256 a38b0d66aec5 = repo copy); exclusive
   fullscreen 240 Hz applied 2026-10-26, read back 1/0, 240/1.

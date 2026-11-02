@@ -111,3 +111,43 @@
   session to merge; triage ANSWERs wait in inbox_answers.jsonl for a session
   to send. Tests: `tests/test_loop.py`.
   Proof: 36362e5, tools/vw_loop.py, tests/test_loop.py.
+- [x] VW-RUNCAP: two operator asks, both kit-owned (FLEET-COMMON 10; VW never
+  edits or resets the kit ledger locally). (a) 500 runs / 24 h, REQUEST to
+  MAIN 2026-10-29 0611. (b) Operator order 2026-10-29: when the cap is hit,
+  usage percent remains and the session was not told to wrap up / /done,
+  record the cap-hit in the usage ledger, reset the rolling count and
+  continue; REQUEST to MAIN 2026-10-29 0614 (asks one ruling on a + b).
+  Until then VW runs at the kit's 120 and stops at the cap. Accept: MAIN
+  answers; adopt the kit version that carries it. after: MAIN.
+  DONE 2026-11-01 (MAIN ORDER 2026-11-01 2005 item 1). Kit v26 shipped it: (a)
+  granted through the machine config; (b) automatic reset declined by MAIN's
+  ruling, `budget reset` is the operator's word. Read back on kit v28:
+  `fleet_lanes.py status` "- VW runs cap: 500", `fleet_headless.py budget show
+  --code VW` cap 500. Proof: ops/fleet_kit/fleet_lanes.py, v26 ORDER section 7.
+- [x] VW-KIT-BOARDID: kit v25 fleet_board.py line 59 (_LINE, ID group
+  `{0,15}`) silently drops checklist rows whose ID is over 16 chars (seen:
+  VW-AUTOEXEC-VERIFY). FIX note sent to MAIN 2026-10-29 0612. Meanwhile render
+  the board via `--progress` JSON (no ID limit). Accept: adopt the kit version
+  that raises the limit or fails loudly; a stdin render shows an 18-char ID.
+  after: MAIN.
+  DONE 2026-11-01 (MAIN ORDER 2026-11-01 2005 item 1). Kit v26 raised it. Read
+  back on kit v28: fleet_board.ID_MAX 48; parse_checklist on stdin-shaped text
+  keeps the 18-char VW-AUTOEXEC-VERIFY row. Parsed, not rendered: a headless run
+  never renders the board (FLEET-COMMON 18). Proof: ops/fleet_kit/fleet_board.py.
+- [x] VW-LANE-ORDER-LIVE: MAIN FIX 2026-11-01 0825 items 2 and 3 are unit-tested
+  only; no order job has run the close-on-evidence path live. Item 4: MAIN's
+  acceptance reads back only on the next ORDER (kit v28). Accept: one real order
+  job closes on a kept commit, its WORK row stays pending until a session merges
+  and answers, and the result is recorded here.
+  Lane read-back 2026-11-01 (kit v28 ORDER, kind order): the lane read and wrote
+  its worktree, ran the suite gate and committed. Still open for a session: the
+  job's close and its WORK row. Allowlist gaps seen: `python -c` asks for approval
+  (conformance() could not run in the lane), and the main checkout's inbox and
+  outbox are unreadable from the lane, so the session checks provenance.
+  DONE 2026-11-01. Read live on the kit v28 ORDER, the older of the two notes the
+  one hand tick found (the 2005 ORDER stayed queued and a session worked it): job
+  rc 0 in 141.1 s, kept refs/fleet-lanes/lane-0-vw-build-1793585169 (b2f1994),
+  worktree pruned, inbox_answers.jsonl state merge, WORK row pending until
+  close-order after a session reviewed and merged it. The blocked branch of the
+  close stays unit-tested only. Gaps: VW-LANE-ORDER-GAPS. Proof: b2f1994,
+  tools/vw_loop.py, tests/test_loop.py.

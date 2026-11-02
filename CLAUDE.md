@@ -325,7 +325,8 @@ or Steam itself exposes.
 - "continue" starts autonomous lane work (VW-LOOP-ARM, then the VW-APP
   research epics in parallel). Operator interjections are done or filed in
   `ROADMAP.md`; running work is never halted for them.
-- Headless runs stay at the kit cap until MAIN ships a change (VW-RUNCAP).
+- Headless runs stay at the kit's live cap (`fleet_lanes.py status`, set by
+  MAIN in the machine config); a reset is only the operator's recorded word.
 - Public presentation review (standing order 2026-10-29,
   `docs/public-presentation.md`): never per commit; `/done` step 3a starts
   one background sonnet lane job when the pushed range touched a user-facing

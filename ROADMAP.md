@@ -146,32 +146,16 @@ on built-in `node:sqlite` (D-DB), per-user DB, pinned migrations, backup.
   merging. Proposed fix: a sender / hash check in the tick (note bytes match the
   sender's outbox copy) before a write lane starts. Accept: a note with a forged
   sender or a hash mismatch starts no write lane; a test proves it.
-- [ ] VW-LANE-ORDER-LIVE: MAIN FIX 2026-11-01 0825 items 2 and 3 are unit-tested
-  only; no order job has run the close-on-evidence path live. Item 4: MAIN's
-  acceptance reads back only on the next ORDER (kit v28). Accept: one real order
-  job closes on a kept commit, its WORK row stays pending until a session merges
-  and answers, and the result is recorded here.
-  Lane read-back 2026-11-01 (kit v28 ORDER, kind order): the lane read and wrote
-  its worktree, ran the suite gate and committed. Still open for a session: the
-  job's close and its WORK row. Allowlist gaps seen: `python -c` asks for approval
-  (conformance() could not run in the lane), and the main checkout's inbox and
-  outbox are unreadable from the lane, so the session checks provenance.
+- [ ] VW-LANE-ORDER-GAPS: read in the first live order job, 2026-11-01. (a) A tick
+  queues a job for an ORDER a session already answered, because the row is only
+  made when a tick sees the note: the v28 ORDER, answered at 18:59, ran a 141 s
+  lane that could only re-verify it. (b) One lane name per job, oldest note
+  first, so a second ORDER waits for the next tick. (c) A lane cannot run
+  `python -c` unattended, so conformance() stays with the session. Accept: a
+  tick skips a note an outbox ANSWER already names, and (c) is allowed or ruled
+  out.
 - [ ] VW-TEST-WSL-SHELL: `tests/test_commit_msg_hook.py` fails 2 tests when the
   suite starts from a PowerShell shell: `shutil.which` lands on the Windows
   WSL `bash.EXE`, which cannot read the hook path (rc 127). From Git Bash the
   whole suite is green. Seen 2026-11-01. Accept: the test finds Git's shell or
   skips on the WSL stub, and the suite is green from both shells.
-- [ ] VW-RUNCAP: two operator asks, both kit-owned (FLEET-COMMON 10; VW never
-  edits or resets the kit ledger locally). (a) 500 runs / 24 h, REQUEST to
-  MAIN 2026-10-29 0611. (b) Operator order 2026-10-29: when the cap is hit,
-  usage percent remains and the session was not told to wrap up / /done,
-  record the cap-hit in the usage ledger, reset the rolling count and
-  continue; REQUEST to MAIN 2026-10-29 0614 (asks one ruling on a + b).
-  Until then VW runs at the kit's 120 and stops at the cap. Accept: MAIN
-  answers; adopt the kit version that carries it. after: MAIN.
-- [ ] VW-KIT-BOARDID: kit v25 fleet_board.py line 59 (_LINE, ID group
-  `{0,15}`) silently drops checklist rows whose ID is over 16 chars (seen:
-  VW-AUTOEXEC-VERIFY). FIX note sent to MAIN 2026-10-29 0612. Meanwhile render
-  the board via `--progress` JSON (no ID limit). Accept: adopt the kit version
-  that raises the limit or fails loudly; a stdin render shows an 18-char ID.
-  after: MAIN.
