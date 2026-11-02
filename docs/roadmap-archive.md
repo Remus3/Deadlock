@@ -149,5 +149,6 @@
   rc 0 in 141.1 s, kept refs/fleet-lanes/lane-0-vw-build-1793585169 (b2f1994),
   worktree pruned, inbox_answers.jsonl state merge, WORK row pending until
   close-order after a session reviewed and merged it. The blocked branch of the
-  close stays unit-tested only. Gaps: VW-LANE-ORDER-GAPS. Proof: b2f1994,
-  tools/vw_loop.py, tests/test_loop.py.
+  close stays unit-tested only. ANSWER 1859 predates the job, so the answer leg was
+  not read in live sequence, and FIX 0825 item 4 reads on the 2005 ANSWER. Gaps:
+  VW-LANE-ORDER-GAPS. Proof: b2f1994, tools/vw_loop.py, tests/test_loop.py.

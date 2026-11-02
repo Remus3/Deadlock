@@ -151,9 +151,12 @@ on built-in `node:sqlite` (D-DB), per-user DB, pinned migrations, backup.
   made when a tick sees the note: the v28 ORDER, answered at 18:59, ran a 141 s
   lane that could only re-verify it. (b) One lane name per job, oldest note
   first, so a second ORDER waits for the next tick. (c) A lane cannot run
-  `python -c` unattended, so conformance() stays with the session. Accept: a
-  tick skips a note an outbox ANSWER already names, and (c) is allowed or ruled
-  out.
+  `python -c` unattended, so conformance() stays with the session. (d) A queued
+  job still runs after its row closes: close-order leaves job files, and the
+  picker never checks the row. Accept: a tick skips a note an outbox ANSWER
+  already names, matched on the note's date and title because an ANSWER cites its
+  ORDER that way (1859 does), not by filename; a closed row's job does not run;
+  and (c) is allowed or ruled out.
 - [ ] VW-TEST-WSL-SHELL: `tests/test_commit_msg_hook.py` fails 2 tests when the
   suite starts from a PowerShell shell: `shutil.which` lands on the Windows
   WSL `bash.EXE`, which cannot read the hook path (rc 127). From Git Bash the
