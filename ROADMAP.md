@@ -47,6 +47,10 @@
   deadlock, valve, autoexec, game-config, windows set and read back; README
   has CI + license badges, linked docs, a Status line, the app/ blurb and
   "How this repo is built".
+  First lane run 2026-11-01 on 08e9c97, partial, state file not written: without
+  --writes-code a lane has no allowlist, so `gh repo view` and `gh release list`
+  were refused and it read README.md, SECURITY.md, NOTICE and LICENSE head only.
+  The job needs `gh repo view` allowed and a way to reach the state file.
 - [ ] VW-CVAR-DRIFT (recurring, per game patch): `tools/vw_cvar_drift.py
   fetch` then `check` diffs the autoexec convars against the public
   GameTracking-Deadlock dump at the two newest patches and flags removed /
