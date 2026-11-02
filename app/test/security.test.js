@@ -124,6 +124,40 @@ test('CSP header is strict and mirrored in the page (SEC-E7)', () => {
   assert.doesNotMatch(html, /https?:\/\//i, 'remote content');
 });
 
+// VW-5 (MAIN ORDER 2026-11-01 2005): run the real resolver source under a chosen
+// path module, so the posix behaviour that broke the ubuntu job (a73250b) is
+// caught on Windows too and the Windows behaviour on ubuntu. No seam in the app.
+function resolverUnder(pathModule) {
+  const file = path.join(__dirname, '..', 'src', 'main', 'appProtocol.js');
+  const mod = { exports: {} };
+  const load = (id) => (id === 'node:path' ? pathModule : require(id));
+  new Function('require', 'module', 'exports', fs.readFileSync(file, 'utf8'))(
+    load, mod, mod.exports);
+  return mod.exports.resolveRequest;
+}
+
+for (const [name, mod, root] of [
+  ['posix', path.posix, '/srv/vw/renderer'],
+  ['win32', path.win32, 'C:\\vw\\renderer'],
+]) {
+  test(`app:// refuses backslash and dot-dot under path.${name} (SEC-E1)`, () => {
+    const resolve = resolverUnder(mod);
+    const ok = resolve('app://vw/index.html', root);
+    assert.equal(ok.file, mod.join(root, 'index.html'));
+    for (const u of [
+      'app://vw/..%5c..%5cpackage.json',
+      'app://vw/..%5Cpackage.json',
+      'app://vw/sub%5c..%5c..%5cpackage.json',
+      'app://vw/name%5cindex.html',
+      'app://vw/..%2f..%2fpackage.json',
+      'app://vw/sub/..%2f..%2f..%2fpackage.json',
+      'app://vw/%2e%2e%2fpackage.json',
+    ]) {
+      assert.equal(resolve(u, root), null, u);
+    }
+  });
+}
+
 test('preload exposes a fixed API only (SEC-E13 shape)', () => {
   const text = fs.readFileSync(path.join(SRC, 'preload', 'preload.js'), 'utf8');
   assert.match(text, /contextBridge\.exposeInMainWorld\('vw'/);
