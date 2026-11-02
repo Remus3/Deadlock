@@ -2,7 +2,7 @@ VW hand-off (Deadlock config and tuning tree). Tracked; the repo is PUBLIC:
 no path, account id, name or email in this file; other trees by code only.
 
 READ FIRST
-  1. CLAUDE.md - FLEET-COMMON block (kit v25) then "VW rules": game safety
+  1. CLAUDE.md - FLEET-COMMON block (kit v27) then "VW rules": game safety
      floor, privacy, tiered push policy, lanes and inbox.
   2. ROADMAP.md - open work.
   3. docs/optimization.md - what was applied 2026-10-25, read-backs, rollback.
@@ -11,9 +11,18 @@ READ FIRST
      Electron companion app, three engines, research tracks, process rules,
      safety mapping (the floor governs). Epics VW-APP-* in ROADMAP.md.
 
+OPEN RISK - REVIEW LANE COMMITS BEFORE MERGING (VW-LANE-PROVENANCE)
+  The lane tick has no sender or hash check: since FIX 0825 any note classed
+  ORDER or FIX can drive a write lane with `acceptEdits`; pytest / npm test run
+  worktree code, so the allowlist is not a sandbox. The only safeguard is that
+  lane commits stay under refs/fleet-lanes/ until a session reviews and merges
+  them. Every session MUST review those commits, and check the note against
+  MAIN's committed outbox copy, before merging. Proposed fix: a sender / hash
+  check in the tick (filed, not worked).
+
 STATE (reading 2026-10-25, tree created by MAIN on operator order)
-  - Kit v25 vendored at ops/fleet_kit/ (adopted 2774b87, provenance MATCH),
-    MANIFEST byte-identical to MAIN's. Hooks: core.hooksPath .githooks
+  - Kit v27 vendored at ops/fleet_kit/ (adopted 22f0e6b; conformance test green
+    in the session 4 gate). Hooks: core.hooksPath .githooks
     (commit-msg fleet_identity, pre-commit privacy scan, pre-push identity +
     privacy scan of the pushed range).
   - Game: launched once by the operator. Applied and read back: autoexec.cfg
@@ -38,33 +47,64 @@ STATE (reading 2026-10-25, tree created by MAIN on operator order)
     /done gate: python suite 134 passed; app `npm test` 69 passed.
 
 NEXT ACTION
-  FIRST at session start: (a) read back the /done session 3 push: `gh run
-  list --branch main --limit 5` (ci for the hand-off commit; record
-  green/red). Read back at /done 3: 8980677 ci green, codeql green, app RED
-  on ubuntu (SEC-E1 backslash case resolved on posix); fixed in a73250b
-  (VW-APP-CI-FIX, resolver refuses backslash / dot-dot on every OS): ci,
-  app and codeql green. (b) Merge any lane
-  commits under refs/fleet-lanes/ and send pending answers in
-  ops/loop/control/inbox_answers.jsonl (VW-LOOP-SCOPE). (c) Inbox: look for
-  MAIN's answer to the VW FIX note 2026-10-31 1612 (split-route proxy HTTP
-  429 "Pinned account is unavailable"; outbox sha256 aef0df9c..., delivered
-  1/1). It blocks VW-PUBLIC-REVIEW; the review lane started at /done 3 is
-  expected to fail the same way (public_review_state.json stays unwritten,
-  so the next /done retries).
+  FIRST at session start: (a) read back the /done session 4 push: `gh run
+  list --branch main --limit 5` (ci, app, codeql for the hand-off commit; record
+  green/red). The CI read-back is OWED: one push per session, and this file
+  was committed before that push. The code batch went up with it (7 commits:
+  kit v26, W44, kit v27, 3 VW-LANE-ORDER-FIX / VW-PUBLIC-REVIEW, this hand-off);
+  app/ untouched in the range, so `npm test` was not run at /done 4.
+  (b) REVIEW then merge any lane commits under refs/fleet-lanes/ (see OPEN RISK)
+  and send pending answers in ops/loop/control/inbox_answers.jsonl
+  (VW-LOOP-SCOPE). Read at /done 4: no refs, no answers file.
+  (c) Inbox: kit v28 ORDER is in MAIN's outbox, not yet in this inbox, due in
+  the 2026-11-02 04:00 run. Carried, not acted on. It is also the first live
+  read-back of FIX 0825 item 4 (VW-LANE-ORDER-LIVE).
+  (d) VW-PUBLIC-REVIEW is DUE and UNBLOCKED: public_review_state.json is still
+  missing and MAIN's ANSWER cleared the proxy 429. Skipped at /done 4 because
+  the operator limited that session to the inbox; the next /done step 3a starts
+  it unless the session is limited again.
   ON "continue": next VW-APP epic in ROADMAP order via lanes (queue jobs
   with `tools/vw_loop.py queue`): VW-APP-INGEST (after GAME + DB, both
   done) and VW-APP-E1 (after HERO + BUS, both done) are unblocked; also
   VW-APP-WATCHDOG (after: none). Then E2, E3, OVERLAY, COMPANION,
   CONTROLLER, COACH.
+  Session 4 (2026-11-01), scope inbox only by operator word ("just the inbox-
+  not roadmap work at this time"); no roadmap work, no lane job, nothing
+  queued. The session checklist was NOT printed at session start; the one task
+  was VW-INBOX: process the inbox (done). Worked: MAIN FIX 2026-11-01 0825
+  (9bd6c17, 51221f9, c8f0663). Read back at /done 4: the three commits in
+  git log; FIX note sha256 52f76e64115d in the seen ledger equals the inbox
+  copy; outbox ANSWER `2026-11-01-1805-from-VW-ANSWER-to-MAIN-lane-order-jobs-
+  FIX-0825.md` sha256 7dcebb8351e2, recorded delivered 1/1 when sent. The
+  recipient copy was NOT re-hashed at /done. Its filename and header say 18:05;
+  the real time was 17:59; left as sent. All 8 inbox notes are in
+  inbox_seen.jsonl; newest is still FIX 0825, so no new note at /done 4.
+  MAIN ANSWER 2026-10-31 2120: the proxy 429 cause was an expired OAuth token,
+  re-login done, healthy again (acked; RESOLVED, left the waiting list).
+  Filed this session, open: VW-LANE-PROVENANCE (OPEN RISK above);
+  VW-LANE-ORDER-LIVE (FIX 0825 items 2 and 3 unit-tested only, no order job has
+  run the close-on-evidence path live; item 4: MAIN's acceptance reads back
+  only on the next ORDER, kit v28); VW-TEST-WSL-SHELL
+  (tests/test_commit_msg_hook.py has 2 failures when the suite starts from
+  PowerShell: `which` finds the Windows WSL bash.EXE, which cannot read the hook
+  path).
+  GATE at /done 4: run from Git Bash through the Bash tool, avoiding the WSL
+  shell, via fleet_suite_gate.py run with `python.exe -m pytest` (Python 3.14)
+  and `-o addopts=""` so the count prints: 160 passed, 0 failed, 0 skipped, rc
+  0, about 1 s, run twice (same result). Not a green from PowerShell, which
+  still has the 2 failures above. vw_privacy.py scan: clean, rc 0.
   Session 3 (2026-10-31) landed: VW-CI-FIX (8581383), VW-PR1-NOTE,
   VW-REVIEW-FAIL (8c60219, 0753061), VW-CVAR-CHECK (3ee8072; 0 cheat /
   devonly, 5 engine cvars unknown -> VW-CVAR-DUMP), VW-APP-SCAFFOLD
   (efe5f01), VW-APP-BUS (0d62c07), VW-APP-DB (0d57133), docs (1eb6c7f).
   Follow-ups filed: VW-APP-UPDATE-E2E, VW-APP-WATCHDOG, VW-CVAR-DUMP.
+  Read back at /done 3: 8980677 ci green, codeql green, app RED on ubuntu
+  (SEC-E1 backslash case resolved on posix); fixed in a73250b (VW-APP-CI-FIX,
+  resolver refuses backslash / dot-dot on every OS): ci, app and codeql green.
   Headless drive 2026-11-01 (MAIN ORDER 2026-10-31 2215, W44): topics +
   README (items 1-2), tools/vw_frametime.py, commit-msg 72-char subject
-  refusal, tools/vw_cvar_drift.py (VW-CVAR-DRIFT); ONE ANSWER sent. Not
-  pushed: pushes at the next /done (code batch, after the local gate).
+  refusal, tools/vw_cvar_drift.py (VW-CVAR-DRIFT); ONE ANSWER sent. Pushed
+  with the /done 4 batch.
   PROCESS: sub-agents sharing one session scratchpad must use unique file
   names (one agent's progress helper was overwritten on 2026-10-31).
   pytest.ini addopts carries -q, so `pytest -q` prints no pass count;
@@ -81,9 +121,7 @@ NEXT ACTION
      with the 500/24h ask (VW-RUNCAP). Never reset the kit ledger locally;
      at the cap, stop until MAIN ships it.
   C) Public presentation review (VW-PUBLIC-REVIEW, recurring): rules in
-     docs/public-presentation.md; /done step 3a. BLOCKED on the proxy 429.
-  Inbox: no new note at /done 2026-10-31 session 3 (newest still the kit
-  v25 ORDER; all three recorded in inbox_seen.jsonl).
+     docs/public-presentation.md; /done step 3a. Due and unblocked, see (d).
   Operator-only acts (batched, next time in game):
   1) VW-CASTING: confirm the three casting options in the menu (no file
   shows them). 2) VW-AUTOEXEC-VERIFY: one F7 console look for the echo and
@@ -99,10 +137,12 @@ NEXT ACTION
   text to the gitignored ops/runtime/cvarlist.txt (steps in
   docs/optimization.md "Cvar flag check").
   Operator go needed: VW-APP-UPDATE-E2E (publish two app release drafts).
-  Waiting on MAIN: the proxy 429 FIX note (blocks VW-PUBLIC-REVIEW);
-  VW-RUNCAP (run at kit 120 / 24 h); VW-KIT-BOARDID (fleet_board stdin
-  parser drops IDs over 16 chars, FIX note 2026-10-29 0612; render via
-  --progress JSON until the fixing kit is adopted).
+  Waiting on MAIN: VW-RUNCAP (roadmap says run at kit 120 / 24 h; the machine
+  config read at /done 4 shows runs_cap VW 500, so re-check item (a) and whether
+  MAIN answered item (b) before closing); VW-KIT-BOARDID (fleet_board stdin
+  parser dropped IDs over 16 chars, FIX note 2026-10-29 0612; the vendored
+  v27 parser reads ID_MAX = 48 with a comment naming that note, so check
+  a stdin render of an 18-char ID and close it).
   Earlier closed context: controls done 2026-10-25 23:16 (reticle-free
   autoexec, game copy sha256 a38b0d66aec5 = repo copy); exclusive
   fullscreen 240 Hz applied 2026-10-26, read back 1/0, 240/1.
@@ -124,9 +164,10 @@ DO NOT RE-LITIGATE
   - App releases ship unsigned in 0.x with SHA-256 verify (VW-APP-SEC
     SIGN-0). Reverses: the app goes to anyone else or SmartScreen blocks it.
   - The proxy 429 is not worked around (no route change, no retry loop;
-    kit limit=null so no fallback hop, FLEET-COMMON 10). Reverses: MAIN's
-    answer to the 2026-10-31 1612 FIX note.
+    kit limit=null so no fallback hop, FLEET-COMMON 10). MAIN's 2120 ANSWER:
+    the same 429 text again means the same expiry, an operator re-login.
+    Reverses: MAIN names a different cause.
   - The app store uses built-in node:sqlite (D-DB, zero runtime deps).
     Reverses: node:sqlite removed or unstable in the pinned Electron.
 
-SESSION: 4
+SESSION: 5
