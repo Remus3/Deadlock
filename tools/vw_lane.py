@@ -4,6 +4,7 @@
                                   [--writes-code] [--kind build|inbox|triage|order]
                                   [--effort low|medium|high]
     python tools/vw_lane.py status
+    python tools/vw_lane.py review-due
 
 A run claims a repo lane (kit fleet_lanes.run_lane: lane lock
 ops/loop/control/lanes/<i>.lock, its own clean worktree at the kit's
@@ -29,13 +30,19 @@ PERMISSIONS (MAIN FIX 2026-11-01 0825): a headless child has nobody to approve a
 prompt, so a writes_code job gets acceptEdits plus the named gate, gitlock and
 git commands of LANE_COMMANDS (plan()["extra"]). No blanket bypass, no push, no
 apply tool (a lane never writes a game file). Read-only jobs get nothing extra.
+REVIEW COOLDOWN (MAIN ORDER 2026-11-01 2005, VW-2): a public review ending rc 1
+on a limit or auth failure records retry_after 6 h ahead in the review state
+file; `review-due` (/done step 3a) skips while that is in the future and says so
+in one line. Other failures are not cooled down: the next /done retries them.
 """
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import time
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,6 +55,14 @@ TIMEOUT_S = 3600
 KINDS = ("build", "inbox", "triage", "order")
 EFFORTS = ("low", "medium", "high")
 LOG_REL = Path("ops") / "runtime" / "lane_logs"  # gitignored; stream log + fail record
+REVIEW_NOTE = "public-review"
+REVIEW_STATE_REL = Path("ops") / "loop" / "control" / "public_review_state.json"  # gitignored
+REVIEW_COOLDOWN_H = 6
+REVIEW_MAX_AGE_DAYS = 7
+_LIMIT_OR_AUTH = re.compile(
+    r"\b(?:401|403|429)\b|rate.?limit|usage.?limit|limit reached|hit your .{0,40}limit"
+    r"|overloaded|authenticat|unauthori[sz]ed|oauth|not logged in|/login|credential",
+    re.IGNORECASE)
 LANE_COMMANDS = (  # what a writes_code lane runs unattended; gitlock only for a commit
     "git status", "git diff", "git log", "git show", "git rev-parse", "git add",
     "python -m pytest", "python tools/vw_privacy.py", "python tools/vw_release.py check",
@@ -125,6 +140,8 @@ def run(lane, note, prompt, writes_code=False, kind="build", effort=None):
                 kept = keep_and_prune(ROOT, claim["worktree"], run_id)
             line = dict(line)
             line["kept"] = kept
+            if note == REVIEW_NOTE:
+                record_review_failure(ROOT, line)
             return line
     except fl.LaneRefused as exc:  # lanes_full, lane_held or admission
         return _skipped("lane refused (%s); retry next tick" % exc)
@@ -220,6 +237,125 @@ def keep_and_prune(repo, worktree, run_id, run=None):
     return out
 
 
+# ---------------------------------------------------------------- public review
+
+def limit_or_auth_failure(line):
+    """True for a run that ended rc 1 on a usage limit or an auth failure (pure)."""
+    if line.get("rc") != 1:
+        return False
+    if line.get("limit"):
+        return True
+    text = " ".join(str(line.get(k) or "") for k in ("error", "result", "stderr"))
+    return bool(_LIMIT_OR_AUTH.search(text))
+
+
+def read_review_state(root):
+    """The state file's dict, or None when it is missing or unreadable."""
+    try:
+        doc = json.loads((Path(root) / REVIEW_STATE_REL).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return doc if isinstance(doc, dict) else None
+
+
+def record_review_failure(root, line, now=None):
+    """On a limit or auth failure, write retry_after and keep last_commit and
+    last_date, so the review stays due once the window ends. Returns the new
+    state, or None when this run earns no cooldown. Never raises."""
+    if not limit_or_auth_failure(line):
+        return None
+    now = now or datetime.now().astimezone()
+    doc = read_review_state(root) or {}
+    doc.update(result="failed", updated=now.isoformat(timespec="seconds"),
+               retry_after=(now + timedelta(hours=REVIEW_COOLDOWN_H)).isoformat(
+                   timespec="seconds"))
+    try:
+        path = Path(root) / REVIEW_STATE_REL
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(doc) + "\n", encoding="ascii", newline="\n")
+    except OSError:
+        return None
+    return doc
+
+
+def review_cooldown(state, now):
+    """The retry_after datetime still in the future, else None (pure). An
+    unreadable value is no cooldown: a bad file must not silence the review."""
+    try:
+        until = datetime.fromisoformat(str((state or {}).get("retry_after")))
+        return until if until > now else None
+    except (TypeError, ValueError):
+        return None
+
+
+def surface_touched(changed, added=()):
+    """A user-facing surface among these repo-relative paths (pure;
+    docs/public-presentation.md section 3)."""
+    for name in changed:
+        if name in ("README.md", "LICENSE", "NOTICE", "SECURITY.md"):
+            return True
+        if name.startswith(".github/"):
+            return True
+        if name.startswith("docs/") and not name.startswith("docs/research/") \
+                and "archive" not in name:
+            return True
+    return any(name.startswith("tools/") for name in added)
+
+
+def review_decision(state, now, surface=False):
+    """(due, one line) for /done step 3a (pure). The cooldown outranks every
+    other reason; `surface` is a touched surface or a new tag since last_commit."""
+    until = review_cooldown(state, now)
+    if until:
+        return False, "public review skipped: cooldown until %s after a limit or auth failure" % (
+            until.isoformat(timespec="minutes"))
+    if not state or not state.get("last_commit") or not state.get("last_date"):
+        return True, "public review due: no finished review recorded"
+    if state.get("result") == "failed":
+        return True, "public review due: the last run failed"
+    if surface:
+        return True, "public review due: a user-facing surface changed"
+    try:
+        age = (now.date() - date.fromisoformat(str(state["last_date"]))).days
+    except ValueError:
+        return True, "public review due: unreadable last_date"
+    if age >= REVIEW_MAX_AGE_DAYS:
+        return True, "public review due: last review %d days ago" % age
+    return False, "public review not due"
+
+
+def _surface_since(root, last_commit):
+    """Touched surface, new tag or a new top-level dir since last_commit (names
+    only). A range git cannot read counts as touched: fail towards a review."""
+    def git(*args):
+        return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True,
+                              timeout=60)
+    span = "%s..origin/main" % last_commit
+    changed = git("diff", "--name-only", span)
+    added = git("diff", "--name-only", "--diff-filter=A", span)
+    tags = git("tag", "--merged", "origin/main", "--no-merged", last_commit)
+    if changed.returncode or added.returncode or tags.returncode:
+        return True
+    names = added.stdout.split("\n")
+    old_top = git("ls-tree", "--name-only", last_commit).stdout.split("\n")
+    new_top = any("/" in n and n.split("/")[0] not in old_top for n in names if n)
+    return bool(tags.stdout.strip()) or new_top or surface_touched(
+        changed.stdout.split("\n"), names)
+
+
+def review_due(root=ROOT, now=None):
+    """The live /done step 3a reading: (due, one line)."""
+    now = now or datetime.now().astimezone()
+    state = read_review_state(root)
+    surface = False
+    if state and state.get("last_commit") and not review_cooldown(state, now):
+        try:
+            surface = _surface_since(root, state["last_commit"])
+        except (OSError, subprocess.SubprocessError):
+            surface = True  # fail towards a review
+    return review_decision(state, now, surface)
+
+
 def status():
     _fh, fl = _kit()
     return {"code": CODE, "cap": cap(), "slots": slots(),
@@ -239,10 +375,15 @@ def main(argv=None):
     r.add_argument("--kind", default="build", choices=KINDS)
     r.add_argument("--effort", default=None, choices=EFFORTS)
     sub.add_parser("status")
+    sub.add_parser("review-due")
     a = ap.parse_args(argv)
     if a.cmd == "status":
         print(json.dumps(status(), indent=1, default=str))
         return 0
+    if a.cmd == "review-due":
+        due, why = review_due()
+        print(why)
+        return 0 if due else 1
     prompt = Path(a.prompt_file).read_text(encoding="utf-8")
     line = run(a.lane, a.note, prompt, a.writes_code, a.kind, a.effort)
     print(json.dumps({k: line.get(k) for k in ("rc", "error", "is_error", "cost_usd",

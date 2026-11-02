@@ -40,23 +40,30 @@ at every commit. This file is the scope, the rules, the trigger and the job.
 ## 3. Cadence - when it runs
 
 Checked at every `/done` (step 3a of `.claude/commands/done.md`), after the
-push. Due when either holds:
+push, by `python tools/vw_lane.py review-due` (exit 0 due, exit 1 not, one line
+either way). A cooldown (below) outranks everything else. Due when any holds:
 
 - (a) the pushed range since the last review touches a user-facing surface:
   `README.md`, `LICENSE`, `NOTICE`, `SECURITY.md`, `docs/` (not `docs/research/`
   or archives), `.github/`, a new tag, or a new top-level directory or a new
   `tools/` entry point (a new feature);
 - (b) 7 days or more have passed since the last review;
-- (c) the state file is missing (first run).
+- (c) the state file is missing (first run), or the last run failed.
 
-Not due: nothing is spawned and nothing is printed. The check is a git diff of
-names and a date compare; it never reads file contents.
+Not due: nothing is spawned. The check is a git diff of names and a date compare;
+it never reads file contents.
+
+Cooldown: a review run ending rc 1 on a usage limit or an auth failure writes
+`retry_after`, 6 hours ahead, to the state file. `/done` skips the review while
+that is in the future and says so in one line. Any other failure earns no
+cooldown, so the next `/done` retries it. Tests: `tests/test_lane.py`.
 
 State file (gitignored, per host): `ops/loop/control/public_review_state.json`
 
 ```
 {"last_commit": "<sha reviewed>", "last_date": "YYYY-MM-DD",
- "result": "changed|no-change|failed", "updated": "<ISO time>"}
+ "result": "changed|no-change|failed", "updated": "<ISO time>",
+ "retry_after": "<ISO time, only after a limit or auth failure>"}
 ```
 
 ## 4. The job

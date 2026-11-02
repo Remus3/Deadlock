@@ -63,11 +63,14 @@ fires no `ci` run; that is not a failure). Never force-push.
 
 ## 3a. Public presentation trigger (VW-PUBLIC-REVIEW, `docs/public-presentation.md`)
 
-After the push, read `ops/loop/control/public_review_state.json`. Due when the
-file is missing, or `git diff --name-only <last_commit>..origin/main` names a
-user-facing surface (README.md, LICENSE, NOTICE, SECURITY.md, docs/ outside
-research and archives, .github/, a new top-level dir or tools/ entry point),
-or a tag was added since, or `last_date` is 7 or more days old. Due: start
+After the push, run `python tools/vw_lane.py review-due`: exit 0 is due, exit 1
+is not, and it prints one line. Skipped inside a cooldown (`retry_after` in
+`ops/loop/control/public_review_state.json`, written when a review ended rc 1 on
+a limit or auth failure): carry that one line into the hand-off. Otherwise due
+when the file is missing, the last run failed, `<last_commit>..origin/main` names
+a user-facing surface (README.md, LICENSE, NOTICE, SECURITY.md, docs/ outside
+research and archives, .github/, a new top-level dir or tools/ entry point), a
+tag was added since, or `last_date` is 7 or more days old. Due: start
 `python tools/vw_lane.py run review --note public-review --prompt-file <file>`
 in the BACKGROUND with the job of `docs/public-presentation.md` section 4;
 never wait for it. Not due: do nothing. Names and dates only; read no file
