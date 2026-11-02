@@ -17,7 +17,7 @@ def test_every_kit_file_matches_the_manifest():
     bad = [n for n, h in man["files"].items()
            if hashlib.sha256((KIT / n).read_bytes()).hexdigest() != h]
     assert not bad, bad
-    assert man["version"] == 27
+    assert man["version"] == 28
 
 
 def test_claude_md_embeds_the_block_byte_exact():

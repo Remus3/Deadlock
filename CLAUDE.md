@@ -213,7 +213,7 @@ edit. Tree-specific rules go BELOW this block, never inside it.
 
 # VW rules (tree-specific)
 
-VW channel code: `VW`. Kit: v27, vendored at `ops/fleet_kit/` (never edit;
+VW channel code: `VW`. Kit: v28, vendored at `ops/fleet_kit/` (never edit;
 report a defect to MAIN). Kit conformance: `tests/test_fleet_kit_conformance.py`.
 Hand-off: `VW-NEXT-SESSION.txt` (tracked; its `SESSION: <n>` line is the item-13
 session counter, /done writes n+1). Open work: `ROADMAP.md`.
