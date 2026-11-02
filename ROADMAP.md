@@ -151,6 +151,11 @@ on built-in `node:sqlite` (D-DB), per-user DB, pinned migrations, backup.
   acceptance reads back only on the next ORDER (kit v28). Accept: one real order
   job closes on a kept commit, its WORK row stays pending until a session merges
   and answers, and the result is recorded here.
+  Lane read-back 2026-11-01 (kit v28 ORDER, kind order): the lane read and wrote
+  its worktree, ran the suite gate and committed. Still open for a session: the
+  job's close and its WORK row. Allowlist gaps seen: `python -c` asks for approval
+  (conformance() could not run in the lane), and the main checkout's inbox and
+  outbox are unreadable from the lane, so the session checks provenance.
 - [ ] VW-TEST-WSL-SHELL: `tests/test_commit_msg_hook.py` fails 2 tests when the
   suite starts from a PowerShell shell: `shutil.which` lands on the Windows
   WSL `bash.EXE`, which cannot read the hook path (rc 127). From Git Bash the
